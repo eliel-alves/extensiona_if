@@ -102,7 +102,9 @@ class ListaDemandaState extends State<ListaDemanda> {
           title: const Text("Demandas"),
         ),
 
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: buildMessageButton(),
+
+        /*floatingActionButton: FloatingActionButton(
             onPressed: () {
               final Future future = Navigator.push(context, MaterialPageRoute(builder: (context){
                 return FormDemanda();
@@ -117,15 +119,34 @@ class ListaDemandaState extends State<ListaDemanda> {
               });
             },
             child: const Icon(Icons.add)
-        ),
+        ),*/
 
         body: ListView.builder(
             itemCount: widget._demandas.length,
             itemBuilder: (context, indice) {
               final demanda = widget._demandas[indice];
               return ItemDemanda(demanda);
-            })
+        })
     );
   }
+
+  Widget buildMessageButton() => FloatingActionButton.extended(
+    label: const Text('Nova Demanda'),
+    backgroundColor: Colors.green,
+    hoverColor: Colors.black87,
+    tooltip: 'Cadastrar nova Demanda',
+    onPressed: () {
+      final Future future = Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return FormDemanda();
+      }));
+      future.then((demanda){
+        debugPrint('Retornou do Form');
+        debugPrint('$demanda');
+        setState(() {
+          widget._demandas.add(demanda);
+        });
+      });
+    },
+  );
 
 }

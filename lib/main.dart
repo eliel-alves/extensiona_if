@@ -10,7 +10,14 @@ class ExtensionaIFApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'ExtensionaIF',
-        theme: ThemeData(fontFamily: 'Inter'),
+        theme: ThemeData(
+            fontFamily: 'Inter',
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.green,
+            ).copyWith(
+              secondary: Colors.lightGreen,
+            ),
+        ),
         home: ListaDemanda()
     );
   }

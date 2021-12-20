@@ -20,12 +20,12 @@ class FormDemanda extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column (
           children: [
-            TextEditor(_controllerTitulo, 'Título', 'Dê um nome para esta demanda', Icons.title, 1, 50, _valida),
-            TextEditor(_controllerTempo, 'Tempo', 'Número de meses para ser realizada', Icons.timer_outlined, 1, 25, _valida),
-            TextEditor(_controllerResumo, 'Resumo', 'Escreva um resumo do que será o projeto', Icons.message_outlined, 5, 500, _valida),
-            TextEditor(_controllerObjetivo, 'Objetivo', 'Qual o objetivo do projeto?', Icons.control_point, 5, 250, _valida),
-            TextEditor(_controllerContrapartida, 'Contrapartida', 'Qual o envolvimento da comunidade na proposta?', Icons.content_paste, 5, 100, _valida),
-            TextEditor(_controllerVinculo, 'Vínculo', 'Qual o seu vínculo com a entidade parceira?', Icons.insert_link, 1, 50, _valida),
+            TextEditor(_controllerTitulo, 'Título', 'Dê um nome para esta demanda', Icons.title, 50, _valida),
+            TextEditor(_controllerTempo, 'Tempo', 'Número de meses para ser realizada', Icons.timer_outlined, 25, _valida),
+            TextEditor(_controllerResumo, 'Resumo', 'Escreva um resumo do que será o projeto', Icons.message_outlined, 600, _valida),
+            TextEditor(_controllerObjetivo, 'Objetivo', 'Qual o objetivo do projeto?', Icons.control_point, 250, _valida),
+            TextEditor(_controllerContrapartida, 'Contrapartida', 'Qual o envolvimento da comunidade na proposta?', Icons.content_paste, 100, _valida),
+            TextEditor(_controllerVinculo, 'Vínculo', 'Qual o seu vínculo com a entidade parceira?', Icons.insert_link, 50, _valida),
 
             Padding(
               padding: const EdgeInsets.only(left: 16.0, top: 20.0, right: 16.0, bottom: 40.0),
@@ -46,7 +46,7 @@ class FormDemanda extends StatelessWidget {
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         side: BorderSide(
-                          color: Colors.blueAccent,
+                          color: Colors.green,
                           width: 1.0,
                         ),
                       ),
