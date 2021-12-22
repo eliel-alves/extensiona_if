@@ -130,6 +130,7 @@ class ListaDemandaState extends State<ListaDemanda> {
     );
   }
 
+  // Botão flutuante para Cadastrar Demandas
   Widget buildMessageButton() => FloatingActionButton.extended(
     label: const Text('Nova Demanda'),
     backgroundColor: Colors.green,

@@ -19,9 +19,15 @@ class TextEditor extends StatelessWidget {
       ),
       child: Padding (
         padding: const EdgeInsets.all(16.0),
-        child: TextField(
+        child: TextFormField(
           onChanged: (text){
             print(text);
+          },
+          validator: (text) {
+            if(text == null || text.isEmpty) {
+              return 'Por favor, insira algum texto válido';
+            }
+            return null;
           },
           maxLines: null,
           maxLength: length,
@@ -32,6 +38,7 @@ class TextEditor extends StatelessWidget {
           decoration: InputDecoration(
               prefixIcon: icon != null ? Icon(icon) : null,
               labelText: label,
+              errorText: valid ? 'Este campo é obrigatório!' : null,
               helperText: hint,
               hintText: hint,
               border: OutlineInputBorder(
