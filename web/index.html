@@ -30,6 +30,31 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+
+<!--RECURSOS DO FIREBASE-->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+
+<!--RECURSO DA AUTENTICAÇÃO-->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAGsXFLecU1vGnyxiLN5efdVNqmf1Nf-DI",
+    authDomain: "sis-extensao.firebaseapp.com",
+    projectId: "sis-extensao",
+    storageBucket: "sis-extensao.appspot.com",
+    messagingSenderId: "280548324802",
+    appId: "1:280548324802:web:34b9a1b6dc7d5070f9125b",
+    measurementId: "G-WR3X38S76E"
+  };
+
+  // Initialize
+  firebase.initializeApp(firebaseConfig);
+</script>
+
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->

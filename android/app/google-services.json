@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "280548324802",
+    "project_id": "sis-extensao",
+    "storage_bucket": "sis-extensao.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280548324802:android:137ef1545df377e4f9125b",
+        "android_client_info": {
+          "package_name": "com.example.extensiona_if"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280548324802-0a53mjbiateg1ddqieeg7o56snejues2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.extensiona_if",
+            "certificate_hash": "58f36af7b617e19c8e4159f64b5ac94202e5078c"
+          }
+        },
+        {
+          "client_id": "280548324802-lcudcsvj5o9mr3ld2avjqreuqrv3v7k4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHy0OR_zsbvZbaDpu9JmnxrzohxANcIxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280548324802-lcudcsvj5o9mr3ld2avjqreuqrv3v7k4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

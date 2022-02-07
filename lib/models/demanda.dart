@@ -1,17 +1,17 @@
-class Demanda {
-  final String titulo;
-  final DateTime data;
-  final String tempo;
-  final String resumo;
-  final String status;
-  final String objetivo;
-  final String contrapartida;
-  final String vinculo;
+class Demandas{
 
-  Demanda(this.titulo, this.data, this.tempo, this.resumo, this.status, this.objetivo, this.contrapartida, this.vinculo);
+  final String TituloProposta;
+  final String TempoNecessario;
+  final String Resumo;
+  final String Objetivo;
+  final String Contrapartida;
+  final String ResutadosEsperados;
+
+  Demandas(this.TituloProposta, this.TempoNecessario, this.Resumo, this.Objetivo, this.Contrapartida, this.ResutadosEsperados);
 
   @override
   String toString() {
-    return 'Demanda(titulo: $titulo, data: $data, tempo: $tempo, resumo: $resumo, status: $status, objetivo: $objetivo, contrapartida: $contrapartida, vinculo: $vinculo)';
+    return "Demanda($TituloProposta, $TituloProposta, $Resumo, $Objetivo, $Contrapartida, $ResutadosEsperados)";
   }
+
 }
