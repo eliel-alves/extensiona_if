@@ -42,7 +42,7 @@ class _LoginState extends State<Login> {
 
       if(isLogin) {
         title = 'LOGIN';
-        textActionButton = 'CONECTE-SE';
+        textActionButton = 'FAZER LOGIN';
         firstTextNavigation = 'Não possui nenhuma conta?';
         secondTextNavigation = 'Cadastre-se';
       } else {
