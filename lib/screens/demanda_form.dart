@@ -9,6 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class FormDemanda extends StatefulWidget {
 
@@ -40,6 +43,12 @@ class FormDemandaState extends State<FormDemanda>{
     ' Trabalho'
   ];
 
+  final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
+  final styleTextFile = const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
+
+  FilePickerResult result;
+  PlatformFile name;
+
   String areaTematicaSelecionada;
   DocumentSnapshot areaTematicaAtual;
 
@@ -51,6 +60,12 @@ class FormDemandaState extends State<FormDemanda>{
 
   @override
   Widget build(BuildContext context) {
+
+    final fileName = name != null ? basename(name.name) : 'Nenhum aquivo selecionado...';
+
+    // Recupera a coleção
+    final Stream<QuerySnapshot> colecaoAreasTematicas = FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots();
+    //CollectionReference colecaoAreasTematicas = FirebaseFirestore.instance.collection('AREAS_TEMATICAS');
 
     return Scaffold(
       appBar: AppBar(
@@ -141,6 +156,34 @@ class FormDemandaState extends State<FormDemanda>{
               ),
             ),
 
+            CampoSelecaoArquivos(
+                Icons.cloud_upload_rounded,
+                'Faça o upload de arquivos ',
+                'AQUI',
+                    () async {
+                  result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+                  if(result != null) {
+                    final file = result.files.first;
+                    //Pega o nome do arquivo selecionado
+                    setState(() => name = PlatformFile(name: file.name, size: file.size));
+                  } else {
+
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(
+                      'Arquivo não selecionado e/ou Falha ao selecionar arquivo',
+                    ),
+                    ));
+
+                  }
+
+
+                },
+                styleText,
+                fileName,
+                styleTextFile
+            ),
+
+
             SizedBox(
               height: 40,
               width: double.infinity,
@@ -175,7 +218,7 @@ class FormDemandaState extends State<FormDemanda>{
 
   }
 
-  void _criarDemanda(BuildContext context) {
+  void _criarDemanda(BuildContext context) async {
     // Recupera o usuário
     final userDao = Provider.of<UserDAO>(context, listen: false);
 
@@ -208,8 +251,42 @@ class FormDemandaState extends State<FormDemanda>{
     _controladorVinculo.text = '';
     _controladorResultadosEsperados.text = '';
 
+    //Faz o upload do arquivo selecionado para o Firebase storage
+    if(result != null && result.files.isNotEmpty) {
+      if (kIsWeb) {
+        _uploadFile(result.files.first.bytes, result.files.first.name, userDao.userId());
+      } else {
+        _uploadFile(await File(result.files.first.path).readAsBytes(), result.files.first.name, userDao.userId());
+      }
+    }
+
     //SnackBar
     const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  ///Função responsável por fazer o upload do arquivo para o storage
+  Future<void> _uploadFile(Uint8List _data, String nameFile, String userId) async {
+
+    CollectionReference _demandas = FirebaseFirestore.instance.
+    collection('DEMANDAS').doc(userId).collection('arquivos');
+
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance
+        .ref('arquivos/$nameFile');
+
+    ///Mostrar a progressão do upload
+    firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
+
+    ///Pega o download url do arquivo
+    String url = await uploadTask.ref.getDownloadURL();
+
+    if (uploadTask.state == firebase_storage.TaskState.success) {
+      print('Arquivo enviado com sucesso!');
+      print('URL do arquivo: $url');
+      print(userId);
+      _demandas.add({'file_url' : url});
+    } else {
+      print(uploadTask.state);
+    }
   }
 }
