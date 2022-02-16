@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:extensiona_if/Components/item_demanda.dart';
+import 'package:extensiona_if/components/item_demanda.dart';
 
 class ListaDemanda extends StatelessWidget {
   const ListaDemanda({Key key}) : super(key: key);
