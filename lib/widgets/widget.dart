@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:extensiona_if/Screens/login.dart';
+import 'package:extensiona_if/screens/login.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 class IconesMedia extends StatelessWidget {

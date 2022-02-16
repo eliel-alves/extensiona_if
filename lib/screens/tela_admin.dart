@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:extensiona_if/Components/editor.dart';
-import 'package:extensiona_if/Widgets/widget.dart';
+import 'package:extensiona_if/components/editor.dart';
+import 'package:extensiona_if/widgets/widget.dart';
 
 class AdmApp extends StatefulWidget {
   const AdmApp({Key key}) : super(key: key);

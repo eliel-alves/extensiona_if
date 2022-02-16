@@ -1,9 +1,6 @@
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:extensiona_if/screens/demanda_lista.dart';
-import 'package:extensiona_if/widgets/widget.dart';
-import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';

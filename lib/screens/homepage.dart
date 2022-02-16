@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:extensiona_if/Screens/demanda_form.dart';
-import 'package:extensiona_if/Screens/user_options.dart';
+import 'package:extensiona_if/screens/demanda_form.dart';
+import 'package:extensiona_if/screens/user_options.dart';
 
 
 class AllUsersHomePage extends StatefulWidget{

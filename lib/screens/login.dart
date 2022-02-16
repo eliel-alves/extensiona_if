@@ -5,7 +5,6 @@ import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/screens/tela_admin.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:provider/provider.dart';
-import 'package:extensiona_if/data/user_dao.dart';
 
 
 class Login extends StatefulWidget {

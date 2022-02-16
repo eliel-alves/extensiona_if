@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/screens/demanda_lista.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 
