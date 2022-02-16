@@ -1,3 +1,4 @@
+import 'package:extensiona_if/screens/demanda_lista.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/screens/demanda_form.dart';
 import 'package:extensiona_if/screens/user_options.dart';
@@ -33,6 +34,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
         controller: pc,
         children: [
           FormDemanda(),
+          ListaDemanda(),
           MoreOptions(),
         ],
         onPageChanged: setPaginaAtual,
@@ -41,7 +43,8 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
           items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: 'Formulário'),
+              BottomNavigationBarItem(icon: Icon(Icons.assignment_rounded), label: 'Formulário'),
+              BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: 'Minhas Demandas'),
               BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Mais')
           ],
           onTap: (pagina) {

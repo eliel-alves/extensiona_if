@@ -64,18 +64,6 @@ class MoreOptions extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  Options(Icons.list , 'Minhas Demandas', 'Visualize suas demandas cadastradas', () {
-                    debugPrint("Página ListaDemandas");
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ListaDemanda();
-                    }));
-
-                  },
-                      Theme.of(context).colorScheme.primary
-                  ),
-
-                  const SizedBox(height: 10),
-
                   Options(Icons.logout, 'Sair', 'Desconectar sua conta desse aparelho', () {
                     debugPrint("Usuário saiu");
                     showDialog(

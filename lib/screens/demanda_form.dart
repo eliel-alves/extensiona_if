@@ -1,4 +1,9 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:path/path.dart';
+import 'package:flutter/foundation.dart';
 import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/components/editor.dart';
@@ -35,7 +40,8 @@ class FormDemandaState extends State<FormDemanda>{
     ' Trabalho'
   ];
 
-  String optionSelected;
+  String areaTematicaSelecionada;
+  DocumentSnapshot areaTematicaAtual;
 
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
@@ -83,7 +89,7 @@ class FormDemandaState extends State<FormDemanda>{
               child: Column(
                 children: [
                   Align(
-              alignment: Alignment.centerLeft,
+                    alignment: Alignment.centerLeft,
                     child: Text('Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
                         style: GoogleFonts.cabin(textStyle: style),
                     ),
@@ -91,20 +97,46 @@ class FormDemandaState extends State<FormDemanda>{
 
                   const SizedBox(height: 10),
 
-                  DropdownButtonFormField(
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      helperText: 'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-                      hintText: hintText,
-                    ),
-                    items: buttonOptions.map((options) {
-                      return DropdownMenuItem(
-                        value: options,
-                        child: Text(options),
-                      );
-                    }).toList(),
-                    onChanged: (value) => setState(() => optionSelected = value),
-                  ),
+                  StreamBuilder<QuerySnapshot>(
+                      stream: colecaoAreasTematicas,
+                      builder: (
+                          BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot
+                          ) {
+                        if (snapshot.hasError) {
+                          return const Text("Carregando...");
+                        } else {
+                          return DropdownButtonFormField<DocumentSnapshot>(
+                            hint: Text('Selecione a área temática'),
+                            items: snapshot.data.docs.map((DocumentSnapshot document) {
+                              Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+                              return DropdownMenuItem<DocumentSnapshot>(
+                                  value: document,
+                                  child:Text(
+                                      data['nome'],
+                                    ),
+                                );
+                            }).toList(),
+                          );
+                        }
+
+                  }),
+
+                  // DropdownButtonFormField(
+                  //   decoration: InputDecoration(
+                  //     border: const OutlineInputBorder(),
+                  //     helperText: 'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
+                  //     hintText: hintText,
+                  //   ),
+                  //   // items: buttonOptions.map((options) {
+                  //   //   return DropdownMenuItem(
+                  //   //     value: options,
+                  //   //     child: Text(options),
+                  //   //   );
+                  //   // }).toList(),
+                  //   onChanged: (value) => setState(() => areaTematicaSelecionada = value),
+                  // ),
                 ],
               ),
             ),
@@ -113,23 +145,27 @@ class FormDemandaState extends State<FormDemanda>{
               height: 40,
               width: double.infinity,
               child: ElevatedButton(
-                  onPressed: (){
-                    setState((){
-                      _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
-                      //optionSelected.isEmpty ? _valida = true : _valida = false;
-                    });
+                style: ElevatedButton.styleFrom(
+                  primary: AppTheme.colors.blue,
+                  textStyle: AppTheme.typo.button,
+                ),
+                onPressed: (){
+                  setState((){
+                    _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
+                    //optionSelected.isEmpty ? _valida = true : _valida = false;
+                  });
 
-                    // Caso não tenha erros de validação
-                    if(!_valida){
-                      _criarDemanda(context);
-                    }
-                  },
-                  child: const Text("CONFIRMAR")
+                  // Caso não tenha erros de validação
+                  if(!_valida){
+                    _criarDemanda(context);
+                  }
+                },
+                child: const Text("Criar Nova Demanda")
               ),
             ),
           ],
@@ -158,7 +194,7 @@ class FormDemandaState extends State<FormDemanda>{
       'contrapartida': _controladorContrapartida.text,
       'vinculo': _controladorVinculo.text,
       'resultados_esperados': _controladorResultadosEsperados.text,
-      'area_tematica': optionSelected,
+      'area_tematica': areaTematicaSelecionada,
     })
         .then((value) => debugPrint("Sua proposta foi registrada no banco de dados"))
         .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));

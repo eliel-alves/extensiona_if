@@ -55,7 +55,7 @@ class Divisor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   // Size size = MediaQuery.of(context).size;
+    // Size size = MediaQuery.of(context).size;
 
     return SizedBox(
       width: double.infinity,
@@ -158,18 +158,18 @@ class AppBarLogoUser extends StatelessWidget {
 
         DottedBorder(
           color: Colors.white,
-        borderType: BorderType.Rect,
-        strokeWidth: 1,
-        dashPattern: const [5, 4],
-        strokeCap: StrokeCap.round,
-        padding: const EdgeInsets.all(10),
-        child: Container(
-          padding: const EdgeInsets.all(2),
-          child: Image.asset(
-            userPhoto,
-            width: 70,
+          borderType: BorderType.Rect,
+          strokeWidth: 1,
+          dashPattern: const [5, 4],
+          strokeCap: StrokeCap.round,
+          padding: const EdgeInsets.all(10),
+          child: Container(
+            padding: const EdgeInsets.all(2),
+            child: Image.asset(
+              userPhoto,
+              width: 70,
+            ),
           ),
-        ),
         ),
 
 
@@ -240,9 +240,9 @@ class Buttons extends StatelessWidget {
         onPressed: press,
         child: Text(text, style: GoogleFonts.roboto(textStyle: styleText, color: letterColor)),
         style: ElevatedButton.styleFrom(
-          primary: color,
+            primary: color,
             side: BorderSide(
-            color: borderColor,
+              color: borderColor,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(29),
@@ -253,5 +253,4 @@ class Buttons extends StatelessWidget {
   }
 
 }
-
 
