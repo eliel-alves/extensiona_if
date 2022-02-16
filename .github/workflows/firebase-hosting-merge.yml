@@ -8,12 +8,37 @@ name: Deploy to Firebase Hosting on merge
       - master
 jobs:
   build_and_deploy:
+    name: Deploy do App Web
     runs-on: ubuntu-latest
     steps:
+      # Verifica repositório
       - uses: actions/checkout@v2
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+
+      # Instalando flutter
+      - uses: subosito/flutter-action@v1
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'
-          channelId: live
-          projectId: sis-extensao
+          channel: 'dev'
+
+      # Build Website
+      - name: Build Website
+        run: |
+          flutter config --enable-web
+          flutter pub get
+          flutter build web --release
+        working-directory: ./
+
+      # Deploy Firebase Hosting
+      - name: Deploy Firebase Hosting
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:extensiona_if
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: ./
+
+#      - uses: FirebaseExtended/action-hosting-deploy@v0
+#        with:
+#          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+#          firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'
+#          channelId: live
+#          projectId: sis-extensao
