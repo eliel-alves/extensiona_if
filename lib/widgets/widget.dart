@@ -118,7 +118,7 @@ class RetornarPageLogin extends StatelessWidget {
 }
 
 class AppBarLogo extends StatelessWidget {
-  final TextStyle styleTextTitle;
+  final String titulo;
 
   const AppBarLogo(this.titulo);
 

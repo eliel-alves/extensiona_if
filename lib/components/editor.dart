@@ -96,7 +96,7 @@ class _EditorDropdownButtonState extends State<EditorDropdownButton> {
   }
 }
 
-class EditorLogin extends StatelessWidget {
+class EditorAuth extends StatelessWidget {
 
   final TextEditingController controlador;
   final String rotulo;
@@ -106,33 +106,24 @@ class EditorLogin extends StatelessWidget {
   final int qtdCaracteres;
   final bool verdadeOuFalso;
 
-  const EditorLogin(this.controlador, this.rotulo, this.dica, this.icon, this.valida, this.qtdCaracteres, this.verdadeOuFalso, {Key key}) : super(key: key);
+  EditorAuth(this.controlador, this.rotulo, this.dica, this.icon, this.valida, this.qtdCaracteres, this.verdadeOuFalso);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(29),
-        ),
-        child: TextField(
-          obscureText: verdadeOuFalso,
-          //maxLength: qtdCaracteres,
-          controller: controlador,
-          style: const TextStyle(
-            fontSize: 18.0,
-          ),
-          decoration: InputDecoration(
-            //labelText: rotulo,
-            hintText: dica,
-            prefixIcon: icon,
-            fillColor: Colors.grey[200],
-            //helperText: dica,
-            errorText: valida ? 'Campo obrigatório!' : null,
-            border: InputBorder.none,
-          ),
-        )
+    // Size size = MediaQuery.of(context).size;
+
+    return TextField(
+      obscureText: verdadeOuFalso,
+      controller: controlador,
+      style: AppTheme.typo.defaultText,
+      decoration: InputDecoration(
+        labelStyle: AppTheme.typo.defaultText,
+        labelText: rotulo,
+        hintText: dica,
+        prefixIcon: icon,
+        errorText: valida ? 'Campo obrigatório!' : null,
+        border: const OutlineInputBorder()
+      ),
     );
   }
 }
