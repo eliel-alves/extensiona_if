@@ -113,29 +113,28 @@ class FormDemandaState extends State<FormDemanda>{
                   const SizedBox(height: 10),
 
                   StreamBuilder<QuerySnapshot>(
-                      stream: colecaoAreasTematicas,
-                      builder: (
-                          BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot
-                          ) {
-                        if (snapshot.hasError) {
-                          return const Text("Carregando...");
-                        } else {
-                          return DropdownButtonFormField<DocumentSnapshot>(
-                            hint: Text('Selecione a área temática'),
-                            items: snapshot.data.docs.map((DocumentSnapshot document) {
-                              Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                    stream: colecaoAreasTematicas,
+                    builder: (
+                        BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot
+                        ) {
+                      if (snapshot.hasError) {
+                        return const Text("Carregando...");
+                      } else {
+                        return DropdownButtonFormField<DocumentSnapshot>(
+                          hint: const Text('Selecione a área temática'),
+                          items: snapshot.data.docs.map((DocumentSnapshot document) {
+                            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
-                              return DropdownMenuItem<DocumentSnapshot>(
-                                  value: document,
-                                  child:Text(
-                                      data['nome'],
-                                    ),
-                                );
-                            }).toList(),
-                          );
-                        }
-
+                            return DropdownMenuItem<DocumentSnapshot>(
+                                value: document,
+                                child:Text(
+                                  data['nome'],
+                                ),
+                            );
+                          }).toList(),
+                        );
+                      }
                   }),
 
                   // DropdownButtonFormField(
@@ -173,10 +172,7 @@ class FormDemandaState extends State<FormDemanda>{
                       'Arquivo não selecionado e/ou Falha ao selecionar arquivo',
                     ),
                     ));
-
                   }
-
-
                 },
                 styleText,
                 fileName,
@@ -222,11 +218,8 @@ class FormDemandaState extends State<FormDemanda>{
     // Recupera o usuário
     final userDao = Provider.of<UserDAO>(context, listen: false);
 
-    // Recupera a coleção
-    CollectionReference colecaoDemandas = FirebaseFirestore.instance.collection('DEMANDAS');
-
     //Adicionando um novo documento a nossa coleção -> Demandas
-    colecaoDemandas.add({
+    DocumentReference _novaDemanda = await FirebaseFirestore.instance.collection('DEMANDAS').add({
       'usuario': userDao.userId(),
       'titulo': _controladorTitulo.text,
       'tempo': _controladorTempoNecessario.text,
@@ -239,8 +232,9 @@ class FormDemandaState extends State<FormDemanda>{
       'resultados_esperados': _controladorResultadosEsperados.text,
       'area_tematica': areaTematicaSelecionada,
     })
-        .then((value) => debugPrint("Sua proposta foi registrada no banco de dados"))
-        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+    .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+
+    debugPrint("ID da demanda: " + _novaDemanda.id);
 
     //Limpando os campos após a criação da proposta
     _controladorTitulo.text = '';
@@ -251,12 +245,20 @@ class FormDemandaState extends State<FormDemanda>{
     _controladorVinculo.text = '';
     _controladorResultadosEsperados.text = '';
 
+    String _nomeArquivo = result.files.first.name;
+    String _nomeArquivoExtensao;
+
     //Faz o upload do arquivo selecionado para o Firebase storage
     if(result != null && result.files.isNotEmpty) {
+      _nomeArquivo = _nomeArquivo.substring(0, _nomeArquivo.lastIndexOf('.'));
+      _nomeArquivoExtensao = _nomeArquivo + '_' + _novaDemanda.id + '.' + result.files.first.extension;
+
+      debugPrint("Nome do arquivo: " + _nomeArquivoExtensao);
+
       if (kIsWeb) {
-        _uploadFile(result.files.first.bytes, result.files.first.name, userDao.userId());
+        _uploadFile(result.files.first.bytes, _nomeArquivoExtensao, _novaDemanda.id);
       } else {
-        _uploadFile(await File(result.files.first.path).readAsBytes(), result.files.first.name, userDao.userId());
+        _uploadFile(await File(result.files.first.path).readAsBytes(), _nomeArquivoExtensao, _novaDemanda.id);
       }
     }
 
@@ -266,10 +268,10 @@ class FormDemandaState extends State<FormDemanda>{
   }
 
   ///Função responsável por fazer o upload do arquivo para o storage
-  Future<void> _uploadFile(Uint8List _data, String nameFile, String userId) async {
+  Future<void> _uploadFile(Uint8List _data, String nameFile, String demandaId) async {
 
-    CollectionReference _demandas = FirebaseFirestore.instance.
-    collection('DEMANDAS').doc(userId).collection('arquivos');
+    CollectionReference _arquivosDemanda = FirebaseFirestore.instance.
+    collection('DEMANDAS').doc(demandaId).collection('arquivos');
 
     firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance
         .ref('arquivos/$nameFile');
@@ -283,8 +285,8 @@ class FormDemandaState extends State<FormDemanda>{
     if (uploadTask.state == firebase_storage.TaskState.success) {
       print('Arquivo enviado com sucesso!');
       print('URL do arquivo: $url');
-      print(userId);
-      _demandas.add({'file_url' : url});
+      print(demandaId);
+      _arquivosDemanda.add({'file_url' : url});
     } else {
       print(uploadTask.state);
     }

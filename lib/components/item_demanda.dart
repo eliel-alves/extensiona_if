@@ -27,7 +27,7 @@ class ItemDemanda extends StatelessWidget {
           ) {
         if (snapshot.hasError) {
           return const Center(
-            child: Text('Algo não deu certo !'),
+            child: Text('Ocorreu algum erro!'),
           );
         }
         if(snapshot.connectionState == ConnectionState.waiting) {
@@ -80,35 +80,35 @@ class ItemDemanda extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+
                                 child: ListTile(
-                                    leading: const Icon(Icons.add_circle_outline),
-                                    title: Text(infoTitulo),
-                                    subtitle: Text(infoTempo),
-                                    trailing: SizedBox(
-                                      width: 50,
-                                      child: Row(
-                                        children: <Widget>[
-                                          IconButton (
-                                            icon: const Icon(Icons.edit, color: Colors.green, size: 32),
-                                            tooltip: 'Editar proposta',
-                                            onPressed: () {
+                                  leading: const Icon(Icons.add_circle_outline),
+                                  title: Text(infoTitulo),
+                                  subtitle: Text(infoTempo),
+                                  trailing: SizedBox(
+                                    width: 50,
+                                    child: Row(
+                                      children: <Widget>[
+                                        IconButton (
+                                          icon: const Icon(Icons.edit, color: Colors.green, size: 32),
+                                          tooltip: 'Editar proposta',
+                                          onPressed: () {
+                                            final Future future =
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                              return EditarFormInfo(infoTitulo, infoTempo, infoResumo, infoObjetivo, infoContrapartida, infoVinculo, infoResultadosEsperados, updateDados);
+                                            }));
 
-                                              final Future future =
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                                return EditarFormInfo(infoTitulo, infoTempo, infoResumo, infoObjetivo, infoContrapartida, infoVinculo, infoResultadosEsperados, updateDados);
-                                              }));
-
-                                              future.then((demandaAtualizada) {
-                                                debugPrint("$demandaAtualizada");
-                                                debugPrint('A proposta foi alterada');
-                                              });
-
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                )),
+                                            future.then((demandaAtualizada) {
+                                              debugPrint("$demandaAtualizada");
+                                              debugPrint('A proposta foi alterada');
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                )
+                            ),
                       ),
                     )
                 );

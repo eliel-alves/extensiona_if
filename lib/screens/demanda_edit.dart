@@ -1,3 +1,4 @@
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -50,36 +51,36 @@ class EditarFormInfoState extends State<EditarFormInfo> {
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Atualizar propostas"),
+          title: const Text("Atualizar Demanda"),
         elevation: 0,
         actions: [
           SizedBox(
             width: 80,
             child: IconButton (
-              icon: const Icon(Icons.delete, color: Colors.redAccent, size: 32),
-              tooltip: 'Remover proposta',
+              icon: Icon(Icons.delete, color: AppTheme.colors.red, size: 32),
+              tooltip: 'Remover Proposta',
               onPressed: () {
                 showDialog(
                     context: context,
                     barrierDismissible: false,
                     builder: (BuildContext context) {
                     return AlertDialog(
-                      title: const Text('Deletar proposta'),
+                      title: const Text('Deletar Proposta'),
                       content: const Text('Você deseja deletar esta proposta?'),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                       actions: <Widget> [
                         TextButton(
                           onPressed: (){
-                            //Deleting the data from the firebase
+                            // Deletando demanda do Firebase
                             debugPrint('Foi deletado a proposta');
                             widget.updateDados.reference.delete();
 
-                            //Going back to the main page
+                            // Voltando para a página da lista de Demandas
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
                               return ListaDemanda();
                             }));
 
-                            //SnackBar
+                            // SnackBar
                             const SnackBar snackBar = SnackBar(content: Text("A proposta foi deletada com sucesso! "));
                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           },
@@ -103,6 +104,7 @@ class EditarFormInfoState extends State<EditarFormInfo> {
 
         ],
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

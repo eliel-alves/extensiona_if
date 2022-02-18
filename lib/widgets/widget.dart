@@ -1,3 +1,4 @@
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/screens/login.dart';
@@ -85,9 +86,7 @@ class Divisor extends StatelessWidget {
   }
 }
 
-
 class RetornarPageLogin extends StatelessWidget {
-
   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
   @override
@@ -113,30 +112,28 @@ class RetornarPageLogin extends StatelessWidget {
                   'Conecte-se',
                   style: GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
             )
-
           ]),
     );
   }
-
 }
 
 class AppBarLogo extends StatelessWidget {
   final TextStyle styleTextTitle;
 
-  const AppBarLogo(this.styleTextTitle);
+  const AppBarLogo(this.titulo);
 
   @override
   Widget build(BuildContext context) {
     return  Column(
       children: [
         Image.asset(
-          'lib/assets/img/logo.png',
+          'lib/assets/img/logo-light-version.png',
           width: 240,
         ),
         const SizedBox(height: 20),
         Text(
-          'Escola de Extensão do IFSul',
-          style: GoogleFonts.cabin(textStyle: styleTextTitle),
+          titulo,
+          style: AppTheme.typo.title,
         ),
       ],
     );
@@ -208,46 +205,6 @@ class LogoWelcomeScreen extends StatelessWidget {
             style: GoogleFonts.cabin(textStyle: styleTextTitle),
           ),
         ],
-      ),
-    );
-  }
-
-}
-
-class Buttons extends StatelessWidget {
-
-  final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-
-  final Function press;
-
-  final String text;
-
-  final Color color;
-
-  final Color letterColor;
-
-  final Color borderColor;
-
-  Buttons(this.press, this.text, this.color, this.letterColor, this.borderColor);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 60,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 45),
-      child: ElevatedButton(
-        onPressed: press,
-        child: Text(text, style: GoogleFonts.roboto(textStyle: styleText, color: letterColor)),
-        style: ElevatedButton.styleFrom(
-            primary: color,
-            side: BorderSide(
-              color: borderColor,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(29),
-            )
-        ),
       ),
     );
   }

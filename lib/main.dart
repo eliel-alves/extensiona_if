@@ -8,13 +8,13 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => UserDAO(),
-          child: ExtensionaApp(),
-        )
-      ],
-      child: ExtensionaApp()
+    providers: [
+      ChangeNotifierProvider(
+        create: (context) => UserDAO(),
+        child: ExtensionaApp(),
+      )
+    ],
+    child: ExtensionaApp()
   ));
 }
 

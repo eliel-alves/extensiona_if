@@ -1,11 +1,12 @@
 import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/screens/tela_admin.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:provider/provider.dart';
-
 
 class Login extends StatefulWidget {
   const Login({Key key}) : super(key: key);
@@ -20,7 +21,8 @@ class _LoginState extends State<Login> {
   bool _valida = false;
 
   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-  final styleTextTitle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  final styleTextTitle =
+      const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
 
   bool isLogin = true;
 
@@ -35,11 +37,11 @@ class _LoginState extends State<Login> {
     setFormAction(true);
   }
 
-  setFormAction(bool acao){
+  setFormAction(bool acao) {
     setState(() {
       isLogin = acao;
 
-      if(isLogin) {
+      if (isLogin) {
         title = 'LOGIN';
         textActionButton = 'FAZER LOGIN';
         firstTextNavigation = 'Não possui uma conta?';
@@ -67,147 +69,144 @@ class _LoginState extends State<Login> {
     return Scaffold(
         appBar: AppBar(
           toolbarHeight: 150,
-          title: AppBarLogo(styleTextTitle),
+          title: const AppBarLogo("Escola de Extensão do IFSul"),
           centerTitle: true,
+          backgroundColor: AppTheme.colors.dark,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
               Padding(
-                padding: const EdgeInsets.all(45),
+                padding: const EdgeInsets.only(top: 45, bottom: 10),
                 child: Text(
-                title,
-                style: GoogleFonts.cabin(textStyle: styleTextTitle),
+                  title,
+                  style: AppTheme.typo.title,
                 ),
               ),
 
               //We are calling the EditorLogin to give our password and email
-              EditorLogin(_emailController, 'Email', 'Email', const Icon(Icons.email_outlined), _valida, 25, false),
+              EditorAuth(_emailController, 'Email', 'Informe o seu e-mail',
+                  const Icon(Icons.email_outlined), _valida, 25, false),
 
               const SizedBox(height: 10),
 
-              EditorLogin(_passwordController, 'Senha','Senha', const Icon(Icons.lock_outline), _valida, 10, true),
+              EditorAuth(_passwordController, 'Senha', 'Informe a sua senha',
+                  const Icon(Icons.lock_outline), _valida, 10, true),
 
               const SizedBox(height: 10),
 
-              
               SizedBox(
                 height: 50,
                 width: double.infinity,
                 child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _emailController.text.isEmpty ? _valida = true : _valida = false;
-                    _passwordController.text.isEmpty ? _valida = true : _valida = false;
-                  });
+                  onPressed: () {
+                    setState(() {
+                      _emailController.text.isEmpty
+                          ? _valida = true
+                          : _valida = false;
+                      _passwordController.text.isEmpty
+                          ? _valida = true
+                          : _valida = false;
+                    });
 
-                  if(!_valida){
-                    if(isLogin){
-                      userDao.login(_emailController.text, _passwordController.text);
-
-                    } else {
-                      userDao.signup(_emailController.text, _passwordController.text);
+                    // Valida os campos
+                    if (!_valida) {
+                      if (isLogin) {
+                        userDao.login(
+                            _emailController.text, _passwordController.text);
+                      } else {
+                        userDao.signup(
+                            _emailController.text, _passwordController.text);
+                      }
                     }
-
-                  }
-                },
-                  child: Text(textActionButton, style: GoogleFonts.roboto(textStyle: styleText)),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(29),
-                    )
+                  },
+                  child: Text(
+                    textActionButton,
+                    style: AppTheme.typo.button
                   ),
-              ),
+                  style: ElevatedButton.styleFrom(
+                    primary: AppTheme.colors.green,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                ),
               ),
 
-              CadastrarConta(styleText, firstTextNavigation, secondTextNavigation, () => setFormAction(!isLogin)),
+              CadastrarConta(styleText, firstTextNavigation,
+                  secondTextNavigation, () => setFormAction(!isLogin)),
 
               ContaAdministrador(styleText),
 
               Padding(
-                padding: const EdgeInsets.only(top: 15),
-                  child: Divisor()
-              ),
+                  padding: const EdgeInsets.only(top: 15), child: Divisor()),
 
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    IconesMedia(
-                        'lib/assets/img/logo_google.png',
-                            () {
-                          debugPrint('Você logou com o google');
-
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: SignInButton(
+                        Buttons.Google,
+                        text: "Cadastre-se com o Google",
+                        onPressed: () {
                           userDao.signInWithGoogle();
                         },
-                        'Cadastre-se com o Google',
-                      18,
-                      5
+                      ),
                     ),
 
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: IconesMedia(
-                          'lib/assets/img/logo_facebook.png',
-                              () {
-                            debugPrint('Você logou com o facebook');
+                    const SizedBox(height: 20),
 
-                            userDao.signInWithFacebook();
-                          },
-                          'Cadastre-se com o Facebook',
-                        0,
-                        5
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: SignInButton(
+                        Buttons.FacebookNew,
+                        text: "Cadastre-se com o Facebook",
+                        onPressed: () {
+                          userDao.signInWithFacebook();
+                        },
                       ),
-                    )
+                    ),
                   ],
                 ),
               )
             ],
           ),
         )
-      );
+    );
   }
-
-
-
 }
 
-class CadastrarConta extends StatelessWidget{
-
+class CadastrarConta extends StatelessWidget {
   final TextStyle styleText;
   final String firstTextNavigation;
   final String secondTextNavigation;
   final Function setFormAction;
 
-  const CadastrarConta(this.styleText, this.firstTextNavigation, this.secondTextNavigation, this.setFormAction);
+  const CadastrarConta(this.styleText, this.firstTextNavigation,
+      this.secondTextNavigation, this.setFormAction);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(30),
-      child:  Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-                firstTextNavigation,
-                style: GoogleFonts.cabin(textStyle: styleText, color: Colors.grey[700])),
-
-            GestureDetector(
-              onTap: setFormAction,
-              child: Text(
-                  secondTextNavigation,
-                  style: GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
-            )
-
-          ]),
+      child:
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        Text(firstTextNavigation,
+            style: GoogleFonts.cabin(
+                textStyle: styleText, color: Colors.grey[700])),
+        GestureDetector(
+          onTap: setFormAction,
+          child: Text(secondTextNavigation,
+              style:
+                  GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
+        )
+      ]),
     );
-
   }
-
 }
 
 class ContaAdministrador extends StatelessWidget {
@@ -217,26 +216,23 @@ class ContaAdministrador extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-              'Entrar como',
-              style: GoogleFonts.cabin(textStyle: styleText, color: Colors.grey[700])),
-
-          GestureDetector(
-            onTap: () {
-              debugPrint('Página de login do administrador');
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AdmApp(),
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+      Text('Entrar como',
+          style:
+              GoogleFonts.cabin(textStyle: styleText, color: Colors.grey[700])),
+      GestureDetector(
+        onTap: () {
+          debugPrint('Página de login do administrador');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AdmApp(),
               ));
-            },
-
-            child: Text(
-                ' administrador',
-                style: GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
-          )
-
-        ]);
+        },
+        child: Text(' administrador',
+            style:
+                GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
+      )
+    ]);
   }
-
 }

@@ -26,7 +26,7 @@ class _AdmAppState extends State<AdmApp> {
     return Scaffold(
         appBar: AppBar(
           toolbarHeight: 150,
-          title: AppBarLogo(styleTextTitle),
+          title: const AppBarLogo("Escola de Extensão do IFSul"),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -44,11 +44,11 @@ class _AdmAppState extends State<AdmApp> {
               ),
 
               //We are calling the EditorLogin to give our password and email
-              EditorLogin(_emailController, 'Email', 'Email', const Icon(Icons.email_outlined), _valida, 25, false),
+              EditorAuth(_emailController, 'Email', 'Email', const Icon(Icons.email_outlined), _valida, 25, false),
 
               const SizedBox(height: 10),
 
-              EditorLogin(_passwordController, 'Senha','Senha', const Icon(Icons.lock_outline), _valida, 10, true),
+              EditorAuth(_passwordController, 'Senha','Senha', const Icon(Icons.lock_outline), _valida, 10, true),
 
               const SizedBox(height: 10),
 
