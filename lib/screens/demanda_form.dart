@@ -48,6 +48,8 @@ class FormDemandaState extends State<FormDemanda>{
   FilePickerResult result;
   PlatformFile name;
 
+  String selectedCurrency;
+
   String areaTematicaSelecionada;
   DocumentSnapshot areaTematicaAtual;
 
@@ -63,7 +65,7 @@ class FormDemandaState extends State<FormDemanda>{
     final fileName = name != null ? basename(name.name) : 'Nenhum aquivo selecionado...';
 
     // Recupera a coleção
-    final Stream<QuerySnapshot> colecaoAreasTematicas = FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots();
+    //final Stream<QuerySnapshot> colecaoAreasTematicas = FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots();
     //CollectionReference colecaoAreasTematicas = FirebaseFirestore.instance.collection('AREAS_TEMATICAS');
 
     return Scaffold(
@@ -112,44 +114,37 @@ class FormDemandaState extends State<FormDemanda>{
                   const SizedBox(height: 10),
 
                   StreamBuilder<QuerySnapshot>(
-                    stream: colecaoAreasTematicas,
-                    builder: (
-                        BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot
-                        ) {
-                      if (snapshot.hasError) {
-                        return const Text("Carregando...");
+                    stream: FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Text('Carregando ...');
                       } else {
-                        return DropdownButtonFormField<DocumentSnapshot>(
-                          hint: const Text('Selecione a área temática'),
-                          items: snapshot.data.docs.map((DocumentSnapshot document) {
-                            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
-                            return DropdownMenuItem<DocumentSnapshot>(
-                                value: document,
-                                child:Text(
-                                  data['nome'],
-                                ),
+                        return DropdownButtonFormField(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            helperText:
+                            'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
+                            hintText: hintText,
+                          ),
+                          items: snapshot.data.docs.map((DocumentSnapshot document) {
+                            return DropdownMenuItem<String>(
+                              child: Text(document['nome']),
+                              value: document['nome'],
                             );
                           }).toList(),
+                          onChanged: (currencyValue) {
+                            setState(() {
+                              selectedCurrency = currencyValue;
+                            });
+
+                            debugPrint(currencyValue);
+                          },
+                          value: selectedCurrency,
                         );
                       }
-                  }),
-
-                  // DropdownButtonFormField(
-                  //   decoration: InputDecoration(
-                  //     border: const OutlineInputBorder(),
-                  //     helperText: 'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-                  //     hintText: hintText,
-                  //   ),
-                  //   // items: buttonOptions.map((options) {
-                  //   //   return DropdownMenuItem(
-                  //   //     value: options,
-                  //   //     child: Text(options),
-                  //   //   );
-                  //   // }).toList(),
-                  //   onChanged: (value) => setState(() => areaTematicaSelecionada = value),
-                  // ),
+                    },
+                  ),
                 ],
               ),
             ),
@@ -195,7 +190,6 @@ class FormDemandaState extends State<FormDemanda>{
                     _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
                     _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
                     _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
-                    //optionSelected.isEmpty ? _valida = true : _valida = false;
                   });
 
                   // Caso não tenha erros de validação
@@ -229,7 +223,7 @@ class FormDemandaState extends State<FormDemanda>{
       'contrapartida': _controladorContrapartida.text,
       'vinculo': _controladorVinculo.text,
       'resultados_esperados': _controladorResultadosEsperados.text,
-      'area_tematica': areaTematicaSelecionada,
+      'area_tematica': selectedCurrency,
     })
     .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 
