@@ -64,6 +64,9 @@ class _AdmAppState extends State<AdmApp> {
 
                     if(!_valida){
                       // userDao.login(_emailController.text, _passwordController.text);
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AdminScreen(),
+                      ));
                     }
                   },
                   child: Text("ENTRAR", style: GoogleFonts.roboto(textStyle: styleText)),
