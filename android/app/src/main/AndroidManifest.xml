@@ -2,7 +2,7 @@
           xmlns:tools="http://schemas.android.com/tools" package="com.example.extensiona_if">
 
     <application
-        android:label="extensiona_if"
+        android:label="Extensiona IF"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

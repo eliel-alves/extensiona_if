@@ -7,6 +7,8 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
