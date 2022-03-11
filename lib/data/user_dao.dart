@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,6 @@ class UserDAO extends ChangeNotifier {
     notifyListeners();
   }
 
-
   // Cadastrar no app
   void signup(String email, String password) async {
     // Tenta cadastrar o usuário
@@ -48,6 +48,7 @@ class UserDAO extends ChangeNotifier {
         email: email,
         password: password,
       );
+      addUser(email, password);
       notifyListeners();
       _getUser();
     } on FirebaseAuthException catch (e) { // Possíveis erros
@@ -64,6 +65,19 @@ class UserDAO extends ChangeNotifier {
     } catch (e) {
       debugPrint(e);
     }
+  }
+
+  // Método responsável por adicionar um novo usuário na coleção USUARIOS
+  void addUser(String email, String password) async {
+    //Adicionando um novo usuario a nossa coleção -> Usuários
+    DocumentReference _novoUsuario = await FirebaseFirestore.instance.collection('USUARIOS').add({
+      'id': userId(),
+      'email': userEmail(),
+      'telefone': '',
+      'tipo': 'user',
+      'url_photo': '',
+    })
+        .catchError((error) => debugPrint("Ocorreu um erro ao registrar o usuário: $error"));
   }
 
   // Logar o usuário

@@ -134,7 +134,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .primary),
-                        textColor: Colors.black,
+                        tileColor: Colors.black,
                         title: Text(_resultsList[index]['titulo']),
                         subtitle: Text(_resultsList[index]['tempo'],
                             style: const TextStyle(
