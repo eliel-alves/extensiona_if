@@ -18,11 +18,13 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _userPhoneController = TextEditingController();
+
   bool _valida = false;
 
   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-  final styleTextTitle =
-      const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  final styleTextTitle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
 
   bool isLogin = true;
 
@@ -30,6 +32,7 @@ class _LoginState extends State<Login> {
   String textActionButton;
   String firstTextNavigation;
   String secondTextNavigation;
+  Widget camposCadastro;
 
   @override
   void initState() {
@@ -46,11 +49,13 @@ class _LoginState extends State<Login> {
         textActionButton = 'FAZER LOGIN';
         firstTextNavigation = 'Não possui uma conta?';
         secondTextNavigation = 'Cadastre-se';
+        camposCadastro = const Text('');
       } else {
         title = 'CADASTRO';
         textActionButton = 'CADASTRAR';
         firstTextNavigation = 'Já possui uma conta?';
         secondTextNavigation = 'Conecte-se';
+        camposCadastro = camposExtras(_nameController, _userPhoneController, _valida);
       }
     });
   }
@@ -95,7 +100,7 @@ class _LoginState extends State<Login> {
               EditorAuth(_passwordController, 'Senha', 'Informe a sua senha',
                   const Icon(Icons.lock_outline), _valida, 10, true),
 
-              const SizedBox(height: 10),
+              camposCadastro,
 
               SizedBox(
                 height: 50,
@@ -103,22 +108,23 @@ class _LoginState extends State<Login> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _emailController.text.isEmpty
-                          ? _valida = true
-                          : _valida = false;
-                      _passwordController.text.isEmpty
-                          ? _valida = true
-                          : _valida = false;
+                      if(isLogin){
+                        _emailController.text.isEmpty ? _valida = true : _valida = false;
+                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
+                      } else {
+                        _emailController.text.isEmpty ? _valida = true : _valida = false;
+                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
+                        _nameController.text.isEmpty ? _valida = true : _valida = false;
+                        _userPhoneController.text.isEmpty ? _valida = true : _valida = false;
+                      }
                     });
 
                     // Valida os campos
                     if (!_valida) {
                       if (isLogin) {
-                        userDao.login(
-                            _emailController.text, _passwordController.text);
+                        userDao.login(_emailController.text, _passwordController.text);
                       } else {
-                        userDao.signup(
-                            _emailController.text, _passwordController.text);
+                        userDao.signup(_emailController.text, _passwordController.text, _nameController.text, _userPhoneController.text);
                       }
                     }
                   },
@@ -235,4 +241,18 @@ class ContaAdministrador extends StatelessWidget {
       )
     ]);
   }
+}
+
+Widget camposExtras(TextEditingController _nameController, TextEditingController _userPhoneController, bool _valida) {
+  return Column(
+    children: [
+      const SizedBox(height: 10),
+
+      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Icons.lock_outline), _valida, 10, false),
+
+      const SizedBox(height: 10),
+
+      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Icons.lock_outline), _valida, 10, false),
+    ],
+  );
 }

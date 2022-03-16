@@ -18,7 +18,6 @@ class FormDemanda extends StatefulWidget {
   State<StatefulWidget> createState() {
     return FormDemandaState();
   }
-
 }
 
 class FormDemandaState extends State<FormDemanda>{
@@ -31,16 +30,6 @@ class FormDemandaState extends State<FormDemanda>{
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados = TextEditingController();
 
-  final List<String> buttonOptions = [
-    'Comunicação',
-    'Cultura',
-    'Direitos Humanos e Justiça',
-    'Educação',
-    'Meio Ambiente',
-    'Saúde',
-    'Tecnologia e Produção',
-    ' Trabalho'
-  ];
 
   final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
   final styleTextFile = const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
@@ -63,10 +52,6 @@ class FormDemandaState extends State<FormDemanda>{
   Widget build(BuildContext context) {
 
     final fileName = name != null ? basename(name.name) : 'Nenhum aquivo selecionado...';
-
-    // Recupera a coleção
-    //final Stream<QuerySnapshot> colecaoAreasTematicas = FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots();
-    //CollectionReference colecaoAreasTematicas = FirebaseFirestore.instance.collection('AREAS_TEMATICAS');
 
     return Scaffold(
       appBar: AppBar(

@@ -49,3 +49,40 @@ class Demandas{
   }
 
 }
+
+class Users {
+  String userId;
+  String email;
+  String tipo;
+  String userName;
+  String userPhone;
+  String userPhoto;
+  String docId;
+
+
+  Users(
+      this.userId,
+      this.email,
+      this.tipo,
+      this.userName,
+      this.userPhone,
+      this.userPhoto,
+      this.docId
+      );
+
+  ///Método responsável por acessar as informações dos campos dos documentos cadastrados no Firebase
+  Users.fromSnapshot() {
+    QueryDocumentSnapshot userColection = FirebaseFirestore.instance.collection('USUARIOS').get() as QueryDocumentSnapshot<Object>;
+
+    Map<String, dynamic> data = userColection.data() as Map<String, dynamic>;
+
+    userId = data['id'];
+    email = data['email'];
+    tipo = data['tipo'];
+    userName = data['name'];
+    userPhone = data['telefone'];
+    userPhoto = data['url_photo'];
+    docId = userColection.id;
+  }
+
+}

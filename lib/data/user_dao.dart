@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class UserDAO extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
@@ -41,14 +41,14 @@ class UserDAO extends ChangeNotifier {
   }
 
   // Cadastrar no app
-  void signup(String email, String password) async {
+  void signup(String email, String password, String userName, String userPhone) async {
     // Tenta cadastrar o usuário
     try {
       await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      addUser(email, password);
+      addUser(email, password, userName, userPhone);
       notifyListeners();
       _getUser();
     } on FirebaseAuthException catch (e) { // Possíveis erros
@@ -68,12 +68,13 @@ class UserDAO extends ChangeNotifier {
   }
 
   // Método responsável por adicionar um novo usuário na coleção USUARIOS
-  void addUser(String email, String password) async {
+  void addUser(String email, String password, String userName, String userPhone) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
     DocumentReference _novoUsuario = await FirebaseFirestore.instance.collection('USUARIOS').add({
       'id': userId(),
       'email': userEmail(),
-      'telefone': '',
+      'telefone': userPhone,
+      'name': userName,
       'tipo': 'user',
       'url_photo': '',
     })
@@ -112,35 +113,63 @@ class UserDAO extends ChangeNotifier {
     _getUser();
   }
 
+  // TODO: Sing In with Google
+  Future<void> signInWithGoogle() async {
+    if (kIsWeb) {
+      GoogleAuthProvider authProvider = GoogleAuthProvider();
 
-  // Login com o Google
-  Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+      try {
+        final UserCredential userCredential =
+        await auth.signInWithPopup(authProvider);
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        usuario = userCredential.user;
+        _getUser();
+        notifyListeners();
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    // Create a new credential
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+      final GoogleSignInAccount googleSignInAccount =
+      await googleSignIn.signIn();
 
-    // Once signed in, return the UserCredential
-    await auth.signInWithCredential(credential).then((userCredential) => {
-        user = userCredential
-    });
-    //return await auth.signInWithCredential(credential);
-    _getUser();
-    notifyListeners();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        try {
+          final UserCredential userCredential =
+          await auth.signInWithCredential(credential);
+
+          usuario = userCredential.user;
+          _getUser();
+          notifyListeners();
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'account-exists-with-different-credential') {
+            // ...
+          } else if (e.code == 'invalid-credential') {
+            // ...
+          }
+        } catch (e) {
+          // ...
+        }
+      }
+    }
+
+    return usuario;
   }
 
   // Login com Facebook
   void signInWithFacebook() async {
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login();
-      final userData = await FacebookAuth.instance.getUserData();
+      //final userData = await FacebookAuth.instance.getUserData();
 
       final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken.token);
       await auth.signInWithCredential(facebookAuthCredential);
