@@ -39,7 +39,7 @@ class ExtensionaApp extends StatelessWidget {
           } else if (snapshot.hasData) {
             return Consumer<UserDAO>(builder: (context, userDao, child) {
               if (userDao.isLoggedIn()) {
-                return const AllUsersHomePage();
+                  return const AllUsersHomePage();
               } else {
                 return const Login();
               }
