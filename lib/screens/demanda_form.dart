@@ -29,6 +29,10 @@ class FormDemandaState extends State<FormDemanda>{
   final TextEditingController _controladorContrapartida = TextEditingController();
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados = TextEditingController();
+  final TextEditingController _controladorPropostaConjunto = TextEditingController();
+  final TextEditingController _controladorDadosProponete = TextEditingController();
+  final TextEditingController _controladorEmpresaEnvolvida = TextEditingController();
+  final TextEditingController _controladorEquipeColaboradores = TextEditingController();
 
 
   final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
@@ -82,6 +86,20 @@ class FormDemandaState extends State<FormDemanda>{
 
             Editor(_controladorResultadosEsperados, "Quais os resultados esperados?  ",
                 "Descreva os resultados esperados", 5, false, 600),
+
+            Editor(_controladorPropostaConjunto, "Por que a proposta faz jus a uma ação em conjunto?  ",
+                "Por que precisa da Instituição de Ensino?", 7, _valida, 600),
+
+            Editor(_controladorDadosProponete, "Dados do Proponente?  ",
+                "Dados Gerais, está vinculado a qual instituição/empresa?", 7, _valida, 600),
+
+            Editor(_controladorEmpresaEnvolvida, "Quais serão as instituições / empresas envolvidas na proposta?  ",
+                "Instituições/empresas parceiras?", 7, _valida, 600),
+
+            Editor(_controladorEquipeColaboradores, "Quem será a equipe de colaboradores externos?  ",
+                "Nome, formação, dados gerais, etc, ", 7, _valida, 600),
+
+
 
             const SizedBox(height: 10),
 
@@ -175,6 +193,10 @@ class FormDemandaState extends State<FormDemanda>{
                     _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
                     _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
                     _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorDadosProponete.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
+                    _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
                   });
 
                   // Caso não tenha erros de validação
@@ -208,6 +230,10 @@ class FormDemandaState extends State<FormDemanda>{
       'contrapartida': _controladorContrapartida.text,
       'vinculo': _controladorVinculo.text,
       'resultados_esperados': _controladorResultadosEsperados.text,
+      'proposta_conjunto': _controladorPropostaConjunto.text,
+      'dados_proponente': _controladorDadosProponete.text,
+      'empresa_envolvida': _controladorEmpresaEnvolvida.text,
+      'equipe_colaboradores': _controladorEquipeColaboradores.text,
       'area_tematica': selectedCurrency,
     })
     .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
@@ -222,6 +248,10 @@ class FormDemandaState extends State<FormDemanda>{
     _controladorContrapartida.text = '';
     _controladorVinculo.text = '';
     _controladorResultadosEsperados.text = '';
+    _controladorPropostaConjunto.text = '';
+    _controladorDadosProponete.text = '';
+    _controladorEmpresaEnvolvida.text = '';
+    _controladorEquipeColaboradores.text = '';
 
     String _nomeArquivo = result.files.first.name;
     String _nomeArquivoExtensao;
