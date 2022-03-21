@@ -49,7 +49,7 @@ class _AdmAppState extends State<AdmApp> {
 
               const SizedBox(height: 10),
 
-              EditorAuth(_passwordController, 'Senha','Senha', const Icon(Icons.lock_outline), _valida, 10, true),
+              EditorAuth(_passwordController, 'Senha','Senha', const Icon(Icons.vpn_key_outlined), _valida, 10, true),
 
               const SizedBox(height: 10),
 

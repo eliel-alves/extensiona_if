@@ -94,6 +94,10 @@ class _LoginState extends State<Login> {
                 ),
               ),
 
+              camposCadastro,
+
+              const SizedBox(height: 10),
+
               //We are calling the EditorLogin to give our password and email
               EditorAuth(_emailController, 'Email', 'Informe o seu e-mail',
                   const Icon(Icons.email_outlined), _valida, 25, false),
@@ -101,9 +105,7 @@ class _LoginState extends State<Login> {
               const SizedBox(height: 10),
 
               EditorAuth(_passwordController, 'Senha', 'Informe a sua senha',
-                  const Icon(Icons.lock_outline), _valida, 10, true),
-
-              camposCadastro,
+                  const Icon(Icons.vpn_key_outlined), _valida, 10, true),
 
               const SizedBox(height: 10),
 
@@ -241,11 +243,11 @@ Widget camposExtras(TextEditingController _nameController, TextEditingController
     children: [
       const SizedBox(height: 10),
 
-      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Icons.lock_outline), _valida, 10, false),
+      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Icons.person), _valida, 10, false),
 
       const SizedBox(height: 10),
 
-      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Icons.lock_outline), _valida, 10, false),
+      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Icons.phone), _valida, 10, false),
     ],
   );
 }

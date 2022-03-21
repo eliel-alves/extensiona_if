@@ -96,7 +96,7 @@ class _EditorDropdownButtonState extends State<EditorDropdownButton> {
   }
 }
 
-class EditorAuth extends StatelessWidget {
+class EditorAuth extends StatefulWidget {
 
   final TextEditingController controlador;
   final String rotulo;
@@ -104,24 +104,63 @@ class EditorAuth extends StatelessWidget {
   final Icon icon;
   final bool valida;
   final int qtdCaracteres;
-  final bool verdadeOuFalso;
+  final bool verSenha;
 
-  EditorAuth(this.controlador, this.rotulo, this.dica, this.icon, this.valida, this.qtdCaracteres, this.verdadeOuFalso);
+  EditorAuth(this.controlador, this.rotulo, this.dica, this.icon, this.valida, this.qtdCaracteres, this.verSenha);
+
+  @override
+  State<EditorAuth> createState() => _EditorAuthState();
+}
+
+class _EditorAuthState extends State<EditorAuth> {
+
+  bool _habilitaVerSenha;
+  bool _verSenha;
+
+  @override
+  void initState() {
+    super.initState();
+    _habilitaVerSenha = widget.verSenha;
+    _verSenha = widget.verSenha;
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
 
     return TextField(
-      obscureText: verdadeOuFalso,
-      controller: controlador,
+      obscureText: _verSenha,
+      controller: widget.controlador,
       style: AppTheme.typo.defaultText,
       decoration: InputDecoration(
         labelStyle: AppTheme.typo.defaultText,
-        labelText: rotulo,
-        hintText: dica,
-        prefixIcon: icon,
-        errorText: valida ? 'Campo obrigatório!' : null,
+        labelText: widget.rotulo,
+        hintText: widget.dica,
+        prefixIcon: widget.icon,
+        suffixIcon: _habilitaVerSenha ? (
+            _verSenha ?
+        IconButton(
+            onPressed: () {
+              setState(() {
+                //Quando o usuário clicar nesse ícone, ele mudará para falso
+                debugPrint('Você está vendo a sua senha');
+                _verSenha = false;
+              });
+            },
+            icon: const Icon(Icons.lock_outline)
+        )
+            :
+            IconButton(
+                onPressed: () {
+                    setState(() {
+                      //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
+                      debugPrint('Você não está vendo a sua senha');
+                      _verSenha = true;
+                    });
+                },
+                icon: const Icon(Icons.lock_open)
+            )
+    ) : null,
+        errorText: widget.valida ? 'Campo obrigatório!' : null,
         border: const OutlineInputBorder()
       ),
     );
