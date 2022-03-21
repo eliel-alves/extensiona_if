@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:extensiona_if/models/demanda.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,6 +12,8 @@ class UserDAO extends ChangeNotifier {
   User usuario;
   String errorMessage;
   UserCredential user;
+
+  String userType;
 
 
   // Verifica se o usuário está logado
@@ -112,6 +115,23 @@ class UserDAO extends ChangeNotifier {
     notifyListeners();
     _getUser();
   }
+
+  // TODO: verifica o tipo do usuário logado
+  Future<void> checkUser(String userID) async {
+    final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
+      fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+      toFirestore: (user, _) => user.toJson(),
+    );
+
+    // Pega o documento que possui em seu campo id o valor do id do usuário logado
+    final userId = await usersRef.where('id', isEqualTo: userID).get().then((value) => value.docs);
+
+    //Laço que retorna o tipo de usuário(admin ou user)
+    for (var element in userId) {
+      userType = element.data().tipo;
+    }
+  }
+
 
   // TODO: Sing In with Google
   Future<void> signInWithGoogle() async {

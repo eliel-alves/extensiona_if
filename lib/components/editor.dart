@@ -101,12 +101,13 @@ class EditorAuth extends StatefulWidget {
   final TextEditingController controlador;
   final String rotulo;
   final String dica;
+  final String errorText;
   final Icon icon;
   final bool valida;
   final int qtdCaracteres;
   final bool verSenha;
 
-  EditorAuth(this.controlador, this.rotulo, this.dica, this.icon, this.valida, this.qtdCaracteres, this.verSenha);
+  EditorAuth(this.controlador, this.rotulo, this.dica, this.icon, this.valida, this.qtdCaracteres, this.verSenha, this.errorText);
 
   @override
   State<EditorAuth> createState() => _EditorAuthState();
@@ -160,7 +161,7 @@ class _EditorAuthState extends State<EditorAuth> {
                 icon: const Icon(Icons.lock_open)
             )
     ) : null,
-        errorText: widget.valida ? 'Campo obrigatório!' : null,
+        errorText: widget.valida ? widget.errorText : null,
         border: const OutlineInputBorder()
       ),
     );

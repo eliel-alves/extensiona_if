@@ -45,11 +45,11 @@ class _AdmAppState extends State<AdmApp> {
               ),
 
               //We are calling the EditorLogin to give our password and email
-              EditorAuth(_emailController, 'Email', 'Email', const Icon(Icons.email_outlined), _valida, 25, false),
+              EditorAuth(_emailController, 'Email', 'Email', const Icon(Icons.email_outlined), _valida, 25, false, 's'),
 
               const SizedBox(height: 10),
 
-              EditorAuth(_passwordController, 'Senha','Senha', const Icon(Icons.vpn_key_outlined), _valida, 10, true),
+              EditorAuth(_passwordController, 'Senha','Senha', const Icon(Icons.vpn_key_outlined), _valida, 10, true, 'd'),
 
               const SizedBox(height: 10),
 

@@ -171,6 +171,10 @@ class EditarFormInfoState extends State<EditarFormInfo> {
     }).then((value) => debugPrint("Sua proposta foi atualizada no banco de dados"))
         .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 
+
+    //Retorna para a página com as demandas listadas
+    Navigator.pop(context);
+
     //SnackBar
     const SnackBar snackBar = SnackBar(content: Text("A demanda foi editada com sucesso!"));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

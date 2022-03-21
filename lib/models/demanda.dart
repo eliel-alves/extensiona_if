@@ -51,14 +51,6 @@ class Demandas{
 }
 
 class Users {
-  String userId;
-  String email;
-  String tipo;
-  String userName;
-  String userPhone;
-  String userPhoto;
-  String docId;
-
 
   Users(
       this.userId,
@@ -67,22 +59,34 @@ class Users {
       this.userName,
       this.userPhone,
       this.userPhoto,
-      this.docId
       );
 
-  ///Método responsável por acessar as informações dos campos dos documentos cadastrados no Firebase
-  Users.fromSnapshot() {
-    QueryDocumentSnapshot userColection = FirebaseFirestore.instance.collection('USUARIOS').get() as QueryDocumentSnapshot<Object>;
+  Users.fromJson(Map<String, Object> json)
+      : this(
+    json['id'] as String,
+    json['email'] as String,
+    json['tipo'] as String,
+    json['name'] as String,
+    json['telefone'] as String,
+    json['url_photo'] as String,
+  );
 
-    Map<String, dynamic> data = userColection.data() as Map<String, dynamic>;
+  final String userId;
+  final String email;
+  final String tipo;
+  final String userName;
+  final String userPhone;
+  final String userPhoto;
 
-    userId = data['id'];
-    email = data['email'];
-    tipo = data['tipo'];
-    userName = data['name'];
-    userPhone = data['telefone'];
-    userPhoto = data['url_photo'];
-    docId = userColection.id;
+
+  Map<String, Object> toJson() {
+    return {
+      'id': userId,
+      'email': email,
+      'tipo': tipo,
+      'name': userName,
+      'telefone': userPhone,
+      'url_photo': userPhoto,
+    };
   }
-
 }

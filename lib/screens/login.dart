@@ -20,11 +20,14 @@ class _LoginState extends State<Login> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _userPhoneController = TextEditingController();
+  final _confirmPassword = TextEditingController();
 
   bool _valida = false;
 
   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
   final styleTextTitle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+
+  String errorMessage = 'Campo Obrigatório!';
 
   bool isLogin = true;
 
@@ -55,7 +58,12 @@ class _LoginState extends State<Login> {
         textActionButton = 'CADASTRAR';
         firstTextNavigation = 'Já possui uma conta?';
         secondTextNavigation = 'Conecte-se';
-        camposCadastro = camposExtras(_nameController, _userPhoneController, _valida);
+        camposCadastro = campoSignUp(
+            _nameController,
+            _userPhoneController,
+            _confirmPassword,
+            _valida,
+            errorMessage);
       }
     });
   }
@@ -94,18 +102,17 @@ class _LoginState extends State<Login> {
                 ),
               ),
 
-              camposCadastro,
-
-              const SizedBox(height: 10),
-
-              //We are calling the EditorLogin to give our password and email
               EditorAuth(_emailController, 'Email', 'Informe o seu e-mail',
-                  const Icon(Icons.email_outlined), _valida, 25, false),
+                  const Icon(Icons.email_outlined), _valida, 25, false, errorMessage),
 
               const SizedBox(height: 10),
 
               EditorAuth(_passwordController, 'Senha', 'Informe a sua senha',
-                  const Icon(Icons.vpn_key_outlined), _valida, 10, true),
+                  const Icon(Icons.vpn_key_outlined), _valida, 10, true, errorMessage),
+
+              const SizedBox(height: 10),
+
+              camposCadastro,
 
               const SizedBox(height: 10),
 
@@ -123,6 +130,7 @@ class _LoginState extends State<Login> {
                         _passwordController.text.isEmpty ? _valida = true : _valida = false;
                         _nameController.text.isEmpty ? _valida = true : _valida = false;
                         _userPhoneController.text.isEmpty ? _valida = true : _valida = false;
+                        _passwordController.text != _confirmPassword.text ? _valida = true : _valida = false;
                       }
                     });
 
@@ -238,20 +246,27 @@ class ContaAdministrador extends StatelessWidget {
   }
 }
 
-Widget camposExtras(TextEditingController _nameController, TextEditingController _userPhoneController, bool _valida) {
+Widget campoSignUp(
+    TextEditingController _nameController,
+    TextEditingController _userPhoneController,
+    TextEditingController _confirmPassword,
+    bool _valida,
+    String errorMessage) {
   return Column(
     children: [
+
+      EditorAuth(_confirmPassword, 'Confirmar senha', 'Insira novamente a sua senha', const Icon(Icons.vpn_key_outlined), _valida, 10, true, 'Senha Incorreta! Verifique novamente a sua senha'),
+
       const SizedBox(height: 10),
 
-      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Icons.person), _valida, 10, false),
+      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Icons.person), _valida, 10, false, errorMessage),
 
       const SizedBox(height: 10),
 
-      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Icons.phone), _valida, 10, false),
+      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Icons.phone), _valida, 10, false, errorMessage),
     ],
   );
 }
-
 
 Widget socialButtons(Color backgroundColor, Function onTap, String title, IconData iconData) {
   return GestureDetector(

@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/screens/demanda_edit_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/models/demanda.dart';
+import 'package:provider/provider.dart';
 
 class AdminScreen extends StatefulWidget {
   @override
@@ -83,11 +86,22 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final userDao = Provider.of<UserDAO>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Propostas registradas pelos usuários"),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          IconButton(
+              onPressed: () {
+                userDao.logout();
+              },
+              icon: const Icon(Icons.logout)
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -113,6 +127,18 @@ class _AdminScreenState extends State<AdminScreen> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(16.0),
                 itemBuilder: (BuildContext context, int index) {
+
+                  //Pegando as informações dos documentos do firebase da coleção Demandas
+                  final infoTitulo = _resultsList[index]['titulo'];
+                  final infoTempo = _resultsList[index]['tempo'];
+                  //final infoStatus = _resultsList[index]['status'];
+                  final infoResumo = _resultsList[index]['resumo'];
+                  final infoObjetivo = _resultsList[index]['objetivo'];
+                  final infoContrapartida = _resultsList[index]['contrapartida'];
+                  final infoVinculo = _resultsList[index]['vinculo'];
+                  final infoResultadosEsperados = _resultsList[index]['resultados_esperados'];
+                 // final infoAreaTematica = _resultsList[index]['area_tematica'];
+                  final updateDados = _resultsList[index];
 
                   return Container(
                       margin: const EdgeInsets.only(bottom: 20),
@@ -151,6 +177,15 @@ class _AdminScreenState extends State<AdminScreen> {
                                   tooltip: 'Editar proposta',
                                   onPressed: () {
                                     debugPrint('consultou a demanda');
+                                    final Future future =
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                      return EditarFormInfoAdmin(infoTitulo, infoTempo, infoResumo, infoObjetivo, infoContrapartida, infoVinculo, infoResultadosEsperados, updateDados);
+                                    }));
+
+                                    future.then((demandaAtualizada) {
+                                      debugPrint("$demandaAtualizada");
+                                      debugPrint('A proposta foi alterada');
+                                    });
                                   },
                                 ),
                               ],
