@@ -1,12 +1,12 @@
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/screens/tela_admin.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class Login extends StatefulWidget {
   const Login({Key key}) : super(key: key);
@@ -85,9 +85,12 @@ class _LoginState extends State<Login> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 45, bottom: 10),
-                child: Text(
-                  title,
-                  style: AppTheme.typo.title,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    title,
+                    style: AppTheme.typo.title,
+                  ),
                 ),
               ),
 
@@ -101,6 +104,8 @@ class _LoginState extends State<Login> {
                   const Icon(Icons.lock_outline), _valida, 10, true),
 
               camposCadastro,
+
+              const SizedBox(height: 10),
 
               SizedBox(
                 height: 50,
@@ -146,39 +151,27 @@ class _LoginState extends State<Login> {
               Padding(
                   padding: const EdgeInsets.only(top: 15), child: Divisor()),
 
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: SignInButton(
-                        Buttons.Google,
-                        text: "Cadastre-se com o Google",
-                        onPressed: () {
-                          userDao.signInWithGoogle();
-                        },
-                      ),
-                    ),
+              const SizedBox(height: 10),
 
-                    const SizedBox(height: 20),
+              socialButtons(
+                  Colors.white,
+                      () {
+                    userDao.signInWithGoogle();
+                    },
+                  "Cadastre-se com o Google",
+                  FontAwesome.google
+              ),
 
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: SignInButton(
-                        Buttons.FacebookNew,
-                        text: "Cadastre-se com o Facebook",
-                        onPressed: () {
-                          userDao.signInWithFacebook();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              )
+              const SizedBox(height: 20),
+
+              socialButtons(
+                  Colors.blue[600],
+                      () {
+                    userDao.signInWithFacebook();
+                    },
+                  "Cadastre-se com o Facebook",
+                  FontAwesome.facebook
+              ),
             ],
           ),
         )
@@ -254,5 +247,37 @@ Widget camposExtras(TextEditingController _nameController, TextEditingController
 
       EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Icons.lock_outline), _valida, 10, false),
     ],
+  );
+}
+
+
+Widget socialButtons(Color backgroundColor, Function onTap, String title, IconData iconData) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 40,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(iconData),
+
+          const SizedBox(width: 10),
+
+          Text(title, style: AppTheme.typo.button)
+        ],
+      ),
+    ),
   );
 }
