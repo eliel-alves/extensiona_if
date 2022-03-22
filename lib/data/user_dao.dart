@@ -43,6 +43,12 @@ class UserDAO extends ChangeNotifier {
     notifyListeners();
   }
 
+  //Faz referência a coleção de usuário no Firebase
+  final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
+    fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+    toFirestore: (user, _) => user.toJson(),
+  );
+
   // Cadastrar no app
   void signup(String email, String password, String userName, String userPhone) async {
     // Tenta cadastrar o usuário
@@ -73,15 +79,16 @@ class UserDAO extends ChangeNotifier {
   // Método responsável por adicionar um novo usuário na coleção USUARIOS
   void addUser(String email, String password, String userName, String userPhone) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
-    DocumentReference _novoUsuario = await FirebaseFirestore.instance.collection('USUARIOS').add({
-      'id': userId(),
-      'email': userEmail(),
-      'telefone': userPhone,
-      'name': userName,
-      'tipo': 'user',
-      'url_photo': '',
-    })
-        .catchError((error) => debugPrint("Ocorreu um erro ao registrar o usuário: $error"));
+    await usersRef.add(
+      Users(
+          userId(),
+          userEmail(),
+          'user',
+          userName,
+          userPhone,
+          ''
+      ),
+    );
   }
 
   // Logar o usuário
@@ -118,11 +125,6 @@ class UserDAO extends ChangeNotifier {
 
   // TODO: verifica o tipo do usuário logado
   Future<void> checkUser(String userID) async {
-    final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
-      fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
-      toFirestore: (user, _) => user.toJson(),
-    );
-
     // Pega o documento que possui em seu campo id o valor do id do usuário logado
     final userId = await usersRef.where('id', isEqualTo: userID).get().then((value) => value.docs);
 

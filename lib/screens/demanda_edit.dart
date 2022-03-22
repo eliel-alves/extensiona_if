@@ -14,9 +14,25 @@ class EditarFormInfo extends StatefulWidget {
   final String contrapartida;
   final String vinculo;
   final String resultadosEsperados;
+  final String propostaConjunto;
+  final String dadosProponete;
+  final String empresaEnvolvida;
+  final String equipeColaboradores;
   final QueryDocumentSnapshot updateDados;
 
-  const EditarFormInfo(this.titulo, this.tempo, this.resumo, this.objetivo, this.contrapartida, this.vinculo, this.resultadosEsperados, this.updateDados);
+  const EditarFormInfo(
+      this.titulo,
+      this.tempo,
+      this.resumo,
+      this.objetivo,
+      this.contrapartida,
+      this.vinculo,
+      this.resultadosEsperados,
+      this.propostaConjunto,
+      this.dadosProponete,
+      this.empresaEnvolvida,
+      this.equipeColaboradores,
+      this.updateDados);
 
   @override
   State<StatefulWidget> createState() {
@@ -35,6 +51,11 @@ class EditarFormInfoState extends State<EditarFormInfo> {
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados = TextEditingController();
 
+  final TextEditingController _controladorPropostaConjunto = TextEditingController();
+  final TextEditingController _controladorDadosProponete = TextEditingController();
+  final TextEditingController _controladorEmpresaEnvolvida = TextEditingController();
+  final TextEditingController _controladorEquipeColaboradores = TextEditingController();
+
   bool _valida = false;
 
   @override
@@ -48,6 +69,10 @@ class EditarFormInfoState extends State<EditarFormInfo> {
     _controladorContrapartida.text = widget.contrapartida;
     _controladorVinculo.text = widget.vinculo;
     _controladorResultadosEsperados.text = widget.resultadosEsperados;
+    _controladorPropostaConjunto.text = widget.propostaConjunto;
+    _controladorDadosProponete.text = widget.dadosProponete;
+    _controladorEmpresaEnvolvida.text = widget.empresaEnvolvida;
+    _controladorEquipeColaboradores.text = widget.equipeColaboradores;
 
     return Scaffold(
       appBar: AppBar(
@@ -130,6 +155,18 @@ class EditarFormInfoState extends State<EditarFormInfo> {
             Editor(_controladorResultadosEsperados, "Quais os resultados esperados?  ",
                 "Descreva os resultados esperados", 5, false, 600),
 
+            Editor(_controladorPropostaConjunto, "Por que a proposta faz jus a uma ação em conjunto?  ",
+                "Por que precisa da Instituição de Ensino?", 7, _valida, 600),
+
+            Editor(_controladorDadosProponete, "Dados do Proponente?  ",
+                "Dados Gerais, está vinculado a qual instituição/empresa?", 7, _valida, 600),
+
+            Editor(_controladorEmpresaEnvolvida, "Quais serão as instituições / empresas envolvidas na proposta?  ",
+                "Instituições/empresas parceiras?", 7, _valida, 600),
+
+            Editor(_controladorEquipeColaboradores, "Quem será a equipe de colaboradores externos?  ",
+                "Nome, formação, dados gerais, etc, ", 7, _valida, 600),
+
             SizedBox(
               height: 40,
               width: double.infinity,
@@ -142,6 +179,10 @@ class EditarFormInfoState extends State<EditarFormInfo> {
                       _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
                       _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
                       _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
+                      _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
+                      _controladorDadosProponete.text.isEmpty ? _valida = true : _valida = false;
+                      _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
+                      _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
                     });
 
                     // Caso não tenha erros de validação
@@ -167,7 +208,11 @@ class EditarFormInfoState extends State<EditarFormInfo> {
       'resumo': _controladorResumo.text,
       'objetivo': _controladorObjetivo.text,
       'contrapartida': _controladorContrapartida.text,
-      'resultados_esperados': _controladorResultadosEsperados.text
+      'resultados_esperados': _controladorResultadosEsperados.text,
+      'proposta_conjunto': _controladorPropostaConjunto.text,
+      'dados_proponente': _controladorDadosProponete.text,
+      'empresa_envolvida': _controladorEmpresaEnvolvida.text,
+      'equipe_colaboradores': _controladorEquipeColaboradores.text,
     }).then((value) => debugPrint("Sua proposta foi atualizada no banco de dados"))
         .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 

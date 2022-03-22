@@ -55,6 +55,10 @@ class ItemDemanda extends StatelessWidget {
                 final infoVinculo = data.docs[index]['vinculo'];
                 final infoResultadosEsperados = data.docs[index]['resultados_esperados'];
                 final infoAreaTematica = data.docs[index]['area_tematica'];
+                final infoPropostaConjunto = data.docs[index]['proposta_conjunto'];
+                final infoDadosProponete = data.docs[index]['dados_proponente'];
+                final infoEmpresaEnvolvida = data.docs[index]['empresa_envolvida'];
+                final infoEquipeColaboradores = data.docs[index]['equipe_colaboradores'];
                 final updateDados = snapshot.data.docs[index];
 
                 return AnimationConfiguration.staggeredList(
@@ -95,7 +99,19 @@ class ItemDemanda extends StatelessWidget {
                                           onPressed: () {
                                             final Future future =
                                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                              return EditarFormInfo(infoTitulo, infoTempo, infoResumo, infoObjetivo, infoContrapartida, infoVinculo, infoResultadosEsperados, updateDados);
+                                              return EditarFormInfo(
+                                                  infoTitulo,
+                                                  infoTempo,
+                                                  infoResumo,
+                                                  infoObjetivo,
+                                                  infoContrapartida,
+                                                  infoVinculo,
+                                                  infoResultadosEsperados,
+                                                  infoPropostaConjunto,
+                                                  infoDadosProponete,
+                                                  infoEmpresaEnvolvida,
+                                                  infoEquipeColaboradores,
+                                                  updateDados);
                                             }));
 
                                             future.then((demandaAtualizada) {
