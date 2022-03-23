@@ -185,7 +185,7 @@ class CampoSelecaoArquivos extends StatelessWidget{
     return DottedBorder(
       borderType: BorderType.RRect,
       radius: const Radius.circular(12),
-      color: const Color.fromRGBO(125, 155, 118, 0.6),
+      color: Colors.black,
       dashPattern: const [10, 5],
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(12)),
@@ -193,7 +193,6 @@ class CampoSelecaoArquivos extends StatelessWidget{
           padding: const EdgeInsets.only(top: 20),
           height: 150,
           width: double.infinity,
-          color: const Color.fromRGBO(64, 64, 64, 0.4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

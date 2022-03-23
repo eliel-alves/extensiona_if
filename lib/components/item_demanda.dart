@@ -5,7 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:extensiona_if/screens/demanda_edit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_icons/flutter_icons.dart';
 
 class ItemDemanda extends StatelessWidget {
   ItemDemanda({Key key}) : super(key: key);
@@ -41,7 +41,7 @@ class ItemDemanda extends StatelessWidget {
         return AnimationLimiter(
           child: ListView.builder(
               itemCount: data.size,
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               itemBuilder: (context, index) {
 
                 //Pegando as informações dos documentos do firebase da coleção Demandas
@@ -75,7 +75,7 @@ class ItemDemanda extends StatelessWidget {
                                 height: 70.0,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.1),
@@ -86,15 +86,15 @@ class ItemDemanda extends StatelessWidget {
                                 ),
 
                                 child: ListTile(
-                                  leading: const Icon(Icons.add_circle_outline),
+                                  leading: const Icon(FontAwesome.file),
                                   title: Text(infoTitulo),
                                   subtitle: Text(infoTempo),
                                   trailing: SizedBox(
-                                    width: 50,
+                                    width: 100,
                                     child: Row(
                                       children: <Widget>[
                                         IconButton (
-                                          icon: const Icon(Icons.edit, color: Colors.green, size: 32),
+                                          icon: const Icon(FontAwesome.pencil, size: 25),
                                           tooltip: 'Editar proposta',
                                           onPressed: () {
                                             final Future future =
@@ -120,6 +120,50 @@ class ItemDemanda extends StatelessWidget {
                                             });
                                           },
                                         ),
+
+                                        IconButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('Deletar Proposta'),
+                                                      content: const Text('Você deseja deletar esta proposta?'),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                                      actions: <Widget> [
+                                                        TextButton(
+                                                          onPressed: (){
+                                                            //Deleta a proposta cadastrada no Firebase
+                                                            debugPrint('Foi deletado a proposta');
+                                                            updateDados.reference.delete();
+
+                                                            //Fecha a janela de exclusão
+                                                            Navigator.pop(context);
+
+                                                            //Dispara um SnackBar
+                                                            const SnackBar snackBar = SnackBar(content: Text("A proposta foi deletada com sucesso! "));
+                                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                                          },
+                                                          child: const Text('Sim'),
+                                                        ),
+
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(context);
+                                                            //Navigator.of(context).pop();
+                                                            debugPrint('Não foi deletado a proposta');
+                                                          },
+                                                          child: const Text('Não'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }
+                                              );
+                                            },
+                                          tooltip: 'Remover Proposta',
+                                            icon: const Icon(FontAwesome.trash, size: 25),
+                                        )
                                       ],
                                     ),
                                   )

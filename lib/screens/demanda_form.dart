@@ -59,8 +59,7 @@ class FormDemandaState extends State<FormDemanda>{
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Formulário de Cadastro'),
-        centerTitle: true,
+          title: Text("Formulário de cadastro", style: AppTheme.typo.title),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -176,6 +175,7 @@ class FormDemandaState extends State<FormDemanda>{
                 styleTextFile
             ),
 
+            const SizedBox(height: 10),
 
             SizedBox(
               height: 40,
