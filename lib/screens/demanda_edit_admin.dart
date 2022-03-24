@@ -1,8 +1,7 @@
-import 'package:extensiona_if/theme/app_theme.dart';
+
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:extensiona_if/screens/demanda_lista.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 
 class EditarFormInfoAdmin extends StatefulWidget {
@@ -53,55 +52,6 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
       appBar: AppBar(
         title: const Text("Atualizar Demanda"),
         elevation: 0,
-        actions: [
-          SizedBox(
-            width: 80,
-            child: IconButton (
-              icon: Icon(Icons.delete, color: AppTheme.colors.red, size: 32),
-              tooltip: 'Remover Proposta',
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Deletar Proposta'),
-                        content: const Text('Você deseja deletar esta proposta?'),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                        actions: <Widget> [
-                          TextButton(
-                            onPressed: (){
-                              // Deletando demanda do Firebase
-                              debugPrint('Foi deletado a proposta');
-                              widget.updateDados.reference.delete();
-
-                              // Voltando para a página da lista de Demandas
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return ListaDemanda();
-                              }));
-
-                              // SnackBar
-                              const SnackBar snackBar = SnackBar(content: Text("A proposta foi deletada com sucesso! "));
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            },
-                            child: const Text('Sim'),
-                          ),
-
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              debugPrint('Não foi deletado a proposta');
-                            },
-                            child: const Text('Não'),
-                          ),
-                        ],
-                      );
-                    }
-                );
-              },
-            ),
-          ),
-        ],
       ),
 
       body: SingleChildScrollView(

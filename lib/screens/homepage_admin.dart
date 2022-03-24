@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/screens/demanda_edit_admin.dart';
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/models/demanda.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -84,15 +87,31 @@ class _AdminScreenState extends State<AdminScreen> {
     searchResultsList();
   }
 
+  final List<AreaTematica> _optionsAreaTematica = [
+    AreaTematica(id: 1, name: 'Comunicação'),
+    AreaTematica(id: 2, name: 'Cultura'),
+    AreaTematica(id: 3, name: 'Direitos Humanos e Justiça'),
+    AreaTematica(id: 4, name: 'Educação'),
+    AreaTematica(id: 5, name: 'Meio Ambiente'),
+    AreaTematica(id: 6, name: 'Saúde'),
+    AreaTematica(id: 7, name: 'Tecnologia e Produção'),
+    AreaTematica(id: 8, name: 'Trabalho')
+  ];
+
+
   @override
   Widget build(BuildContext context) {
 
     final userDao = Provider.of<UserDAO>(context, listen: false);
 
+    final _items = _optionsAreaTematica.map((areaTematica) => MultiSelectItem<AreaTematica>(areaTematica, areaTematica.name))
+        .toList();
+
+    List<AreaTematica> _selectedValue = [];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Propostas registradas pelos usuários"),
-        centerTitle: true,
+        title: Text("Propostas registradas", style: AppTheme.typo.title),
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
@@ -118,6 +137,33 @@ class _AdminScreenState extends State<AdminScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: MultiSelectDialogField(
+                items: _items,
+                title: Text("Selecionar áreas temáticas", style: AppTheme.typo.defaultText),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.1),
+                  borderRadius: const BorderRadius.all(Radius.circular(40)),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
+                ),
+                buttonIcon: Icon(FontAwesome.chevron_circle_down, color: Theme.of(context).colorScheme.primary),
+                buttonText: Text("Áreas Temáticas", style: AppTheme.typo.button),
+                onConfirm: (results) {
+                  _selectedValue = results;
+                },
+                chipDisplay: MultiSelectChipDisplay<AreaTematica>(
+                  items: _selectedValue.map((e) => MultiSelectItem(e, e.name)).toList(),
+                  onTap: (value) {
+                    setState(() {
+                      debugPrint(value.name.toLowerCase());
+                      _selectedValue.remove(value);
+                    });
+                  },
                 ),
               ),
             ),
@@ -156,24 +202,15 @@ class _AdminScreenState extends State<AdminScreen> {
                         ],
                       ),
                       child: ListTile(
-                          leading: Icon(Icons.assignment_rounded,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary),
-                          title: Text(_resultsList[index]['titulo']),
-                          subtitle: Text(_resultsList[index]['tempo'],
-                              style: const TextStyle(
-                                  color: Colors.black45)),
+                          leading: const Icon(FontAwesome.file),
+                          title: Text(infoTitulo),
+                          subtitle: Text(infoTempo, style: const TextStyle(color: Colors.black45)),
                           trailing: SizedBox(
-                            width: 50,
+                            width: 100,
                             child: Row(
                               children: <Widget>[
                                 IconButton(
-                                  icon: Icon(Icons.edit,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary,
-                                      size: 32),
+                                  icon: const Icon(FontAwesome.pencil, size: 25),
                                   tooltip: 'Editar proposta',
                                   onPressed: () {
                                     debugPrint('consultou a demanda');
@@ -188,6 +225,51 @@ class _AdminScreenState extends State<AdminScreen> {
                                     });
                                   },
                                 ),
+
+
+                                IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Deletar Proposta'),
+                                            content: const Text('Você deseja deletar esta proposta?'),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                            actions: <Widget> [
+                                              TextButton(
+                                                onPressed: (){
+                                                  //Deleta a proposta cadastrada no Firebase
+                                                  debugPrint('Foi deletado a proposta');
+                                                  updateDados.reference.delete();
+
+                                                  //Fecha a janela de exclusão
+                                                  Navigator.pop(context);
+
+                                                  //Dispara um SnackBar
+                                                  const SnackBar snackBar = SnackBar(content: Text("A proposta foi deletada com sucesso! "));
+                                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                                },
+                                                child: const Text('Sim'),
+                                              ),
+
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  //Navigator.of(context).pop();
+                                                  debugPrint('Não foi deletado a proposta');
+                                                },
+                                                child: const Text('Não'),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                    );
+                                  },
+                                  tooltip: 'Remover Proposta',
+                                  icon: const Icon(FontAwesome.trash, size: 25),
+                                )
                               ],
                             ),
                           )));
@@ -197,4 +279,14 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     );
   }
+}
+
+class AreaTematica {
+  final int id;
+  final String name;
+
+  AreaTematica({
+    this.id,
+    this.name,
+  });
 }

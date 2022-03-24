@@ -2,6 +2,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class Editor extends StatelessWidget {
   final TextEditingController controlador;
@@ -16,7 +17,7 @@ class Editor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 13, bottom: 13),
         child: TextField(
           maxLength: qtdCaracteres,
           controller: controlador,
@@ -32,66 +33,6 @@ class Editor extends StatelessWidget {
             border: const OutlineInputBorder(),
           ),
         )
-    );
-  }
-}
-
-class EditorDropdownButton extends StatefulWidget{
-  final TextStyle style;
-  String optionSelected;
-
-  EditorDropdownButton(this.style, this.optionSelected, {Key key}) : super(key: key);
-
-  @override
-  State<EditorDropdownButton> createState() => _EditorDropdownButtonState();
-}
-
-class _EditorDropdownButtonState extends State<EditorDropdownButton> {
-
-  final List<String> buttonOptions = [
-    'Comunicação',
-    'Cultura',
-    'Direitos Humanos e Justiça',
-    'Educação',
-    'Meio Ambiente',
-    'Saúde',
-    'Tecnologia e Produção',
-    ' Trabalho'
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text('Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-              style: GoogleFonts.cabin(textStyle: widget.style),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          DropdownButtonFormField(
-
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              helperText: 'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-              hintText: 'Selecione a área temática',
-              //errorText: widget.valida ? 'Campo obrigatório!' : null,
-            ),
-            items: buttonOptions.map((options) {
-              return DropdownMenuItem(
-                value: options,
-                child: Text(options),
-              );
-            }).toList(),
-            onChanged: (value) => setState(() => widget.optionSelected = value.toString()),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -147,7 +88,7 @@ class _EditorAuthState extends State<EditorAuth> {
                 _verSenha = false;
               });
             },
-            icon: const Icon(Icons.lock_outline)
+            icon: const Icon(Ionicons.md_eye_off)
         )
             :
             IconButton(
@@ -158,7 +99,7 @@ class _EditorAuthState extends State<EditorAuth> {
                       _verSenha = true;
                     });
                 },
-                icon: const Icon(Icons.lock_open)
+                icon: const Icon(Ionicons.md_eye)
             )
     ) : null,
         errorText: widget.valida ? widget.errorText : null,

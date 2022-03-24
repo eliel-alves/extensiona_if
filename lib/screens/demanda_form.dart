@@ -4,7 +4,6 @@ import 'package:path/path.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +47,7 @@ class FormDemandaState extends State<FormDemanda>{
 
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
-  String hintText = 'Selecione a área temática';
+  String hintText = 'Área temática';
 
   bool _valida = false;
 
@@ -62,14 +61,55 @@ class FormDemandaState extends State<FormDemanda>{
           title: Text("Formulário de cadastro", style: AppTheme.typo.title),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
             Editor(_controladorTitulo, "Título da proposta", "Título da Proposta", 1, _valida, 150),
 
-            Editor(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, _valida, 150),
+            Row(
+              children: [
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Text('Carregando ...');
+                    } else {
+
+                      return Expanded(
+                        child: DropdownButtonFormField(
+                            isExpanded: true,
+                            decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                              helperText:
+                              'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
+                              hintText: hintText,
+                          ),
+                            items: snapshot.data.docs.map((DocumentSnapshot document) {
+                              return DropdownMenuItem<String>(
+                                child: Text(document['nome']),
+                                value: document['nome'],
+                              );
+                            }).toList(),
+                            onChanged: (currencyValue) {
+                              setState(() {
+                                selectedCurrency = currencyValue;
+                              });
+                              debugPrint(currencyValue);
+                            },
+                            value: selectedCurrency,
+                          ),
+                      );
+                    }
+                  },
+                ),
+
+                const SizedBox(width: 10),
+
+                Expanded(child: Editor(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, _valida, 150)),
+              ],
+            ),
 
             Editor(_controladorResumo, "Faça uma breve descrição da sua proposta",
                 "Explique da melhor forma que conseguir sobre o que se trata a proposta", 5, _valida, 600),
@@ -98,58 +138,7 @@ class FormDemandaState extends State<FormDemanda>{
             Editor(_controladorEquipeColaboradores, "Quem será a equipe de colaboradores externos?  ",
                 "Nome, formação, dados gerais, etc, ", 7, _valida, 600),
 
-
-
             const SizedBox(height: 10),
-
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-                        style: GoogleFonts.cabin(textStyle: style),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return const Text('Carregando ...');
-                      } else {
-
-                        return DropdownButtonFormField(
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            helperText:
-                            'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-                            hintText: hintText,
-                          ),
-                          items: snapshot.data.docs.map((DocumentSnapshot document) {
-                            return DropdownMenuItem<String>(
-                              child: Text(document['nome']),
-                              value: document['nome'],
-                            );
-                          }).toList(),
-                          onChanged: (currencyValue) {
-                            setState(() {
-                              selectedCurrency = currencyValue;
-                            });
-
-                            debugPrint(currencyValue);
-                          },
-                          value: selectedCurrency,
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
 
             CampoSelecaoArquivos(
                 Icons.cloud_upload_rounded,

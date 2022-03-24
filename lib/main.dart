@@ -10,7 +10,8 @@ import 'package:provider/provider.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MultiProvider(
+  runApp(
+      MultiProvider(
     providers: [
       ChangeNotifierProvider(
         create: (context) => UserDAO(),
@@ -39,7 +40,8 @@ class ExtensionaApp extends StatelessWidget {
             debugPrint("You have an error!");
             return const Text('Algo não deu certo!');
           } else if (snapshot.hasData) {
-            return Consumer<UserDAO>(builder: (context, userDao, child) {
+            return Consumer<UserDAO>(
+                builder: (context, userDao, child) {
               if (userDao.isLoggedIn()) {
                 //Chama a função que verifica o usuário que logou e passa o id do mesmo
                 userDao.checkUser(userDao.userId());
@@ -58,7 +60,8 @@ class ExtensionaApp extends StatelessWidget {
               } else {
                 return const Login();
               }
-            });
+            },
+            );
           } else {
             return const Center(
               child: CircularProgressIndicator(),

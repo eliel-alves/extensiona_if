@@ -1,9 +1,7 @@
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/components/editor.dart';
-import 'package:extensiona_if/screens/tela_admin.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -36,6 +34,7 @@ class _LoginState extends State<Login> {
   String firstTextNavigation;
   String secondTextNavigation;
   Widget camposCadastro;
+  Widget resetPassword;
 
   @override
   void initState() {
@@ -49,13 +48,14 @@ class _LoginState extends State<Login> {
 
       if (isLogin) {
         title = 'LOGIN';
-        textActionButton = 'FAZER LOGIN';
+        textActionButton = 'ENTRAR';
         firstTextNavigation = 'Não possui uma conta?';
         secondTextNavigation = 'Cadastre-se';
         camposCadastro = const Text('');
+        resetPassword = trocarSenha();
       } else {
         title = 'CADASTRO';
-        textActionButton = 'CADASTRAR';
+        textActionButton = 'CRIAR CONTA';
         firstTextNavigation = 'Já possui uma conta?';
         secondTextNavigation = 'Conecte-se';
         camposCadastro = campoSignUp(
@@ -64,6 +64,7 @@ class _LoginState extends State<Login> {
             _confirmPassword,
             _valida,
             errorMessage);
+        resetPassword = const Text('');
       }
     });
   }
@@ -91,30 +92,28 @@ class _LoginState extends State<Login> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+
               Padding(
                 padding: const EdgeInsets.only(top: 45, bottom: 10),
                 child: Align(
                   alignment: Alignment.topLeft,
-                  child: Text(
-                    title,
-                    style: AppTheme.typo.title,
-                  ),
+                  child: Text(title, style: AppTheme.typo.title),
                 ),
               ),
 
+              cadastrarConta(firstTextNavigation, secondTextNavigation, () => setFormAction(!isLogin)),
+
               EditorAuth(_emailController, 'Email', 'Informe o seu e-mail',
-                  const Icon(Icons.email_outlined), _valida, 25, false, errorMessage),
+                  const Icon(Ionicons.md_mail), _valida, 25, false, errorMessage),
 
               const SizedBox(height: 10),
 
               EditorAuth(_passwordController, 'Senha', 'Informe a sua senha',
-                  const Icon(Icons.vpn_key_outlined), _valida, 10, true, errorMessage),
-
-              const SizedBox(height: 10),
+                  const Icon(Ionicons.md_key), _valida, 10, true, errorMessage),
 
               camposCadastro,
 
-              const SizedBox(height: 10),
+              resetPassword,
 
               SizedBox(
                 height: 50,
@@ -153,11 +152,6 @@ class _LoginState extends State<Login> {
                 ),
               ),
 
-              CadastrarConta(styleText, firstTextNavigation,
-                  secondTextNavigation, () => setFormAction(!isLogin)),
-
-              ContaAdministrador(styleText),
-
               Padding(
                   padding: const EdgeInsets.only(top: 15), child: Divisor()),
 
@@ -189,61 +183,36 @@ class _LoginState extends State<Login> {
   }
 }
 
-class CadastrarConta extends StatelessWidget {
-  final TextStyle styleText;
-  final String firstTextNavigation;
-  final String secondTextNavigation;
-  final Function setFormAction;
-
-  const CadastrarConta(this.styleText, this.firstTextNavigation,
-      this.secondTextNavigation, this.setFormAction);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(30),
-      child:
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-        Text(firstTextNavigation,
-            style: GoogleFonts.cabin(
-                textStyle: styleText, color: Colors.grey[700])),
-        GestureDetector(
-          onTap: setFormAction,
-          child: Text(secondTextNavigation,
-              style:
-                  GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
-        )
-      ]),
-    );
-  }
+Widget trocarSenha() {
+  return Padding(
+    padding: const EdgeInsets.only(top: 13, bottom: 13),
+    child: Align(
+      alignment: Alignment.bottomRight,
+      child: GestureDetector(
+        onTap: () {
+          debugPrint('O usuário trocou de senha');
+        },
+        child: Text('Esqueceu sua senha?', style: AppTheme.typo.defaultText),
+      ),
+    ),
+  );
 }
 
-class ContaAdministrador extends StatelessWidget {
-  final TextStyle styleText;
-
-  const ContaAdministrador(this.styleText);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-      Text('Entrar como',
-          style:
-              GoogleFonts.cabin(textStyle: styleText, color: Colors.grey[700])),
-      GestureDetector(
-        onTap: () {
-          debugPrint('Página de login do administrador');
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AdmApp(),
-              ));
-        },
-        child: Text(' administrador',
-            style:
-                GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
-      )
-    ]);
-  }
+Widget cadastrarConta(String firstText, String secondText, Function setFormAction) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 15, bottom: 13),
+    child: Align(
+      alignment: Alignment.topLeft,
+      child: Row (
+          children: <Widget>[
+            Text(firstText, style: AppTheme.typo.defaultText),
+            GestureDetector (
+              onTap: setFormAction,
+              child: Text(secondText, style: AppTheme.typo.defaultText),
+            )
+          ]),
+    ),
+  );
 }
 
 Widget campoSignUp(
@@ -255,15 +224,19 @@ Widget campoSignUp(
   return Column(
     children: [
 
-      EditorAuth(_confirmPassword, 'Confirmar senha', 'Insira novamente a sua senha', const Icon(Icons.vpn_key_outlined), _valida, 10, true, 'Senha Incorreta! Verifique novamente a sua senha'),
+      const SizedBox(height: 10),
+
+      EditorAuth(_confirmPassword, 'Confirmar senha', 'Insira novamente a sua senha', const Icon(Ionicons.md_key), _valida, 10, true, 'Senha Incorreta! Verifique novamente a sua senha'),
 
       const SizedBox(height: 10),
 
-      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Icons.person), _valida, 10, false, errorMessage),
+      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Ionicons.md_person), _valida, 10, false, errorMessage),
 
       const SizedBox(height: 10),
 
-      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Icons.phone), _valida, 10, false, errorMessage),
+      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Ionicons.md_call), _valida, 10, false, errorMessage),
+
+      const SizedBox(height: 10)
     ],
   );
 }
