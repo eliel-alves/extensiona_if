@@ -19,6 +19,7 @@ class _AdminScreenState extends State<AdminScreen> {
   Future resultsLoaded;
   List _allResults = [];
   List _resultsList = [];
+  List<AreaTematica> _selectedValue = [];
 
   ///Chama a função que verifica qualquer mudança no que foi digitado no TextFild
   @override
@@ -46,20 +47,24 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   ///Função responsável por filtrar as demandas cadastradas pela área temática de cada demanda
-  searchResultsList() {
+  searchResultsList() async {
     //Esse vetor ira armazenar todos os resultados encontrados durante a pesquisa
     var mostrarResultados = [];
 
     //Caso o usuário tenha digitado alguma coisa no TextField
-    if(_filterController.text != "") {
+    if(_selectedValue.isNotEmpty) {
       for(var dataSnapshot in _allResults){
         //Pega as áreas temáticas de todos os documentos registrados no Firebase
-        var areaTematica = Demandas.fromSnapshot(dataSnapshot).AreaTematica.toLowerCase();
+        var areaTematica = Demandas.fromSnapshot(dataSnapshot).areaTematica.toLowerCase();
 
-        //Caso o usuário tenha pesquisado por uma área existente, será apresentado todas as demandas registradas com essa área temática
-        if(areaTematica.contains(_filterController.text.toLowerCase())) {
-          //Adiciona as demandas encontradas ao vetor mostrarResultados
-          mostrarResultados.add(dataSnapshot);
+
+        for (var element in _selectedValue) {
+          debugPrint(element.name);
+          //Caso o usuário tenha selecionado uma área existente, será apresentado todas as demandas registradas com essa área temática
+          if(areaTematica.contains(element.name.toLowerCase())) {
+            //Adiciona as demandas encontradas ao vetor mostrarResultados
+            mostrarResultados.add(dataSnapshot);
+          }
         }
       }
       //Caso contrário, será apresentado o vetor que contém todas as demandas cadastradas no banco do Firebase
@@ -98,7 +103,6 @@ class _AdminScreenState extends State<AdminScreen> {
     AreaTematica(id: 8, name: 'Trabalho')
   ];
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -106,8 +110,6 @@ class _AdminScreenState extends State<AdminScreen> {
 
     final _items = _optionsAreaTematica.map((areaTematica) => MultiSelectItem<AreaTematica>(areaTematica, areaTematica.name))
         .toList();
-
-    List<AreaTematica> _selectedValue = [];
 
     return Scaffold(
       appBar: AppBar(
@@ -279,14 +281,4 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     );
   }
-}
-
-class AreaTematica {
-  final int id;
-  final String name;
-
-  AreaTematica({
-    this.id,
-    this.name,
-  });
 }

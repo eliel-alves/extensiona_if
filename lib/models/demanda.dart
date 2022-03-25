@@ -2,33 +2,33 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Demandas{
 
-  String TituloProposta;
-  String TempoNecessario;
-  String Resumo;
-  String Objetivo;
-  String Contrapartida;
-  String ResutadosEsperados;
-  String AreaTematica;
-  String Vinculo;
+  String tituloProposta;
+  String tempoNecessario;
+  String resumo;
+  String objetivo;
+  String contrapartida;
+  String resutadosEsperados;
+  String areaTematica;
+  String vinculo;
   String userID;
   String docId;
 
   Demandas(
-      this.TituloProposta,
-      this.TempoNecessario,
-      this.Resumo,
-      this.Objetivo,
-      this.Contrapartida,
-      this.ResutadosEsperados,
-      this.AreaTematica,
-      this.Vinculo,
+      this.tituloProposta,
+      this.tempoNecessario,
+      this.resumo,
+      this.objetivo,
+      this.contrapartida,
+      this.resutadosEsperados,
+      this.areaTematica,
+      this.vinculo,
       this.userID,
       docId,
       );
 
   @override
   String toString() {
-    return "Demanda($TituloProposta, $TituloProposta, $Resumo, $Objetivo, $Contrapartida, $ResutadosEsperados)";
+    return "Demanda($tituloProposta, $tituloProposta, $resumo, $objetivo, $contrapartida, $resutadosEsperados)";
   }
 
 
@@ -36,18 +36,28 @@ class Demandas{
   Demandas.fromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
-    TituloProposta = data['titulo'];
-    TempoNecessario = data['tempo'];
-    ResutadosEsperados = data['resultados_esperados'];
-    Resumo = data['resumo'];
-    Objetivo = data['objetivo'];
-    Contrapartida = data['contrapartida'];
-    AreaTematica = data['area_tematica'];
-    Vinculo = data['vinculo'];
+    tituloProposta = data['titulo'];
+    tempoNecessario = data['tempo'];
+    resutadosEsperados = data['resultados_esperados'];
+    resumo = data['resumo'];
+    objetivo = data['objetivo'];
+    contrapartida = data['contrapartida'];
+    areaTematica = data['area_tematica'];
+    vinculo = data['vinculo'];
     userID = data['usuario'];
     docId = snapshot.id;
   }
 
+}
+
+class AreaTematica {
+  final int id;
+  final String name;
+
+  AreaTematica({
+    this.id,
+    this.name,
+  });
 }
 
 class Users {
