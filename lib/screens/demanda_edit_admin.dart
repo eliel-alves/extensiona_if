@@ -116,7 +116,8 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
       'resumo': _controladorResumo.text,
       'objetivo': _controladorObjetivo.text,
       'contrapartida': _controladorContrapartida.text,
-      'resultados_esperados': _controladorResultadosEsperados.text
+      'resultados_esperados': _controladorResultadosEsperados.text,
+      'status': 'aprovado'
     }).then((value) => debugPrint("Sua proposta foi atualizada no banco de dados"))
         .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 

@@ -1,4 +1,5 @@
 import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -6,6 +7,7 @@ import 'package:extensiona_if/screens/demanda_edit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:intl/intl.dart';
 
 class ItemDemanda extends StatelessWidget {
   ItemDemanda({Key key}) : super(key: key);
@@ -45,7 +47,7 @@ class ItemDemanda extends StatelessWidget {
               itemBuilder: (context, index) {
 
                 //Pegando as informações dos documentos do firebase da coleção Demandas
-                final infoTitulo = data.docs[index]['titulo'];
+                final infoTitulo = data.docs[index]['proposta_conjunto'];
                 final infoTempo = data.docs[index]['tempo'];
                 final infoData = data.docs[index]['data'];
                 final infoStatus = data.docs[index]['status'];
@@ -56,7 +58,7 @@ class ItemDemanda extends StatelessWidget {
                 final infoResultadosEsperados = data.docs[index]['resultados_esperados'];
                 final infoAreaTematica = data.docs[index]['area_tematica'];
                 final infoPropostaConjunto = data.docs[index]['proposta_conjunto'];
-                final infoDadosProponete = data.docs[index]['dados_proponente'];
+                final infoDadosProponente = data.docs[index]['dados_proponente'];
                 final infoEmpresaEnvolvida = data.docs[index]['empresa_envolvida'];
                 final infoEquipeColaboradores = data.docs[index]['equipe_colaboradores'];
                 final updateDados = snapshot.data.docs[index];
@@ -86,40 +88,79 @@ class ItemDemanda extends StatelessWidget {
                                 ),
 
                                 child: ListTile(
-                                  leading: const Icon(FontAwesome.file),
+                                  leading: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: const [
+                                      Icon(FontAwesome.file),
+                                    ]
+                                  ),
                                   title: Text(infoTitulo),
-                                  subtitle: Text(infoTempo),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: Row(
+                                      children: [
+                                        // Informação Tempo
+                                        Icon(
+                                          Icons.alarm_outlined,
+                                          size: 18,
+                                          color: AppTheme.colors.blue,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(infoTempo),
+
+                                        // Espaçamento entre as informações
+                                        const SizedBox(width: 10),
+
+                                        // Informação Status
+                                        Icon(
+                                          Icons.flag_outlined,
+                                          size: 18,
+                                          color: AppTheme.colors.blue,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                            infoStatus[0].toString().toUpperCase() +
+                                                infoStatus.toString().substring(1, infoStatus.toString().length)
+                                        ),
+                                      ]
+                                    ),
+                                  ),
                                   trailing: SizedBox(
                                     width: 100,
                                     child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: <Widget>[
-                                        IconButton (
-                                          icon: const Icon(FontAwesome.pencil, size: 25),
-                                          tooltip: 'Editar proposta',
-                                          onPressed: () {
-                                            final Future future =
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                              return EditarFormInfo(
-                                                  infoTitulo,
-                                                  infoTempo,
-                                                  infoResumo,
-                                                  infoObjetivo,
-                                                  infoContrapartida,
-                                                  infoVinculo,
-                                                  infoResultadosEsperados,
-                                                  infoPropostaConjunto,
-                                                  infoDadosProponete,
-                                                  infoEmpresaEnvolvida,
-                                                  infoEquipeColaboradores,
-                                                  updateDados);
-                                            }));
+                                        if(infoStatus == 'registrado') ...[
+                                          IconButton (
+                                            icon: const Icon(FontAwesome.pencil, size: 25),
+                                            tooltip: 'Editar proposta',
+                                            onPressed: () {
+                                              final Future future =
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                return EditarFormInfo(
+                                                    infoTitulo,
+                                                    infoTempo,
+                                                    infoResumo,
+                                                    infoObjetivo,
+                                                    infoContrapartida,
+                                                    infoVinculo,
+                                                    infoResultadosEsperados,
+                                                    infoPropostaConjunto,
+                                                    infoDadosProponente,
+                                                    infoEmpresaEnvolvida,
+                                                    infoEquipeColaboradores,
+                                                    updateDados
+                                                );
+                                              }));
 
-                                            future.then((demandaAtualizada) {
-                                              debugPrint("$demandaAtualizada");
-                                              debugPrint('A proposta foi alterada');
-                                            });
-                                          },
-                                        ),
+                                              future.then((demandaAtualizada) {
+                                                // debugPrint(demandaAtualizada);
+                                                debugPrint('A proposta foi alterada');
+                                              });
+                                            },
+                                          ),
+                                        ],
 
                                         IconButton(
                                             onPressed: () {

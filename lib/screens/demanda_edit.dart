@@ -14,7 +14,7 @@ class EditarFormInfo extends StatefulWidget {
   final String vinculo;
   final String resultadosEsperados;
   final String propostaConjunto;
-  final String dadosProponete;
+  final String dadosProponente;
   final String empresaEnvolvida;
   final String equipeColaboradores;
   final QueryDocumentSnapshot updateDados;
@@ -28,7 +28,7 @@ class EditarFormInfo extends StatefulWidget {
       this.vinculo,
       this.resultadosEsperados,
       this.propostaConjunto,
-      this.dadosProponete,
+      this.dadosProponente,
       this.empresaEnvolvida,
       this.equipeColaboradores,
       this.updateDados);
@@ -49,9 +49,8 @@ class EditarFormInfoState extends State<EditarFormInfo> {
   final TextEditingController _controladorContrapartida = TextEditingController();
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados = TextEditingController();
-
   final TextEditingController _controladorPropostaConjunto = TextEditingController();
-  final TextEditingController _controladorDadosProponete = TextEditingController();
+  final TextEditingController _controladorDadosProponente = TextEditingController();
   final TextEditingController _controladorEmpresaEnvolvida = TextEditingController();
   final TextEditingController _controladorEquipeColaboradores = TextEditingController();
 
@@ -69,7 +68,7 @@ class EditarFormInfoState extends State<EditarFormInfo> {
     _controladorVinculo.text = widget.vinculo;
     _controladorResultadosEsperados.text = widget.resultadosEsperados;
     _controladorPropostaConjunto.text = widget.propostaConjunto;
-    _controladorDadosProponete.text = widget.dadosProponete;
+    _controladorDadosProponente.text = widget.dadosProponente;
     _controladorEmpresaEnvolvida.text = widget.empresaEnvolvida;
     _controladorEquipeColaboradores.text = widget.equipeColaboradores;
 
@@ -107,7 +106,7 @@ class EditarFormInfoState extends State<EditarFormInfo> {
             Editor(_controladorPropostaConjunto, "Por que a proposta faz jus a uma ação em conjunto?  ",
                 "Por que precisa da Instituição de Ensino?", 7, _valida, 600),
 
-            Editor(_controladorDadosProponete, "Dados do Proponente?  ",
+            Editor(_controladorDadosProponente, "Dados do Proponente?  ",
                 "Dados Gerais, está vinculado a qual instituição/empresa?", 7, _valida, 600),
 
             Editor(_controladorEmpresaEnvolvida, "Quais serão as instituições / empresas envolvidas na proposta?  ",
@@ -116,34 +115,57 @@ class EditarFormInfoState extends State<EditarFormInfo> {
             Editor(_controladorEquipeColaboradores, "Quem será a equipe de colaboradores externos?  ",
                 "Nome, formação, dados gerais, etc, ", 7, _valida, 600),
 
-            SizedBox(
-              height: 40,
-              width: double.infinity,
-              child: ElevatedButton(
-                  onPressed: (){
-                    setState((){
-                      _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorDadosProponete.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
-                    });
-
-                    // Caso não tenha erros de validação
-                    if(!_valida){
-                      _editarDemanda(context);
-                    }
-                  },
-                  child: const Text("SALVAR MUDANÇAS")
-              ),
-            ),
+            // SizedBox(
+            //   height: 40,
+            //   width: double.infinity,
+            //   // child: ElevatedButton(
+            //   //     onPressed: (){
+            //   //       setState((){
+            //   //         _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorDadosProponete.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
+            //   //         _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
+            //   //       });
+            //   //
+            //   //       // Caso não tenha erros de validação
+            //   //       if(!_valida){
+            //   //         _editarDemanda(context);
+            //   //       }
+            //   //     },
+            //   //     child: const Text("SALVAR MUDANÇAS")
+            //   // ),
+            // ),
           ],
         ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          setState((){
+            _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
+            _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
+            _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
+            _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
+            _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
+            _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
+            _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
+            _controladorDadosProponente.text.isEmpty ? _valida = true : _valida = false;
+            _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
+            _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
+          });
+
+          // Caso não tenha erros de validação
+          if(!_valida){
+            _editarDemanda(context);
+          }
+        },
+        child: const Icon(Icons.done)
       ),
     );
 
@@ -159,7 +181,7 @@ class EditarFormInfoState extends State<EditarFormInfo> {
       'contrapartida': _controladorContrapartida.text,
       'resultados_esperados': _controladorResultadosEsperados.text,
       'proposta_conjunto': _controladorPropostaConjunto.text,
-      'dados_proponente': _controladorDadosProponete.text,
+      'dados_proponente': _controladorDadosProponente.text,
       'empresa_envolvida': _controladorEmpresaEnvolvida.text,
       'equipe_colaboradores': _controladorEquipeColaboradores.text,
     }).then((value) => debugPrint("Sua proposta foi atualizada no banco de dados"))

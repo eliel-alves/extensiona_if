@@ -11,14 +11,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-class FormDemanda extends StatefulWidget {
-
-  @override
-  State<StatefulWidget> createState() {
-    return FormDemandaState();
-  }
-}
-
 class FormDemandaState extends State<FormDemanda>{
 
   final TextEditingController _controladorTitulo = TextEditingController();
@@ -191,6 +183,7 @@ class FormDemandaState extends State<FormDemanda>{
                   // Caso não tenha erros de validação
                   if(!_valida){
                     _criarDemanda(context);
+                    widget.pagina.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
                   }
                 },
                 child: const Text("Criar Nova Demanda")
@@ -202,6 +195,8 @@ class FormDemandaState extends State<FormDemanda>{
     );
 
   }
+
+
 
   void _criarDemanda(BuildContext context) async {
     // Recupera o usuário
@@ -262,6 +257,7 @@ class FormDemandaState extends State<FormDemanda>{
     //SnackBar
     const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
   }
 
   ///Função responsável por fazer o upload do arquivo para o storage
@@ -287,5 +283,16 @@ class FormDemandaState extends State<FormDemanda>{
     } else {
       print(uploadTask.state);
     }
+  }
+}
+
+class FormDemanda extends StatefulWidget {
+  final PageController pagina;
+
+  const FormDemanda({Key key, this.pagina}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return FormDemandaState();
   }
 }

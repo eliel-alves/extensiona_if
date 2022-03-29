@@ -33,7 +33,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
       body: PageView(
         controller: pc,
         children: [
-          FormDemanda(),
+          FormDemanda(pagina : pc),
           ListaDemanda(),
           MoreOptions(),
         ],

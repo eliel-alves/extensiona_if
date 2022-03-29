@@ -11,15 +11,16 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-      MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
         create: (context) => UserDAO(),
         child: ExtensionaApp(),
-      )
-    ],
-    child: ExtensionaApp()
-  ));
+        )
+      ],
+      child: ExtensionaApp()
+    )
+  );
 }
 
 class ExtensionaApp extends StatelessWidget {
