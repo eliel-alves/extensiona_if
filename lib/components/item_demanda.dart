@@ -7,7 +7,7 @@ import 'package:extensiona_if/screens/demanda_edit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:intl/intl.dart';
+
 
 class ItemDemanda extends StatelessWidget {
   ItemDemanda({Key key}) : super(key: key);
@@ -47,7 +47,7 @@ class ItemDemanda extends StatelessWidget {
               itemBuilder: (context, index) {
 
                 //Pegando as informações dos documentos do firebase da coleção Demandas
-                final infoTitulo = data.docs[index]['proposta_conjunto'];
+                final infoTitulo = data.docs[index]['titulo'];
                 final infoTempo = data.docs[index]['tempo'];
                 final infoData = data.docs[index]['data'];
                 final infoStatus = data.docs[index]['status'];
