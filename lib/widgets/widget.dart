@@ -1,7 +1,6 @@
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:extensiona_if/screens/login.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 class IconesMedia extends StatelessWidget {
@@ -86,36 +85,6 @@ class Divisor extends StatelessWidget {
   }
 }
 
-class RetornarPageLogin extends StatelessWidget {
-  final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(30),
-      child:  Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-                'Já possui uma conta?',
-                style: GoogleFonts.cabin(textStyle: styleText, color: Colors.grey[700])),
-
-            GestureDetector(
-              onTap: () {
-                debugPrint('Página de cadastro');
-
-                Navigator.pop(context, MaterialPageRoute(builder: (context) => const Login(),
-                ));
-              },
-
-              child: Text(
-                  'Conecte-se',
-                  style: GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
-            )
-          ]),
-    );
-  }
-}
 
 class AppBarLogo extends StatelessWidget {
   final String titulo;
@@ -211,3 +180,22 @@ class LogoWelcomeScreen extends StatelessWidget {
 
 }
 
+
+Widget registerOrLogin(String firstText, String secondText, Function setFormAction, BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 20, top: 20),
+    child:  Row(
+        children: <Widget>[
+          Text(firstText, style: AppTheme.typo.defaultText),
+
+          GestureDetector(
+            onTap: setFormAction,
+            child: Text(
+                secondText,
+                style: AppTheme.typo.defaultText),
+          )
+
+        ]),
+  );
+
+}

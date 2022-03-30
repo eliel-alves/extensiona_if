@@ -69,41 +69,44 @@ class _EditorAuthState extends State<EditorAuth> {
   @override
   Widget build(BuildContext context) {
 
-    return TextField(
-      obscureText: _verSenha,
-      controller: widget.controlador,
-      style: AppTheme.typo.defaultText,
-      decoration: InputDecoration(
-        labelStyle: AppTheme.typo.defaultText,
-        labelText: widget.rotulo,
-        hintText: widget.dica,
-        prefixIcon: widget.icon,
-        suffixIcon: _habilitaVerSenha ? (
-            _verSenha ?
-        IconButton(
-            onPressed: () {
-              setState(() {
-                //Quando o usuário clicar nesse ícone, ele mudará para falso
-                debugPrint('Você está vendo a sua senha');
-                _verSenha = false;
-              });
-            },
-            icon: const Icon(Ionicons.md_eye_off)
-        )
-            :
-            IconButton(
-                onPressed: () {
-                    setState(() {
-                      //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
-                      debugPrint('Você não está vendo a sua senha');
-                      _verSenha = true;
-                    });
-                },
-                icon: const Icon(Ionicons.md_eye)
-            )
-    ) : null,
-        errorText: widget.valida ? widget.errorText : null,
-        border: const OutlineInputBorder()
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6, top: 6),
+      child: TextField(
+        obscureText: _verSenha,
+        controller: widget.controlador,
+        style: AppTheme.typo.defaultText,
+        decoration: InputDecoration(
+          labelStyle: AppTheme.typo.defaultText,
+          labelText: widget.rotulo,
+          hintText: widget.dica,
+          prefixIcon: widget.icon,
+          suffixIcon: _habilitaVerSenha ? (
+              _verSenha ?
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  //Quando o usuário clicar nesse ícone, ele mudará para falso
+                  debugPrint('Você está vendo a sua senha');
+                  _verSenha = false;
+                });
+              },
+              icon: const Icon(Ionicons.md_eye_off)
+          )
+              :
+              IconButton(
+                  onPressed: () {
+                      setState(() {
+                        //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
+                        debugPrint('Você não está vendo a sua senha');
+                        _verSenha = true;
+                      });
+                  },
+                  icon: const Icon(Ionicons.md_eye)
+              )
+      ) : null,
+          errorText: widget.valida ? widget.errorText : null,
+          border: const OutlineInputBorder()
+        ),
       ),
     );
   }

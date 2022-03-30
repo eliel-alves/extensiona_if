@@ -1,4 +1,5 @@
 import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/screens/register.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
@@ -6,268 +7,197 @@ import 'package:extensiona_if/widgets/widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key key}) : super(key: key);
+class AuthenticationPages extends StatefulWidget {
+  const AuthenticationPages({Key key}) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  State<AuthenticationPages> createState() => _AuthenticationPagesState();
 }
 
-class _LoginState extends State<Login> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _userPhoneController = TextEditingController();
-  final _confirmPassword = TextEditingController();
+class _AuthenticationPagesState extends State<AuthenticationPages> {
 
-  bool _valida = false;
-
-  final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-  final styleTextTitle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
-
-  String errorMessage = 'Campo Obrigatório!';
-
-  bool isLogin = true;
-
-  String title;
-  String textActionButton;
-  String firstTextNavigation;
-  String secondTextNavigation;
-  Widget camposCadastro;
-  Widget resetPassword;
+  int initialPage = 0;
+  PageController pc;
 
   @override
   void initState() {
     super.initState();
-    setFormAction(true);
+    pc = PageController(initialPage: initialPage);
   }
 
-  setFormAction(bool acao) {
+  setInitialPage(page) {
     setState(() {
-      isLogin = acao;
-
-      if (isLogin) {
-        title = 'LOGIN';
-        textActionButton = 'ENTRAR';
-        firstTextNavigation = 'Não possui uma conta?';
-        secondTextNavigation = 'Cadastre-se';
-        camposCadastro = const Text('');
-        resetPassword = trocarSenha();
-      } else {
-        title = 'CADASTRO';
-        textActionButton = 'CRIAR CONTA';
-        firstTextNavigation = 'Já possui uma conta?';
-        secondTextNavigation = 'Conecte-se';
-        camposCadastro = campoSignUp(
-            _nameController,
-            _userPhoneController,
-            _confirmPassword,
-            _valida,
-            errorMessage);
-        resetPassword = const Text('');
-      }
+      initialPage = page;
     });
   }
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final userDao = Provider.of<UserDAO>(context, listen: false);
-
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 150,
-          title: const AppBarLogo("Escola de Extensão do IFSul"),
-          centerTitle: true,
-          backgroundColor: AppTheme.colors.dark,
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-
-              Padding(
-                padding: const EdgeInsets.only(top: 45, bottom: 10),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(title, style: AppTheme.typo.title),
-                ),
-              ),
-
-              cadastrarConta(firstTextNavigation, secondTextNavigation, () => setFormAction(!isLogin)),
-
-              EditorAuth(_emailController, 'Email', 'Informe o seu e-mail',
-                  const Icon(Ionicons.md_mail), _valida, 25, false, errorMessage),
-
-              const SizedBox(height: 10),
-
-              EditorAuth(_passwordController, 'Senha', 'Informe a sua senha',
-                  const Icon(Ionicons.md_key), _valida, 10, true, errorMessage),
-
-              camposCadastro,
-
-              resetPassword,
-
-              SizedBox(
-                height: 50,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if(isLogin){
-                        _emailController.text.isEmpty ? _valida = true : _valida = false;
-                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
-                      } else {
-                        _emailController.text.isEmpty ? _valida = true : _valida = false;
-                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
-                        _nameController.text.isEmpty ? _valida = true : _valida = false;
-                        _userPhoneController.text.isEmpty ? _valida = true : _valida = false;
-                        _passwordController.text != _confirmPassword.text ? _valida = true : _valida = false;
-                      }
-                    });
-
-                    // Valida os campos
-                    if (!_valida) {
-                      if (isLogin) {
-                        userDao.login(_emailController.text, _passwordController.text);
-                      } else {
-                        userDao.signup(_emailController.text, _passwordController.text, _nameController.text, _userPhoneController.text);
-                      }
-                    }
-                  },
-                  child: Text(
-                    textActionButton,
-                    style: AppTheme.typo.button
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: AppTheme.colors.green,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
-                ),
-              ),
-
-              Padding(
-                  padding: const EdgeInsets.only(top: 15), child: Divisor()),
-
-              const SizedBox(height: 10),
-
-              socialButtons(
-                  Colors.white,
-                      () {
-                    userDao.signInWithGoogle();
-                    },
-                  "Cadastre-se com o Google",
-                  FontAwesome.google
-              ),
-
-              const SizedBox(height: 20),
-
-              socialButtons(
-                  Colors.blue[600],
-                      () {
-                    userDao.signInWithFacebook();
-                    },
-                  "Cadastre-se com o Facebook",
-                  FontAwesome.facebook
-              ),
-            ],
-          ),
-        )
+      body: PageView(
+        pageSnapping: false,
+        controller: pc,
+        children: [
+          LoginPage(pageController: pc),
+          RegisterUser(pageController: pc)
+        ],
+        onPageChanged: setInitialPage,
+      ),
     );
   }
 }
 
-Widget trocarSenha() {
-  return Padding(
-    padding: const EdgeInsets.only(top: 13, bottom: 13),
-    child: Align(
-      alignment: Alignment.bottomRight,
-      child: GestureDetector(
-        onTap: () {
-          debugPrint('O usuário trocou de senha');
-        },
-        child: Text('Esqueceu sua senha?', style: AppTheme.typo.defaultText),
-      ),
-    ),
-  );
+
+class LoginPage extends StatefulWidget {
+
+  final PageController pageController;
+
+  const LoginPage({Key key, this.pageController}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-Widget cadastrarConta(String firstText, String secondText, Function setFormAction) {
-  return Padding(
-    padding: const EdgeInsets.only(top: 15, bottom: 13),
-    child: Align(
-      alignment: Alignment.topLeft,
-      child: Row (
-          children: <Widget>[
-            Text(firstText, style: AppTheme.typo.defaultText),
-            GestureDetector (
-              onTap: setFormAction,
-              child: Text(secondText, style: AppTheme.typo.defaultText),
-            )
-          ]),
-    ),
-  );
-}
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-Widget campoSignUp(
-    TextEditingController _nameController,
-    TextEditingController _userPhoneController,
-    TextEditingController _confirmPassword,
-    bool _valida,
-    String errorMessage) {
-  return Column(
-    children: [
+  bool _valida = false;
+  String validaMassage = 'Campo Obrigatório!';
 
-      const SizedBox(height: 10),
+  @override
+  Widget build(BuildContext context) {
+    final authService = Provider.of<UserDAO>(context, listen: false);
 
-      EditorAuth(_confirmPassword, 'Confirmar senha', 'Insira novamente a sua senha', const Icon(Ionicons.md_key), _valida, 10, true, 'Senha Incorreta! Verifique novamente a sua senha'),
-
-      const SizedBox(height: 10),
-
-      EditorAuth(_nameController, 'Nome','Informe o seu nome completo', const Icon(Ionicons.md_person), _valida, 10, false, errorMessage),
-
-      const SizedBox(height: 10),
-
-      EditorAuth(_userPhoneController, 'Telefone','Informe um número de contato', const Icon(Ionicons.md_call), _valida, 10, false, errorMessage),
-
-      const SizedBox(height: 10)
-    ],
-  );
-}
-
-Widget socialButtons(Color backgroundColor, Function onTap, String title, IconData iconData) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: double.infinity,
-      height: 50,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 40,
-            spreadRadius: 10,
-          ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 150,
+        title: const AppBarLogo("Escola de Extensão do IFSul"),
+        centerTitle: true,
+        backgroundColor: AppTheme.colors.dark,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(iconData),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
 
-          const SizedBox(width: 10),
 
-          Text(title, style: AppTheme.typo.button)
-        ],
+            Padding(
+              padding: const EdgeInsets.only(top: 45, bottom: 10),
+              child: Text('LOGIN', style: AppTheme.typo.title),
+            ),
+
+            registerOrLogin(
+                'Não possui uma conta?',
+                'Cadastre-se',
+                    () {
+                  widget.pageController.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
+                },
+                context),
+
+            EditorAuth(_emailController, 'Email', 'Informe seu email', const Icon(Ionicons.md_mail), _valida, 30, false, validaMassage),
+
+            EditorAuth(_passwordController, 'Senha', 'Informe sua senha', const Icon(Ionicons.md_key), _valida, 10, true, validaMassage),
+
+            trocarSenha(),
+
+            SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _emailController.text.isEmpty ? _valida = true : _valida = false;
+                      _passwordController.text.isEmpty ? _valida = true : _valida = false;
+                    });
+
+                    if(!_valida) {
+                      authService.login(_emailController.text, _passwordController.text, context);
+                    }
+                  },
+                  child: Text('Entrar', style: AppTheme.typo.button),
+                style: ElevatedButton.styleFrom(
+                    primary: AppTheme.colors.green,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+              ),
+            ),
+
+
+            Padding(
+                padding: const EdgeInsets.only(top: 15), child: Divisor()),
+
+            const SizedBox(height: 10),
+
+            socialButtons(
+                Colors.white,
+                    () {
+                  authService.signInWithGoogle();
+                },
+                "Cadastre-se com o Google",
+                FontAwesome.google
+            ),
+
+            const SizedBox(height: 20),
+
+            socialButtons(
+                Colors.blue[600],
+                    () {
+                  authService.signInWithFacebook();
+                },
+                "Cadastre-se com o Facebook",
+                FontAwesome.facebook
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
+
+  Widget trocarSenha() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 19, top: 13),
+      child: Align(
+        alignment: Alignment.bottomRight,
+        child: GestureDetector(
+          onTap: () {
+            debugPrint('O usuário trocou de senha');
+          },
+          child: Text('Esqueceu sua senha?', style: AppTheme.typo.defaultText),
+        ),
+      ),
+    );
+  }
+
+
+  Widget socialButtons(Color backgroundColor, Function onTap, String title, IconData iconData) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        height: 50,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 40,
+              spreadRadius: 10,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(iconData),
+
+            const SizedBox(width: 10),
+
+            Text(title, style: AppTheme.typo.button)
+          ],
+        ),
+      ),
+    );
+  }
 }

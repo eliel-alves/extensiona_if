@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/models/demanda.dart';
+import 'package:extensiona_if/screens/homepage.dart';
+import 'package:extensiona_if/screens/homepage_admin.dart';
+import 'package:extensiona_if/screens/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:provider/provider.dart';
 
 class UserDAO extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
@@ -50,7 +54,7 @@ class UserDAO extends ChangeNotifier {
   );
 
   // Cadastrar no app
-  void signup(String email, String password, String userName, String userPhone) async {
+  void signup(String email, String password, String userName, String userPhone, BuildContext context) async {
     // Tenta cadastrar o usuário
     try {
       await auth.createUserWithEmailAndPassword(
@@ -70,7 +74,10 @@ class UserDAO extends ChangeNotifier {
       }
 
       // Mostrando o erro pro usuário
-      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.BOTTOM);
+      //Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.BOTTOM);
+      //SnackBar
+      SnackBar snackBar = SnackBar(content: Text(errorMessage));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
       debugPrint(e);
     }
@@ -79,7 +86,7 @@ class UserDAO extends ChangeNotifier {
   // Método responsável por adicionar um novo usuário na coleção USUARIOS
   void addUser(String email, String password, String userName, String userPhone) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
-    await usersRef.add(
+    await usersRef.doc(userId()).set(
       Users(
           userId(),
           userEmail(),
@@ -92,7 +99,7 @@ class UserDAO extends ChangeNotifier {
   }
 
   // Logar o usuário
-  void login(String email, String password) async {
+  void login(String email, String password, BuildContext context) async {
     try {
       await auth.signInWithEmailAndPassword(
         email: email,
@@ -109,7 +116,9 @@ class UserDAO extends ChangeNotifier {
         errorMessage = 'Email não encontrado. Cadastre-se';
       }
 
-      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.SNACKBAR);
+      //Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.SNACKBAR);
+      SnackBar snackBar = SnackBar(content: Text(errorMessage));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
       debugPrint(e);
     }
@@ -204,7 +213,68 @@ class UserDAO extends ChangeNotifier {
   }
 }
 
+class ManegeAuthState extends StatelessWidget {
+  const ManegeAuthState({Key key}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<UserDAO>(builder: (context, authService, child) {
+      if(authService.isLoggedIn()) {
+        return const RoleBasedUI();
+      } else {
+        debugPrint('Não estou logado no app');
+        return const AuthenticationPages();
+      }
+    },
+    );
+  }
+
+}
+
+
+class RoleBasedUI extends StatelessWidget{
+  const RoleBasedUI({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final authService = Provider.of<UserDAO>(context, listen: false);
+
+    return StreamBuilder<DocumentSnapshot>(
+      stream: authService.usersRef.doc(authService.userId()).snapshots(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: SpinKitFadingCircle(
+                color: Theme.of(context).colorScheme.primary, size: 120),
+          );
+        }
+
+        else if (snapshot.hasData) {
+          return checkRole(snapshot.data);
+        }
+        return const LinearProgressIndicator();
+      },
+    );
+  }
+
+  Widget checkRole(DocumentSnapshot snapshot) {
+    if (snapshot.data == null) {
+      return const Center(
+        child: Text('Sem dados cadastrados no cloud firestore'),
+      );
+    }
+    if (snapshot.get('tipo') == 'admin') {
+      return AdminScreen();
+    } else {
+      return const AllUsersHomePage();
+    }
+  }
+}
 
 
 
