@@ -37,6 +37,47 @@ class Editor extends StatelessWidget {
   }
 }
 
+
+class EditorTextFormField extends StatelessWidget {
+  final TextEditingController controller;
+  final int maxLength;
+  final int lines;
+  final String labelText;
+  final String dica;
+  final bool validaField;
+
+  const EditorTextFormField(this.controller, this.labelText, this.dica, this.lines, this.maxLength, this.validaField, {Key key}): super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 13, bottom: 13),
+      child: TextFormField(
+        controller: controller,
+        maxLength: maxLength,
+        maxLines: lines,
+        style: const TextStyle(
+          fontSize: 18.0,
+        ),
+        decoration: InputDecoration(
+            labelText: labelText,
+            hintText: dica,
+            helperText: dica,
+            border: const OutlineInputBorder(),
+        ),
+        validator: validaField ? (value) {
+          if (value == null || value.isEmpty) {
+            return 'Campo Obrigatório!';
+          }
+          return null;
+        }
+            : null,
+      ),
+    );
+  }
+
+}
+
 class EditorAuth extends StatefulWidget {
 
   final TextEditingController controlador;

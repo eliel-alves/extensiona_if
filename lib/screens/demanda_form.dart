@@ -25,6 +25,8 @@ class FormDemandaState extends State<FormDemanda>{
   final TextEditingController _controladorEmpresaEnvolvida = TextEditingController();
   final TextEditingController _controladorEquipeColaboradores = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
 
   final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
   final styleTextFile = const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
@@ -41,7 +43,7 @@ class FormDemandaState extends State<FormDemanda>{
 
   String hintText = 'Área temática';
 
-  bool _valida = false;
+  //bool _valida = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,30 +56,32 @@ class FormDemandaState extends State<FormDemanda>{
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
 
-            Editor(_controladorTitulo, "Título da proposta", "Título da Proposta", 1, _valida, 150),
+              EditorTextFormField(_controladorTitulo, "Título da proposta", "Título da Proposta", 1, 150, true),
 
-            Row(
-              children: [
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Text('Carregando ...');
-                    } else {
+              Row(
+                children: [
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('AREAS_TEMATICAS').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Text('Carregando ...');
+                      } else {
 
-                      return Expanded(
-                        child: DropdownButtonFormField(
+                        return Expanded(
+                          child: DropdownButtonFormField(
                             isExpanded: true,
                             decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               helperText:
                               'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
                               hintText: hintText,
-                          ),
+                            ),
                             items: snapshot.data.docs.map((DocumentSnapshot document) {
                               return DropdownMenuItem<String>(
                                 child: Text(document['nome']),
@@ -92,111 +96,125 @@ class FormDemandaState extends State<FormDemanda>{
                             },
                             value: selectedCurrency,
                           ),
-                      );
+                        );
+                      }
+                    },
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(child: EditorTextFormField(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, 150, true)),
+                ],
+              ),
+
+              EditorTextFormField(_controladorResumo, "Faça uma breve descrição da sua proposta",
+                  "Explique da melhor forma que conseguir sobre o que se trata a proposta", 5, 600, true),
+
+              EditorTextFormField(_controladorObjetivo, "Descreva os objetivos que você espera serem atendidos",
+                  "Coloque em forma de tópicos os objetivos da proposta", 5, 600, true),
+
+              EditorTextFormField(_controladorContrapartida, "Quais recursos a equipe dispõe para a execução da proposta?",
+                  "Descreva quais recursos estão disponíveis para a execução da proposta, financeiros, humanos, estrutura, etc", 5, 600, true),
+
+              EditorTextFormField(_controladorVinculo, "Qual o seu vínculo com o projeto?",
+                  "Descreva qual o seu vínculo com a entidade parceira envolvida com este projeto", 1, 100, true),
+
+              EditorTextFormField(_controladorResultadosEsperados, "Quais os resultados esperados?  ",
+                  "Descreva os resultados esperados", 5, 600, false),
+
+              EditorTextFormField(_controladorPropostaConjunto, "Por que a proposta faz jus a uma ação em conjunto?  ",
+                  "Por que precisa da Instituição de Ensino?", 7, 600, true),
+
+              EditorTextFormField(_controladorDadosProponete, "Dados do Proponente?  ",
+                  "Dados Gerais, está vinculado a qual instituição/empresa?", 7, 600, true),
+
+              EditorTextFormField(_controladorEmpresaEnvolvida, "Quais serão as instituições / empresas envolvidas na proposta?  ",
+                  "Instituições/empresas parceiras?", 7, 600, true),
+
+              EditorTextFormField(_controladorEquipeColaboradores, "Quem será a equipe de colaboradores externos?  ",
+                  "Nome, formação, dados gerais, etc, ", 7, 600, true),
+
+              const SizedBox(height: 10),
+
+              CampoSelecaoArquivos(
+                  Icons.cloud_upload_rounded,
+                  'Faça o upload de arquivos ',
+                  'AQUI',
+                      () async {
+                    result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+                    if(result != null) {
+                      final file = result.files.first;
+                      //Pega o nome do arquivo selecionado
+                      setState(() => name = PlatformFile(name: file.name, size: file.size));
+                    } else {
+
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(
+                        'Arquivo não selecionado e/ou Falha ao selecionar arquivo',
+                      ),
+                      ));
                     }
                   },
-                ),
-
-                const SizedBox(width: 10),
-
-                Expanded(child: Editor(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, _valida, 150)),
-              ],
-            ),
-
-            Editor(_controladorResumo, "Faça uma breve descrição da sua proposta",
-                "Explique da melhor forma que conseguir sobre o que se trata a proposta", 5, _valida, 600),
-
-            Editor(_controladorObjetivo, "Descreva os objetivos que você espera serem atendidos",
-                "Coloque em forma de tópicos os objetivos da proposta", 5, _valida, 600),
-
-            Editor(_controladorContrapartida, "Quais recursos a equipe dispõe para a execução da proposta?",
-                "Descreva quais recursos estão disponíveis para a execução da proposta, financeiros, humanos, estrutura, etc", 5, _valida, 600),
-
-            Editor(_controladorVinculo, "Qual o seu vínculo com o projeto?",
-                "Descreva qual o seu vínculo com a entidade parceira envolvida com este projeto", 1, _valida, 100),
-
-            Editor(_controladorResultadosEsperados, "Quais os resultados esperados?  ",
-                "Descreva os resultados esperados", 5, false, 600),
-
-            Editor(_controladorPropostaConjunto, "Por que a proposta faz jus a uma ação em conjunto?  ",
-                "Por que precisa da Instituição de Ensino?", 7, _valida, 600),
-
-            Editor(_controladorDadosProponete, "Dados do Proponente?  ",
-                "Dados Gerais, está vinculado a qual instituição/empresa?", 7, _valida, 600),
-
-            Editor(_controladorEmpresaEnvolvida, "Quais serão as instituições / empresas envolvidas na proposta?  ",
-                "Instituições/empresas parceiras?", 7, _valida, 600),
-
-            Editor(_controladorEquipeColaboradores, "Quem será a equipe de colaboradores externos?  ",
-                "Nome, formação, dados gerais, etc, ", 7, _valida, 600),
-
-            const SizedBox(height: 10),
-
-            CampoSelecaoArquivos(
-                Icons.cloud_upload_rounded,
-                'Faça o upload de arquivos ',
-                'AQUI',
-                    () async {
-                  result = await FilePicker.platform.pickFiles(allowMultiple: false);
-
-                  if(result != null) {
-                    final file = result.files.first;
-                    //Pega o nome do arquivo selecionado
-                    setState(() => name = PlatformFile(name: file.name, size: file.size));
-                  } else {
-
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(
-                      'Arquivo não selecionado e/ou Falha ao selecionar arquivo',
-                    ),
-                    ));
-                  }
-                },
-                styleText,
-                fileName,
-                styleTextFile
-            ),
-
-            const SizedBox(height: 10),
-
-            SizedBox(
-              height: 40,
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: AppTheme.colors.blue,
-                  textStyle: AppTheme.typo.button,
-                ),
-                onPressed: (){
-                  setState((){
-                    _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorDadosProponete.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
-                    _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
-                  });
-
-                  // Caso não tenha erros de validação
-                  if(!_valida){
-                    _criarDemanda(context);
-                    widget.pagina.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
-                  }
-                },
-                child: const Text("Criar Nova Demanda")
+                  styleText,
+                  fileName,
+                  styleTextFile
               ),
-            ),
-          ],
+
+              // const SizedBox(height: 10),
+              //
+              // SizedBox(
+              //   height: 40,
+              //   width: double.infinity,
+              //   child: ElevatedButton(
+              //     style: ElevatedButton.styleFrom(
+              //       primary: AppTheme.colors.blue,
+              //       textStyle: AppTheme.typo.button,
+              //     ),
+              //     onPressed: (){
+              //       setState((){
+              //         _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorDadosProponete.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
+              //         _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
+              //       });
+              //
+              //       // Caso não tenha erros de validação
+              //       if(!_valida){
+              //         _criarDemanda(context);
+              //         widget.pagina.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
+              //       }
+              //     },
+              //     child: const Text("Criar Nova Demanda")
+              //   ),
+              // ),
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppTheme.colors.blue,
+        child: const Icon(Icons.done, color: Colors.white),
+        onPressed: () {
+          if (_formKey.currentState.validate()) {
+
+            _criarDemanda(context);
+            widget.pagina.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
+
+            //SnackBar
+            const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
       ),
     );
 
   }
-
-
 
   void _criarDemanda(BuildContext context) async {
     // Recupera o usuário
@@ -253,11 +271,6 @@ class FormDemandaState extends State<FormDemanda>{
         _uploadFile(await File(result.files.first.path).readAsBytes(), _nomeArquivoExtensao, _novaDemanda.id);
       }
     }
-
-    //SnackBar
-    const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
   }
 
   ///Função responsável por fazer o upload do arquivo para o storage
