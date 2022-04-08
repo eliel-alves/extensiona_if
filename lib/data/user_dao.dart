@@ -84,7 +84,7 @@ class UserDAO extends ChangeNotifier {
   }
 
   // Método responsável por adicionar um novo usuário na coleção USUARIOS
-  void addUser(String email, String password, String userName, String userPhone) async {
+  void addUser([String email, String password, String userName, String userPhone]) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
     await usersRef.doc(userId()).set(
       Users(
@@ -132,7 +132,7 @@ class UserDAO extends ChangeNotifier {
     _getUser();
   }
 
-  // TODO: verifica o tipo do usuário logado
+  /*//
   Future<void> checkUser(String userID) async {
     // Pega o documento que possui em seu campo id o valor do id do usuário logado
     final userId = await usersRef.where('id', isEqualTo: userID).get().then((value) => value.docs);
@@ -141,7 +141,7 @@ class UserDAO extends ChangeNotifier {
     for (var element in userId) {
       userType = element.data().tipo;
     }
-  }
+  }*/
 
 
   // TODO: Sing In with Google
@@ -153,6 +153,9 @@ class UserDAO extends ChangeNotifier {
         final UserCredential userCredential =
         await auth.signInWithPopup(authProvider);
 
+        auth.currentUser?.photoURL;
+
+        addUser(userEmail(), null, auth.currentUser?.displayName, auth.currentUser?.phoneNumber);
         usuario = userCredential.user;
         _getUser();
         notifyListeners();
@@ -177,6 +180,8 @@ class UserDAO extends ChangeNotifier {
         try {
           final UserCredential userCredential =
           await auth.signInWithCredential(credential);
+
+          addUser(userEmail(), null, auth.currentUser?.displayName, auth.currentUser?.phoneNumber);
 
           usuario = userCredential.user;
           _getUser();
