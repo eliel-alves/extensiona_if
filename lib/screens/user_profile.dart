@@ -7,6 +7,8 @@ class MyProfile extends StatelessWidget {
 
   UserDAO userDao;
 
+  MyProfile({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     userDao = Provider.of<UserDAO>(context, listen: false);
@@ -25,8 +27,10 @@ class MyProfile extends StatelessWidget {
               Positioned(
                   child: CircleAvatar(
                     backgroundColor: Colors.grey[700],
-                    child: Image.asset(
+                    child: Image.network(
                       userDao.photoURL(),
+                      width: 100,
+                      height: 100,
                     ),
                   )
               ),

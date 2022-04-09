@@ -38,7 +38,6 @@ class UserDAO extends ChangeNotifier {
   // ImgUsuario.src = user.photoURL ? user.photoURL : 'IMGs/usuarioIMG.png'
   String photoURL() {
     return auth.currentUser?.photoURL ?? 'lib/assets/img/logo_user.png';
-    //return auth.currentUser?.photoURL;
   }
 
   // Pegar usuário atual logado

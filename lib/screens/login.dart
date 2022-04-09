@@ -62,8 +62,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _valida = false;
   String validaMassage = 'Campo Obrigatório!';
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -78,77 +78,83 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
 
 
-            Padding(
-              padding: const EdgeInsets.only(top: 45, bottom: 10),
-              child: Text('LOGIN', style: AppTheme.typo.title),
-            ),
-
-            registerOrLogin(
-                'Não possui uma conta?',
-                'Cadastre-se',
-                    () {
-                  widget.pageController.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
-                },
-                context),
-
-            EditorAuth(_emailController, 'Email', 'Informe seu email', const Icon(Ionicons.md_mail), _valida, 30, false, validaMassage),
-
-            EditorAuth(_passwordController, 'Senha', 'Informe sua senha', const Icon(Ionicons.md_key), _valida, 10, true, validaMassage),
-
-            trocarSenha(),
-
-            SizedBox(
-              width: double.infinity,
-              height: 40,
-              child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _emailController.text.isEmpty ? _valida = true : _valida = false;
-                      _passwordController.text.isEmpty ? _valida = true : _valida = false;
-                    });
-
-                    if(!_valida) {
-                      authService.login(_emailController.text, _passwordController.text, context);
-                    }
-                  },
-                  child: Text('Entrar', style: AppTheme.typo.button),
-                style: ElevatedButton.styleFrom(
-                    primary: AppTheme.colors.green,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+              Padding(
+                padding: const EdgeInsets.only(top: 45, bottom: 10),
+                child: Text('LOGIN', style: AppTheme.typo.title),
               ),
-            ),
+
+              registerOrLogin(
+                  'Não possui uma conta?',
+                  'Cadastre-se',
+                      () {
+                    widget.pageController.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
+                  },
+                  context),
+
+              EditorAuth(_emailController, 'Email', 'Informe seu email', const Icon(Ionicons.md_mail), 30, false, validaMassage, false),
+
+              EditorAuth(_passwordController, 'Senha', 'Informe sua senha', const Icon(Ionicons.md_key), 10, true, validaMassage, false),
+
+              trocarSenha(),
+
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        authService.login(_emailController.text, _passwordController.text, context);
+                      }
+                      /*setState(() {
+                        _emailController.text.isEmpty ? _valida = true : _valida = false;
+                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
+                      });
+
+                      if(!_valida) {
+                        authService.login(_emailController.text, _passwordController.text, context);
+                      }*/
+                    },
+                    child: Text('Entrar', style: AppTheme.typo.button),
+                  style: ElevatedButton.styleFrom(
+                      primary: AppTheme.colors.green,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                ),
+              ),
 
 
-            Padding(
-                padding: const EdgeInsets.only(top: 15), child: Divisor()),
+              Padding(
+                  padding: const EdgeInsets.only(top: 15), child: Divisor()),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            socialButtons(
-                Colors.white,
-                    () {
-                  authService.signInWithGoogle();
-                },
-                "Cadastre-se com o Google",
-                FontAwesome.google
-            ),
+              socialButtons(
+                  Colors.white,
+                      () {
+                    authService.signInWithGoogle();
+                  },
+                  "Cadastre-se com o Google",
+                  FontAwesome.google
+              ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            socialButtons(
-                Colors.blue[600],
-                    () {
-                  authService.signInWithFacebook();
-                },
-                "Cadastre-se com o Facebook",
-                FontAwesome.facebook
-            ),
-          ],
+              socialButtons(
+                  Colors.blue[600],
+                      () {
+                    authService.signInWithFacebook();
+                  },
+                  "Cadastre-se com o Facebook",
+                  FontAwesome.facebook
+              ),
+            ],
+          ),
         ),
       ),
     );

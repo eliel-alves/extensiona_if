@@ -34,7 +34,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
         controller: pc,
         children: [
           FormDemanda(pagina : pc),
-          ListaDemanda(),
+          const ListaDemanda(),
           MoreOptions(),
         ],
         onPageChanged: setPaginaAtual,

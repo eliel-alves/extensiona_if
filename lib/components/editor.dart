@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
-class Editor extends StatelessWidget {
+/*class Editor extends StatelessWidget {
   final TextEditingController controlador;
   final String rotulo;
   final String dica;
@@ -35,7 +35,7 @@ class Editor extends StatelessWidget {
         )
     );
   }
-}
+}*/
 
 
 class EditorTextFormField extends StatelessWidget {
@@ -85,11 +85,18 @@ class EditorAuth extends StatefulWidget {
   final String dica;
   final String errorText;
   final Icon icon;
-  final bool valida;
   final int qtdCaracteres;
   final bool verSenha;
+  final bool confirmPasswordField;
 
-  EditorAuth(this.controlador, this.rotulo, this.dica, this.icon, this.valida, this.qtdCaracteres, this.verSenha, this.errorText);
+  const EditorAuth(
+      this.controlador,
+      this.rotulo,
+      this.dica, this.icon,
+      this.qtdCaracteres,
+      this.verSenha,
+      this.errorText,
+      this.confirmPasswordField, {Key key}) : super(key: key);
 
   @override
   State<EditorAuth> createState() => _EditorAuthState();
@@ -112,7 +119,7 @@ class _EditorAuthState extends State<EditorAuth> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6, top: 6),
-      child: TextField(
+      child: TextFormField(
         obscureText: _verSenha,
         controller: widget.controlador,
         style: AppTheme.typo.defaultText,
@@ -145,9 +152,15 @@ class _EditorAuthState extends State<EditorAuth> {
                   icon: const Icon(Ionicons.md_eye)
               )
       ) : null,
-          errorText: widget.valida ? widget.errorText : null,
+          errorText: widget.confirmPasswordField ? widget.errorText : null,
           border: const OutlineInputBorder()
         ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return widget.errorText;
+            }
+            return null;
+          }
       ),
     );
   }

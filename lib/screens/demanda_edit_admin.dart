@@ -15,7 +15,15 @@ class EditarFormInfoAdmin extends StatefulWidget {
   final String resultadosEsperados;
   final QueryDocumentSnapshot updateDados;
 
-  const EditarFormInfoAdmin(this.titulo, this.tempo, this.resumo, this.objetivo, this.contrapartida, this.vinculo, this.resultadosEsperados, this.updateDados);
+  const EditarFormInfoAdmin(
+      this.titulo,
+      this.tempo,
+      this.resumo,
+      this.objetivo,
+      this.contrapartida,
+      this.vinculo,
+      this.resultadosEsperados,
+      this.updateDados);
 
   @override
   State<StatefulWidget> createState() {
@@ -34,7 +42,7 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados = TextEditingController();
 
-  bool _valida = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -56,53 +64,69 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
 
-            Editor(_controladorTitulo, "Título da proposta", "Título da Proposta", 1, _valida, 150),
+              EditorTextFormField(_controladorTitulo, "Título da proposta", "Título da Proposta", 1, 150, true),
 
-            Editor(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, _valida, 150),
+              EditorTextFormField(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, 150, true),
 
-            Editor(_controladorResumo, "Faça uma breve descrição da sua proposta",
-                "Explique da melhor forma que conseguir sobre o que se trata a proposta", 5, _valida, 600),
+              EditorTextFormField(_controladorResumo, "Faça uma breve descrição da sua proposta",
+                  "Explique da melhor forma que conseguir sobre o que se trata a proposta", 5, 600, true),
 
-            Editor(_controladorObjetivo, "Descreva os objetivos que você espera serem atendidos",
-                "Coloque em forma de tópicos os objetivos da proposta", 5, _valida, 600),
+              EditorTextFormField(_controladorObjetivo, "Descreva os objetivos que você espera serem atendidos",
+                  "Coloque em forma de tópicos os objetivos da proposta", 5, 600, true),
 
-            Editor(_controladorContrapartida, "Quais recursos a equipe dispõe para a execução da proposta?",
-                "Descreva quais recursos estão disponíveis para a execução da proposta, financeiros, humanos, estrutura, etc", 5, _valida, 600),
+              EditorTextFormField(_controladorContrapartida, "Quais recursos a equipe dispõe para a execução da proposta?",
+                  "Descreva quais recursos estão disponíveis para a execução da proposta, financeiros, humanos, estrutura, etc", 5, 600, true),
 
-            Editor(_controladorVinculo, "Qual o seu vínculo com o projeto?",
-                "Descreva qual o seu vínculo com a entidade parceira envolvida com este projeto", 1, _valida, 100),
+              EditorTextFormField(_controladorVinculo, "Qual o seu vínculo com o projeto?",
+                  "Descreva qual o seu vínculo com a entidade parceira envolvida com este projeto", 1, 100, true),
 
-            Editor(_controladorResultadosEsperados, "Quais os resultados esperados?  ",
-                "Descreva os resultados esperados", 5, false, 600),
+              EditorTextFormField(_controladorResultadosEsperados, "Quais os resultados esperados?  ",
+                  "Descreva os resultados esperados", 5, 600, false),
 
-            SizedBox(
-              height: 40,
-              width: double.infinity,
-              child: ElevatedButton(
-                  onPressed: (){
-                    setState((){
-                      _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
-                    });
+              /*SizedBox(
+                height: 40,
+                width: double.infinity,
+                child: ElevatedButton(
+                    onPressed: (){
+                      setState((){
+                        _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
+                        _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
+                        _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
+                        _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
+                        _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
+                        _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
+                      });
 
-                    // Caso não tenha erros de validação
-                    if(!_valida){
-                      _editarDemanda(context);
-                    }
-                  },
-                  child: const Text("SALVAR MUDANÇAS")
-              ),
-            ),
-          ],
+                      // Caso não tenha erros de validação
+                      if(!_valida){
+                        _editarDemanda(context);
+                      }
+                    },
+                    child: const Text("SALVAR MUDANÇAS")
+                ),
+              ),*/
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: (){
+            if (_formKey.currentState.validate()) {
+
+              _editarDemanda(context);
+
+              //SnackBar
+              const SnackBar snackBar = SnackBar(content: Text("A demanda foi editada com sucesso!"));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+          },
+          child: const Icon(Icons.done)
       ),
     );
 
@@ -125,11 +149,6 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
 
     //Retorna para a página com as demandas listadas
     Navigator.pop(context);
-
-    //SnackBar
-    const SnackBar snackBar = SnackBar(content: Text("A demanda foi editada com sucesso!"));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
   }
 }
 

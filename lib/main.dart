@@ -21,7 +21,7 @@ void main() {
 }
 
 class ExtensionaApp extends StatelessWidget {
-  ExtensionaApp({Key key}) : super(key: key);
+  const ExtensionaApp({Key key}) : super(key: key);
 
   //final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
