@@ -12,10 +12,14 @@ void main() {
       providers: [
         ChangeNotifierProvider(
         create: (context) => UserDAO(),
-        child: ExtensionaApp(),
+        child: const ExtensionaApp(),
+        ),
+
+        StreamProvider(
+          create: (context) => context.read<UserDAO>().authState, initialData: null,
         )
       ],
-      child: ExtensionaApp()
+      child: const ExtensionaApp()
     )
   );
 }

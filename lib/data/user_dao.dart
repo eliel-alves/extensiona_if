@@ -19,7 +19,6 @@ class UserDAO extends ChangeNotifier {
 
   String userType;
 
-
   // Verifica se o usuário está logado
   bool isLoggedIn() {
     return auth.currentUser != null;
@@ -45,6 +44,8 @@ class UserDAO extends ChangeNotifier {
     usuario = auth.currentUser;
     notifyListeners();
   }
+
+  Stream<User> get authState => auth.authStateChanges();
 
   //Faz referência a coleção de usuário no Firebase
   final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
@@ -222,7 +223,16 @@ class ManegeAuthState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserDAO>(builder: (context, authService, child) {
+    final firebaseUser = context.watch<User>();
+
+    if(firebaseUser == null) {
+      debugPrint('Não estou logado no app');
+      return const AuthenticationPages();
+    } else {
+      return const RoleBasedUI();
+    }
+
+    /*return Consumer<UserDAO>(builder: (context, authService, child) {
       if(authService.isLoggedIn()) {
         return const RoleBasedUI();
       } else {
@@ -230,9 +240,8 @@ class ManegeAuthState extends StatelessWidget {
         return const AuthenticationPages();
       }
     },
-    );
+    );*/
   }
-
 }
 
 
@@ -273,7 +282,7 @@ class RoleBasedUI extends StatelessWidget{
       );
     }
     if (snapshot.get('tipo') == 'admin') {
-      return AdminScreen();
+      return const AdminScreen();
     } else {
       return const AllUsersHomePage();
     }
