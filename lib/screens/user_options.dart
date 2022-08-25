@@ -2,22 +2,18 @@ import 'package:extensiona_if/data/user_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:extensiona_if/screens/user_profile.dart';
-import 'package:extensiona_if/screens/demanda_lista.dart';
 import 'package:provider/provider.dart';
 
 
 class MoreOptions extends StatelessWidget {
 
-  MoreOptions({Key key, this.userDao}) : super(key: key);
+  const MoreOptions({Key key}) : super(key: key);
 
   final styleTextTitle = const TextStyle(fontSize: 23, fontWeight: FontWeight.bold);
 
-  UserDAO userDao;
-
   @override
   Widget build(BuildContext context) {
-    userDao = Provider.of<UserDAO>(context, listen: false);
-
+    UserDAO authService = Provider.of<UserDAO>(context);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 150,
@@ -79,7 +75,7 @@ class MoreOptions extends StatelessWidget {
                                 onPressed: (){
                                   debugPrint('O usuário saiu do app');
                                   Navigator.of(context).pop();
-                                  userDao.logout();
+                                  authService.logout();
                                 },
                                 child: const Text('SIM'),
                               ),

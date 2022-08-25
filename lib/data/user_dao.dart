@@ -1,19 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/models/demanda.dart';
-import 'package:extensiona_if/screens/homepage.dart';
-import 'package:extensiona_if/screens/homepage_admin.dart';
-import 'package:extensiona_if/screens/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:provider/provider.dart';
 
 class UserDAO extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
   User usuario;
+  bool isLoading = true;
+
   String errorMessage;
   UserCredential user;
 
@@ -39,22 +36,37 @@ class UserDAO extends ChangeNotifier {
     return auth.currentUser?.photoURL ?? 'lib/assets/img/logo_user.png';
   }
 
+  UserDAO() {
+    _authCheck();
+  }
+
   // Pegar usuário atual logado
   _getUser() {
     usuario = auth.currentUser;
     notifyListeners();
   }
 
+  // Observador do status de autenticação do usuário
+  _authCheck() {
+    auth.authStateChanges().listen((User user) {
+      usuario = (user == null) ? null : user;
+      isLoading = false;
+      notifyListeners();
+    });
+  }
+
   Stream<User> get authState => auth.authStateChanges();
 
   //Faz referência a coleção de usuário no Firebase
-  final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
-    fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
-    toFirestore: (user, _) => user.toJson(),
-  );
+  final usersRef =
+      FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
+            fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+            toFirestore: (user, _) => user.toJson(),
+          );
 
   // Cadastrar no app
-  void signup(String email, String password, String userName, String userPhone, BuildContext context) async {
+  void signup(String email, String password, String userName, String userPhone,
+      BuildContext context) async {
     // Tenta cadastrar o usuário
     try {
       await auth.createUserWithEmailAndPassword(
@@ -64,7 +76,8 @@ class UserDAO extends ChangeNotifier {
       addUser(email, password, userName, userPhone);
       notifyListeners();
       _getUser();
-    } on FirebaseAuthException catch (e) { // Possíveis erros
+    } on FirebaseAuthException catch (e) {
+      // Possíveis erros
       if (e.code == 'weak-password') {
         //throw AuthException('Sua senha é muito fraca');
         errorMessage = 'Sua senha é muito fraca';
@@ -84,18 +97,15 @@ class UserDAO extends ChangeNotifier {
   }
 
   // Método responsável por adicionar um novo usuário na coleção USUARIOS
-  void addUser([String email, String password, String userName, String userPhone]) async {
+  void addUser(
+      [String email,
+      String password,
+      String userName,
+      String userPhone]) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
     await usersRef.doc(userId()).set(
-      Users(
-          userId(),
-          userEmail(),
-          'user',
-          userName,
-          userPhone,
-          ''
-      ),
-    );
+          Users(userId(), userEmail(), 'user', userName, userPhone, ''),
+        );
   }
 
   // Logar o usuário
@@ -124,7 +134,6 @@ class UserDAO extends ChangeNotifier {
     }
   }
 
-
   // Logou do usuário
   void logout() async {
     await auth.signOut();
@@ -143,7 +152,6 @@ class UserDAO extends ChangeNotifier {
     }
   }*/
 
-
   // TODO: Sing In with Google
   Future<void> signInWithGoogle() async {
     if (kIsWeb) {
@@ -151,11 +159,12 @@ class UserDAO extends ChangeNotifier {
 
       try {
         final UserCredential userCredential =
-        await auth.signInWithPopup(authProvider);
+            await auth.signInWithPopup(authProvider);
 
         auth.currentUser?.photoURL;
 
-        addUser(userEmail(), null, auth.currentUser?.displayName, auth.currentUser?.phoneNumber);
+        addUser(userEmail(), null, auth.currentUser?.displayName,
+            auth.currentUser?.phoneNumber);
         usuario = userCredential.user;
         _getUser();
         notifyListeners();
@@ -166,11 +175,11 @@ class UserDAO extends ChangeNotifier {
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       final GoogleSignInAccount googleSignInAccount =
-      await googleSignIn.signIn();
+          await googleSignIn.signIn();
 
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+            await googleSignInAccount.authentication;
 
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
@@ -179,9 +188,10 @@ class UserDAO extends ChangeNotifier {
 
         try {
           final UserCredential userCredential =
-          await auth.signInWithCredential(credential);
+              await auth.signInWithCredential(credential);
 
-          addUser(userEmail(), null, auth.currentUser?.displayName, auth.currentUser?.phoneNumber);
+          addUser(userEmail(), null, auth.currentUser?.displayName,
+              auth.currentUser?.phoneNumber);
 
           usuario = userCredential.user;
           _getUser();
@@ -207,88 +217,15 @@ class UserDAO extends ChangeNotifier {
       final LoginResult loginResult = await FacebookAuth.instance.login();
       //final userData = await FacebookAuth.instance.getUserData();
 
-      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken.token);
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(loginResult.accessToken.token);
       await auth.signInWithCredential(facebookAuthCredential);
       notifyListeners();
-    } on FirebaseAuthException catch(e) {
+    } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
         debugPrint('erro de autentificação');
       }
     }
   }
 }
-
-class ManegeAuthState extends StatelessWidget {
-  const ManegeAuthState({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
-
-    if(firebaseUser == null) {
-      debugPrint('Não estou logado no app');
-      return const AuthenticationPages();
-    } else {
-      return const RoleBasedUI();
-    }
-
-    /*return Consumer<UserDAO>(builder: (context, authService, child) {
-      if(authService.isLoggedIn()) {
-        return const RoleBasedUI();
-      } else {
-        debugPrint('Não estou logado no app');
-        return const AuthenticationPages();
-      }
-    },
-    );*/
-  }
-}
-
-
-class RoleBasedUI extends StatelessWidget{
-  const RoleBasedUI({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final authService = Provider.of<UserDAO>(context, listen: false);
-
-    return StreamBuilder<DocumentSnapshot>(
-      stream: authService.usersRef.doc(authService.userId()).snapshots(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: SpinKitFadingCircle(
-                color: Theme.of(context).colorScheme.primary, size: 120),
-          );
-        }
-
-        else if (snapshot.hasData) {
-          return checkRole(snapshot.data);
-        }
-        return const LinearProgressIndicator();
-      },
-    );
-  }
-
-  Widget checkRole(DocumentSnapshot snapshot) {
-    if (snapshot.data == null) {
-      return const Center(
-        child: Text('Sem dados cadastrados no cloud firestore'),
-      );
-    }
-    if (snapshot.get('tipo') == 'admin') {
-      return const AdminScreen();
-    } else {
-      return const AllUsersHomePage();
-    }
-  }
-}
-
-
-
 

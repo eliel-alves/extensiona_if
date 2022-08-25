@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<UserDAO>(context, listen: false);
+    UserDAO authService = Provider.of<UserDAO>(context);
 
     return Scaffold(
       appBar: AppBar(
