@@ -24,14 +24,6 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserDAO()),
-        // ChangeNotifierProvider(
-        // create: (context) => UserDAO(),
-        // child: const ExtensionaApp(),
-        // ),
-        //
-        // StreamProvider(
-        //   create: (context) => context.read<UserDAO>().authState, initialData: null,
-        // )
       ],
       child: const ExtensionaApp()
     )

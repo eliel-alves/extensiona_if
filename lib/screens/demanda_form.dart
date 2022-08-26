@@ -10,7 +10,43 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-class FormDemandaState extends State<FormDemanda> {
+class FormDemanda extends StatefulWidget {
+  const FormDemanda(
+      {Key key,
+      this.titulo,
+      this.tempo,
+      this.resumo,
+      this.objetivo,
+      this.contrapartida,
+      this.vinculo,
+      this.resultadosEsperados,
+      this.propostaConjunto,
+      this.dadosProponente,
+      this.empresaEnvolvida,
+      this.equipeColaboradores,
+      this.docId,
+      this.areaTematica})
+      : super(key: key);
+
+  final String titulo;
+  final String tempo;
+  final String resumo;
+  final String objetivo;
+  final String contrapartida;
+  final String vinculo;
+  final String resultadosEsperados;
+  final String propostaConjunto;
+  final String dadosProponente;
+  final String empresaEnvolvida;
+  final String equipeColaboradores;
+  final String areaTematica;
+  final String docId;
+
+  @override
+  State<FormDemanda> createState() => _FormDemandaState();
+}
+
+class _FormDemandaState extends State<FormDemanda> {
   final TextEditingController _controladorTitulo = TextEditingController();
   final TextEditingController _controladorTempoNecessario =
       TextEditingController();
@@ -32,12 +68,11 @@ class FormDemandaState extends State<FormDemanda> {
 
   final _formKey = GlobalKey<FormState>();
 
+  String documentID = '';
+
   final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
   final styleTextFile =
       const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
-
-  //FilePickerResult result;
-  //PlatformFile name;
 
   FilePickerResult _result;
   PlatformFile _arquivo;
@@ -46,21 +81,34 @@ class FormDemandaState extends State<FormDemanda> {
   List<PlatformFile> _caminhoDoArquivo;
   final FileType _tipoArquivo = FileType.custom;
 
-  String selectedCurrency;
-
   String areaTematicaSelecionada;
-  DocumentSnapshot areaTematicaAtual;
+
 
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
   String hintText = 'Área temática';
 
-  //bool _valida = false;
+  @override
+  void initState() {
+    // Retornando os valores para os campos de texto
+    _controladorTitulo.text = widget.titulo;
+    _controladorTempoNecessario.text = widget.tempo;
+    _controladorResumo.text = widget.resumo;
+    _controladorObjetivo.text = widget.objetivo;
+    _controladorContrapartida.text = widget.contrapartida;
+    _controladorVinculo.text = widget.vinculo;
+    _controladorResultadosEsperados.text = widget.resultadosEsperados;
+    _controladorPropostaConjunto.text = widget.propostaConjunto;
+    _controladorDadosProponete.text = widget.dadosProponente;
+    _controladorEmpresaEnvolvida.text = widget.empresaEnvolvida;
+    _controladorEquipeColaboradores.text = widget.equipeColaboradores;
+    areaTematicaSelecionada = widget.areaTematica;
+    documentID = widget.docId;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    //final fileName = name != null ? basename(name.name) : 'Nenhum aquivo selecionado...';
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Formulário de cadastro", style: AppTheme.typo.title),
@@ -74,7 +122,6 @@ class FormDemandaState extends State<FormDemanda> {
             children: [
               EditorTextFormField(_controladorTitulo, "Título da proposta",
                   "Título da Proposta", 1, 150, true),
-
               Row(
                 children: [
                   StreamBuilder<QuerySnapshot>(
@@ -103,11 +150,11 @@ class FormDemandaState extends State<FormDemanda> {
                             }).toList(),
                             onChanged: (currencyValue) {
                               setState(() {
-                                selectedCurrency = currencyValue;
+                                areaTematicaSelecionada = currencyValue;
                               });
                               debugPrint(currencyValue);
                             },
-                            value: selectedCurrency,
+                            value: areaTematicaSelecionada,
                           ),
                         );
                       }
@@ -124,7 +171,6 @@ class FormDemandaState extends State<FormDemanda> {
                           true)),
                 ],
               ),
-
               EditorTextFormField(
                   _controladorResumo,
                   "Faça uma breve descrição da sua proposta",
@@ -132,7 +178,6 @@ class FormDemandaState extends State<FormDemanda> {
                   5,
                   600,
                   true),
-
               EditorTextFormField(
                   _controladorObjetivo,
                   "Descreva os objetivos que você espera serem atendidos",
@@ -140,7 +185,6 @@ class FormDemandaState extends State<FormDemanda> {
                   5,
                   600,
                   true),
-
               EditorTextFormField(
                   _controladorContrapartida,
                   "Quais recursos a equipe dispõe para a execução da proposta?",
@@ -148,7 +192,6 @@ class FormDemandaState extends State<FormDemanda> {
                   5,
                   600,
                   true),
-
               EditorTextFormField(
                   _controladorVinculo,
                   "Qual o seu vínculo com o projeto?",
@@ -156,7 +199,6 @@ class FormDemandaState extends State<FormDemanda> {
                   1,
                   100,
                   true),
-
               EditorTextFormField(
                   _controladorResultadosEsperados,
                   "Quais os resultados esperados?  ",
@@ -164,7 +206,6 @@ class FormDemandaState extends State<FormDemanda> {
                   5,
                   600,
                   false),
-
               EditorTextFormField(
                   _controladorPropostaConjunto,
                   "Por que a proposta faz jus a uma ação em conjunto?  ",
@@ -172,7 +213,6 @@ class FormDemandaState extends State<FormDemanda> {
                   7,
                   600,
                   true),
-
               EditorTextFormField(
                   _controladorDadosProponete,
                   "Dados do Proponente?  ",
@@ -180,7 +220,6 @@ class FormDemandaState extends State<FormDemanda> {
                   7,
                   600,
                   true),
-
               EditorTextFormField(
                   _controladorEmpresaEnvolvida,
                   "Quais serão as instituições / empresas envolvidas na proposta?  ",
@@ -188,7 +227,6 @@ class FormDemandaState extends State<FormDemanda> {
                   7,
                   600,
                   true),
-
               EditorTextFormField(
                   _controladorEquipeColaboradores,
                   "Quem será a equipe de colaboradores externos?  ",
@@ -196,14 +234,11 @@ class FormDemandaState extends State<FormDemanda> {
                   7,
                   600,
                   true),
-
               const SizedBox(height: 10),
-
               ElevatedButton(
                 onPressed: () => _selecionarArquivos(),
                 child: const Text('Selecionar Arquivos'),
               ),
-
               Builder(
                   builder: (BuildContext context) => _caminhoDoArquivo != null
                       ? Container(
@@ -246,64 +281,6 @@ class FormDemandaState extends State<FormDemanda> {
                           )),
                         )
                       : const Text('Nenhum aquivo selecionado...'))
-
-              // CampoSelecaoArquivos(
-              //     Icons.cloud_upload_rounded,
-              //     'Faça o upload de arquivos ',
-              //     'AQUI',
-              //         () async {
-              //       result = await FilePicker.platform.pickFiles(allowMultiple: false);
-              //
-              //       if(result != null) {
-              //         final file = result.files.first;
-              //         //Pega o nome do arquivo selecionado
-              //         setState(() => name = PlatformFile(name: file.name, size: file.size));
-              //       } else {
-              //
-              //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(
-              //           'Arquivo não selecionado e/ou Falha ao selecionar arquivo',
-              //         ),
-              //         ));
-              //       }
-              //     },
-              //     styleText,
-              //     fileName,
-              //     styleTextFile
-              // ),
-
-              // const SizedBox(height: 10),
-              //
-              // SizedBox(
-              //   height: 40,
-              //   width: double.infinity,
-              //   child: ElevatedButton(
-              //     style: ElevatedButton.styleFrom(
-              //       primary: AppTheme.colors.blue,
-              //       textStyle: AppTheme.typo.button,
-              //     ),
-              //     onPressed: (){
-              //       setState((){
-              //         _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorVinculo.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorPropostaConjunto.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorDadosProponete.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorEmpresaEnvolvida.text.isEmpty ? _valida = true : _valida = false;
-              //         _controladorEquipeColaboradores.text.isEmpty ? _valida = true : _valida = false;
-              //       });
-              //
-              //       // Caso não tenha erros de validação
-              //       if(!_valida){
-              //         _criarDemanda(context);
-              //         widget.pagina.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
-              //       }
-              //     },
-              //     child: const Text("Criar Nova Demanda")
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -313,15 +290,21 @@ class FormDemandaState extends State<FormDemanda> {
         child: const Icon(Icons.done, color: Colors.white),
         onPressed: () {
           if (_formKey.currentState.validate()) {
-            _criarDemanda(context);
-            widget.pagina.animateToPage(1,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.ease);
+            if(documentID == null) {
+              _criarDemanda(context);
 
-            //SnackBar
-            const SnackBar snackBar =
-                SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              //SnackBar
+              const SnackBar snackBar =
+              SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            } else {
+              _editarDemanda();
+
+              //SnackBar
+              const SnackBar snackBar =
+              SnackBar(content: Text("Sua demanda foi atualizada com sucesso! "));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           }
         },
       ),
@@ -338,7 +321,6 @@ class FormDemandaState extends State<FormDemanda> {
         .files;
 
     if (!mounted) return;
-    //if (_result == null) return;
 
     setState(() {
       _carregando = false;
@@ -346,6 +328,33 @@ class FormDemandaState extends State<FormDemanda> {
           ? _caminhoDoArquivo.map((e) => e.name).toString()
           : '...';
     });
+  }
+
+  void _editarDemanda() async {
+    final CollectionReference demandaRef =
+    FirebaseFirestore.instance.collection('DEMANDAS');
+
+    demandaRef.doc(documentID).update({
+      'titulo': _controladorTitulo.text,
+      'tempo': _controladorTempoNecessario.text,
+      'resumo': _controladorResumo.text,
+      'objetivo': _controladorObjetivo.text,
+      'contrapartida': _controladorContrapartida.text,
+      'vinculo': _controladorVinculo.text,
+      'resultados_esperados': _controladorResultadosEsperados.text,
+      'proposta_conjunto': _controladorPropostaConjunto.text,
+      'dados_proponente': _controladorDadosProponete.text,
+      'empresa_envolvida': _controladorEmpresaEnvolvida.text,
+      'equipe_colaboradores': _controladorEquipeColaboradores.text,
+      'area_tematica': areaTematicaSelecionada,
+    })
+        .then((value) => debugPrint("Demanda atualizada"))
+        .catchError((error) => debugPrint(
+        "Ocorreu um erro na atualização da sua demanda: $error"));
+
+    limpaFormulario();
+
+    Navigator.pop(context, '/listaDemanda');
   }
 
   void _criarDemanda(BuildContext context) async {
@@ -370,12 +379,43 @@ class FormDemandaState extends State<FormDemanda> {
       'dados_proponente': _controladorDadosProponete.text,
       'empresa_envolvida': _controladorEmpresaEnvolvida.text,
       'equipe_colaboradores': _controladorEquipeColaboradores.text,
-      'area_tematica': selectedCurrency,
+      'area_tematica': areaTematicaSelecionada,
     }).catchError((error) =>
             debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 
     debugPrint("ID da demanda: " + _novaDemanda.id);
 
+    limpaFormulario();
+
+    Navigator.pushReplacementNamed(context, '/listaDemanda');
+
+    debugPrint(_caminhoDoArquivo.length.toString());
+
+    for (var arquivos in _caminhoDoArquivo) {
+      String _nomeArquivo = arquivos.name;
+      String _nomeArquivoExtensao;
+
+      //Faz o upload do arquivo selecionado para o Firebase storage
+      if (_caminhoDoArquivo != null && _caminhoDoArquivo.isNotEmpty) {
+        _nomeArquivo =
+            arquivos.name.substring(0, _nomeArquivo.lastIndexOf('.'));
+        _nomeArquivoExtensao =
+            _nomeArquivo + '_' + _novaDemanda.id + '.' + arquivos.extension;
+
+        debugPrint("Nome do arquivo: " + _nomeArquivoExtensao);
+
+        if (kIsWeb) {
+          _uploadFile(_caminhoDoArquivo.first.bytes, _nomeArquivoExtensao,
+              _novaDemanda.id);
+        } else {
+          _uploadFile(await File(_caminhoDoArquivo.first.path).readAsBytes(),
+              _nomeArquivoExtensao, _novaDemanda.id);
+        }
+      }
+    }
+  }
+
+  void limpaFormulario () {
     //Limpando os campos após a criação da proposta
     _controladorTitulo.text = '';
     _controladorTempoNecessario.text = '';
@@ -388,45 +428,8 @@ class FormDemandaState extends State<FormDemanda> {
     _controladorDadosProponete.text = '';
     _controladorEmpresaEnvolvida.text = '';
     _controladorEquipeColaboradores.text = '';
-
-    debugPrint(_caminhoDoArquivo.length.toString());
-
-    for (var arquivos in _caminhoDoArquivo) {
-      String _nomeArquivo = arquivos.name;
-      String _nomeArquivoExtensao;
-
-      //Faz o upload do arquivo selecionado para o Firebase storage
-      if(_caminhoDoArquivo != null && _caminhoDoArquivo.isNotEmpty) {
-        _nomeArquivo = arquivos.name.substring(0, _nomeArquivo.lastIndexOf('.'));
-        _nomeArquivoExtensao = _nomeArquivo + '_' + _novaDemanda.id + '.' + arquivos.extension;
-
-        debugPrint("Nome do arquivo: " + _nomeArquivoExtensao);
-
-        if (kIsWeb) {
-          _uploadFile(_caminhoDoArquivo.first.bytes, _nomeArquivoExtensao, _novaDemanda.id);
-        } else {
-          _uploadFile(await File(_caminhoDoArquivo.first.path).readAsBytes(), _nomeArquivoExtensao, _novaDemanda.id);
-        }
-      }
-    }
-
-    //String _nomeArquivo = result.files.first.name;
-    //String _nomeArquivoExtensao;
-
-    //Faz o upload do arquivo selecionado para o Firebase storage
-    // if(result != null && result.files.isNotEmpty) {
-    //   _nomeArquivo = _nomeArquivo.substring(0, _nomeArquivo.lastIndexOf('.'));
-    //   _nomeArquivoExtensao = _nomeArquivo + '_' + _novaDemanda.id + '.' + result.files.first.extension;
-    //
-    //   debugPrint("Nome do arquivo: " + _nomeArquivoExtensao);
-    //
-    //   if (kIsWeb) {
-    //     _uploadFile(result.files.first.bytes, _nomeArquivoExtensao, _novaDemanda.id);
-    //   } else {
-    //     _uploadFile(await File(result.files.first.path).readAsBytes(), _nomeArquivoExtensao, _novaDemanda.id);
-    //   }
-    // }
   }
+
 
   ///Função responsável por fazer o upload do arquivo para o storage
   Future<void> _uploadFile(
@@ -453,16 +456,5 @@ class FormDemandaState extends State<FormDemanda> {
     } else {
       print(uploadTask.state);
     }
-  }
-}
-
-class FormDemanda extends StatefulWidget {
-  final PageController pagina;
-
-  const FormDemanda({Key key, this.pagina}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() {
-    return FormDemandaState();
   }
 }

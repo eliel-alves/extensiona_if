@@ -1,10 +1,10 @@
-import 'package:extensiona_if/screens/demanda_lista.dart';
+import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/models/demanda.dart';
 import 'package:flutter/material.dart';
-import 'package:extensiona_if/screens/demanda_form.dart';
-import 'package:extensiona_if/screens/user_options.dart';
+import 'package:provider/provider.dart';
+import '../widgets/widget.dart';
 
-
-class AllUsersHomePage extends StatefulWidget{
+class AllUsersHomePage extends StatefulWidget {
   const AllUsersHomePage({Key key}) : super(key: key);
 
   @override
@@ -12,45 +12,84 @@ class AllUsersHomePage extends StatefulWidget{
 }
 
 class _AllUsersHomePageState extends State<AllUsersHomePage> {
-  int paginaAtual = 0;
-  PageController pc;
-
-  @override
-  void initState() {
-    super.initState();
-    pc = PageController(initialPage: paginaAtual);
-  }
-
-  setPaginaAtual(pagina) {
-    setState(() {
-      paginaAtual = pagina;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: pc,
-        children: [
-          FormDemanda(pagina : pc),
-          const ListaDemanda(),
-          const MoreOptions(),
-        ],
-        onPageChanged: setPaginaAtual,
-      ),
+    UserDAO authService = Provider.of<UserDAO>(context);
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: paginaAtual,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.assignment_rounded), label: 'Formulário'),
-            BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: 'Minhas Demandas'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Mais')
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Extensiona IF'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: const Text(
+                'Mais Opções',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTileOptions(
+                icone: Icons.assignment_rounded,
+                title: 'Formulário',
+                onTap: () {
+                  Navigator.pushNamed(context, '/formDemanda',
+                      arguments: Demandas());
+                }),
+            ListTileOptions(
+                icone: Icons.list_alt_rounded,
+                title: 'Minhas propostas',
+                onTap: () {
+                  Navigator.pushNamed(context, '/listaDemanda');
+                }),
+            ListTileOptions(
+                icone: Icons.account_circle_rounded,
+                title: 'Meu perfil',
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile');
+                }),
+            ListTileOptions(
+                icone: Icons.logout_rounded,
+                title: 'Sair',
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Sair'),
+                          content: const Text(
+                              'Tem certeza que deseja desconectar sua conta desse aparelho?'),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0)),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                debugPrint('O usuário saiu do app');
+                                Navigator.of(context).pop();
+                                authService.logout();
+                              },
+                              child: const Text('SIM'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('CANCELAR'),
+                            ),
+                          ],
+                        );
+                      });
+                }),
           ],
-          onTap: (pagina) {
-            pc.animateToPage(pagina, duration: const Duration(milliseconds: 400), curve: Curves.ease);
-          },
-        backgroundColor: Colors.grey[200],
+        ),
       ),
     );
   }
