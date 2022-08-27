@@ -36,7 +36,7 @@ class RouteGenerator {
                   empresaEnvolvida: argument.empresaEnvolvida,
                   equipeColaboradores: argument.equipeColaboradores,
                   areaTematica: argument.areaTematica,
-                  docId: argument.docId,
+                  docId: argument.docId
                 ));
       case '/listaDemanda':
         return MaterialPageRoute(builder: (_) => const ListaDemanda());

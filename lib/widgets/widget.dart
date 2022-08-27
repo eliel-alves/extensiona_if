@@ -16,6 +16,25 @@ class ListTileOptions extends StatelessWidget {
       ListTile(leading: Icon(icone), title: Text(title), onTap: onTap);
 }
 
+class ListTileFiles extends StatelessWidget {
+  final IconData icone;
+  final String title;
+  final VoidCallback onPressed;
+
+  const ListTileFiles({Key key, this.icone, this.title, this.onPressed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) =>
+      ListTile(
+          trailing: IconButton(
+            icon: const Icon(Icons.highlight_remove_rounded),
+            onPressed: onPressed,
+          ),
+          title: Text(title),
+      );
+}
+
 class IconesMedia extends StatelessWidget {
   final String imgMedia;
   final Function press;

@@ -8,10 +8,17 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
-enum options { deletar, atualizar }
+enum Options { deletar, atualizar }
 
-class ItemDemanda extends StatelessWidget {
+class ItemDemanda extends StatefulWidget {
   const ItemDemanda({Key key}) : super(key: key);
+
+  @override
+  State<ItemDemanda> createState() => _ItemDemandaState();
+}
+
+class _ItemDemandaState extends State<ItemDemanda> {
+  List _arquivoDoUsuario;
 
   @override
   Widget build(BuildContext context) {
@@ -130,8 +137,8 @@ class ItemDemanda extends StatelessWidget {
                                 ] //     Text(DateTime(infoData).year.toString());
                                     ),
                               ),
-                              trailing: PopupMenuButton<options>(
-                                onSelected: (options choice) {
+                              trailing: PopupMenuButton<Options>(
+                                onSelected: (Options choice) {
                                   debugPrint(choice.name);
                                   choiceAction(
                                       choice.name,
@@ -151,17 +158,17 @@ class ItemDemanda extends StatelessWidget {
                                       infoAreaTematica);
                                 },
                                 itemBuilder: (BuildContext context) {
-                                  return <PopupMenuEntry<options>>[
+                                  return <PopupMenuEntry<Options>>[
                                     if (infoStatus == 'registrado') ...[
-                                      const PopupMenuItem<options>(
-                                        value: options.deletar,
+                                      const PopupMenuItem<Options>(
+                                        value: Options.deletar,
                                         child: ListTile(
                                             leading: Icon(Icons.delete),
                                             title: Text('Deletar')),
                                       ),
                                     ],
-                                    const PopupMenuItem<options>(
-                                      value: options.atualizar,
+                                    const PopupMenuItem<Options>(
+                                      value: Options.atualizar,
                                       child: ListTile(
                                         leading: Icon(Icons.edit),
                                         title: Text('Atualizar'),
@@ -248,8 +255,30 @@ class ItemDemanda extends StatelessWidget {
             empresaEnvolvida: infoEmpresaEnvolvida,
             equipeColaboradores: infoEquipeColaboradores,
             areaTematica: infoAreaTematica,
-            docId: updateData.id,
+            docId: updateData.id
           ));
     }
+  }
+
+  subcollectionDate(String documentID) async {
+    var dados = await FirebaseFirestore.instance
+        .collection('DEMANDAS')
+        .doc(documentID)
+        .collection('arquivos')
+        .get();
+
+    for (var document in dados.docs) {
+      setState(() {
+        _arquivoDoUsuario = document.get('file_url');
+      });
+    }
+
+    // dados.docs.map((DocumentSnapshot document) {
+    //   setState(() {
+    //     _arquivoDoUsuario = document.get('file_url');
+    //   });
+    // });
+
+    return _arquivoDoUsuario;
   }
 }

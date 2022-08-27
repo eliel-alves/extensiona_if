@@ -74,8 +74,6 @@ class _FormDemandaState extends State<FormDemanda> {
   final styleTextFile =
       const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
 
-  FilePickerResult _result;
-  PlatformFile _arquivo;
   String _fileName;
   bool _carregando = false;
   List<PlatformFile> _caminhoDoArquivo;
@@ -83,10 +81,11 @@ class _FormDemandaState extends State<FormDemanda> {
 
   String areaTematicaSelecionada;
 
-
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
   String hintText = 'Área temática';
+
+  List userFiles;
 
   @override
   void initState() {
@@ -109,6 +108,12 @@ class _FormDemandaState extends State<FormDemanda> {
 
   @override
   Widget build(BuildContext context) {
+    var subcollectionRef = FirebaseFirestore.instance
+        .collection('DEMANDAS')
+        .doc(documentID)
+        .collection('arquivos')
+        .snapshots();
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Formulário de cadastro", style: AppTheme.typo.title),
@@ -239,48 +244,109 @@ class _FormDemandaState extends State<FormDemanda> {
                 onPressed: () => _selecionarArquivos(),
                 child: const Text('Selecionar Arquivos'),
               ),
-              Builder(
-                  builder: (BuildContext context) => _caminhoDoArquivo != null
-                      ? Container(
-                          padding: const EdgeInsets.only(bottom: 30.0),
-                          height: MediaQuery.of(context).size.height * 0.50,
-                          child: Scrollbar(
-                              child: ListView.separated(
-                            itemCount: _caminhoDoArquivo != null &&
-                                    _caminhoDoArquivo.isNotEmpty
-                                ? _caminhoDoArquivo.length
-                                : 1,
-                            itemBuilder: (BuildContext context, int index) {
-                              final bool isMultiPath =
-                                  _caminhoDoArquivo != null &&
-                                      _caminhoDoArquivo.isNotEmpty;
-                              final String name = 'File $index: ' +
-                                  (isMultiPath
+              documentID != null
+                  ? StreamBuilder<QuerySnapshot>(
+                      stream: subcollectionRef,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return const Center(
+                              child: Text('Something went wrong'));
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        final data = snapshot.requireData;
+
+                        return Column(
+                          children: [
+                            Wrap(
+                              children: List.generate(data.size, (int index) {
+                                final fileName = data.docs[index]['file_name'];
+                                return listFile(fileName, () {
+                                  debugPrint('$_caminhoDoArquivo');
+                                  debugPrint('${_caminhoDoArquivo.length}');
+                                });
+                              }).toList(),
+                            ),
+                            if (_caminhoDoArquivo != null) ...[
+                              Wrap(
+                                children: List.generate(
+                                    _caminhoDoArquivo.length, (int index) {
+                                  final fileName =
+                                      _caminhoDoArquivo[index].name;
+                                  return listFile(fileName, () {
+                                    setState(() {
+                                      _caminhoDoArquivo.removeAt(index);
+                                    });
+                                  });
+                                }).toList(),
+                              )
+                            ]
+                          ],
+                        );
+                      },
+                    )
+                  : Builder(
+                      builder: (BuildContext context) => _caminhoDoArquivo !=
+                              null
+                          ? Container(
+                              padding: const EdgeInsets.only(bottom: 30.0),
+                              height: MediaQuery.of(context).size.height * 0.50,
+                              child: Scrollbar(
+                                  child: ListView.separated(
+                                itemCount: _caminhoDoArquivo != null &&
+                                        _caminhoDoArquivo.isNotEmpty
+                                    ? _caminhoDoArquivo.length
+                                    : 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final bool vetNaoVazio =
+                                      _caminhoDoArquivo != null &&
+                                          _caminhoDoArquivo.isNotEmpty;
+                                  final String name = (vetNaoVazio
                                       ? _caminhoDoArquivo
                                           .map((e) => e.name)
                                           .toList()[index]
                                       : _fileName ?? '...');
 
-                              final path = kIsWeb
-                                  ? null
-                                  : _caminhoDoArquivo
-                                      .map((e) => e.path)
-                                      .toList()[index]
-                                      .toString();
+                                  final path = kIsWeb
+                                      ? null
+                                      : _caminhoDoArquivo
+                                          .map((e) => e.path)
+                                          .toList()[index]
+                                          .toString();
 
-                              return ListTile(
-                                title: Text(
-                                  name,
-                                ),
-                                subtitle: Text(path ?? ''),
-                              );
-                            },
-                            separatorBuilder:
-                                (BuildContext context, int index) =>
-                                    const Divider(),
-                          )),
-                        )
-                      : const Text('Nenhum aquivo selecionado...'))
+                                  return ListTile(
+                                    title: Text(
+                                      name,
+                                    ),
+                                    subtitle: Text(path ?? ''),
+                                    trailing: IconButton(
+                                        onPressed: () {
+                                          //debugPrint('$index');
+                                          debugPrint('$_caminhoDoArquivo');
+                                          setState(() {
+                                            _caminhoDoArquivo.removeAt(index);
+
+                                            if (_caminhoDoArquivo.isEmpty) {
+                                              _caminhoDoArquivo = null;
+                                            }
+                                          });
+                                        },
+                                        icon: const Icon(
+                                            Icons.highlight_remove_rounded)),
+                                  );
+                                },
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const Divider(),
+                              )),
+                            )
+                          : const Text('Nenhum aquivo selecionado...'))
             ],
           ),
         ),
@@ -290,19 +356,19 @@ class _FormDemandaState extends State<FormDemanda> {
         child: const Icon(Icons.done, color: Colors.white),
         onPressed: () {
           if (_formKey.currentState.validate()) {
-            if(documentID == null) {
+            if (documentID == null) {
               _criarDemanda(context);
 
               //SnackBar
-              const SnackBar snackBar =
-              SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
+              const SnackBar snackBar = SnackBar(
+                  content: Text("Sua demanda foi criada com sucesso! "));
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             } else {
               _editarDemanda();
 
               //SnackBar
-              const SnackBar snackBar =
-              SnackBar(content: Text("Sua demanda foi atualizada com sucesso! "));
+              const SnackBar snackBar = SnackBar(
+                  content: Text("Sua demanda foi atualizada com sucesso! "));
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
           }
@@ -322,6 +388,8 @@ class _FormDemandaState extends State<FormDemanda> {
 
     if (!mounted) return;
 
+    debugPrint('$_caminhoDoArquivo');
+
     setState(() {
       _carregando = false;
       _fileName = _caminhoDoArquivo != null
@@ -332,25 +400,27 @@ class _FormDemandaState extends State<FormDemanda> {
 
   void _editarDemanda() async {
     final CollectionReference demandaRef =
-    FirebaseFirestore.instance.collection('DEMANDAS');
+        FirebaseFirestore.instance.collection('DEMANDAS');
 
-    demandaRef.doc(documentID).update({
-      'titulo': _controladorTitulo.text,
-      'tempo': _controladorTempoNecessario.text,
-      'resumo': _controladorResumo.text,
-      'objetivo': _controladorObjetivo.text,
-      'contrapartida': _controladorContrapartida.text,
-      'vinculo': _controladorVinculo.text,
-      'resultados_esperados': _controladorResultadosEsperados.text,
-      'proposta_conjunto': _controladorPropostaConjunto.text,
-      'dados_proponente': _controladorDadosProponete.text,
-      'empresa_envolvida': _controladorEmpresaEnvolvida.text,
-      'equipe_colaboradores': _controladorEquipeColaboradores.text,
-      'area_tematica': areaTematicaSelecionada,
-    })
+    demandaRef
+        .doc(documentID)
+        .update({
+          'titulo': _controladorTitulo.text,
+          'tempo': _controladorTempoNecessario.text,
+          'resumo': _controladorResumo.text,
+          'objetivo': _controladorObjetivo.text,
+          'contrapartida': _controladorContrapartida.text,
+          'vinculo': _controladorVinculo.text,
+          'resultados_esperados': _controladorResultadosEsperados.text,
+          'proposta_conjunto': _controladorPropostaConjunto.text,
+          'dados_proponente': _controladorDadosProponete.text,
+          'empresa_envolvida': _controladorEmpresaEnvolvida.text,
+          'equipe_colaboradores': _controladorEquipeColaboradores.text,
+          'area_tematica': areaTematicaSelecionada,
+        })
         .then((value) => debugPrint("Demanda atualizada"))
         .catchError((error) => debugPrint(
-        "Ocorreu um erro na atualização da sua demanda: $error"));
+            "Ocorreu um erro na atualização da sua demanda: $error"));
 
     limpaFormulario();
 
@@ -406,16 +476,16 @@ class _FormDemandaState extends State<FormDemanda> {
 
         if (kIsWeb) {
           _uploadFile(_caminhoDoArquivo.first.bytes, _nomeArquivoExtensao,
-              _novaDemanda.id);
+              _novaDemanda.id, _nomeArquivo);
         } else {
           _uploadFile(await File(_caminhoDoArquivo.first.path).readAsBytes(),
-              _nomeArquivoExtensao, _novaDemanda.id);
+              _nomeArquivoExtensao, _novaDemanda.id, _nomeArquivo);
         }
       }
     }
   }
 
-  void limpaFormulario () {
+  void limpaFormulario() {
     //Limpando os campos após a criação da proposta
     _controladorTitulo.text = '';
     _controladorTempoNecessario.text = '';
@@ -430,10 +500,19 @@ class _FormDemandaState extends State<FormDemanda> {
     _controladorEquipeColaboradores.text = '';
   }
 
+  Widget listFile(String fileName, VoidCallback onTap) {
+    return ListTile(
+      title: Text(fileName),
+      trailing: IconButton(
+        icon: const Icon(Icons.highlight_remove_rounded),
+        onPressed: onTap,
+      ),
+    );
+  }
 
   ///Função responsável por fazer o upload do arquivo para o storage
-  Future<void> _uploadFile(
-      Uint8List _data, String nameFile, String demandaId) async {
+  Future<void> _uploadFile(Uint8List _data, String nameFile, String demandaId,
+      String nomeArquivoReal) async {
     CollectionReference _arquivosDemanda = FirebaseFirestore.instance
         .collection('DEMANDAS')
         .doc(demandaId)
@@ -449,10 +528,10 @@ class _FormDemandaState extends State<FormDemanda> {
     String url = await uploadTask.ref.getDownloadURL();
 
     if (uploadTask.state == firebase_storage.TaskState.success) {
-      print('Arquivo enviado com sucesso!');
-      print('URL do arquivo: $url');
-      print(demandaId);
-      _arquivosDemanda.add({'file_url': url});
+      debugPrint('Arquivo enviado com sucesso!');
+      debugPrint('URL do arquivo: $url');
+      debugPrint(demandaId);
+      _arquivosDemanda.add({'file_url': url, 'file_name': nomeArquivoReal});
     } else {
       print(uploadTask.state);
     }

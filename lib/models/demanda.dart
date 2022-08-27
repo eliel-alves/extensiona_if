@@ -30,7 +30,7 @@ class Demandas {
     this.empresaEnvolvida,
     this.equipeColaboradores,
     this.userID,
-    this.docId,
+    this.docId
   });
 
   @override
