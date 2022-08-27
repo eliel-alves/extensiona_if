@@ -7,28 +7,22 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 enum Options { deletar, atualizar }
 
-class ItemDemanda extends StatefulWidget {
+class ItemDemanda extends StatelessWidget {
   const ItemDemanda({Key key}) : super(key: key);
-
-  @override
-  State<ItemDemanda> createState() => _ItemDemandaState();
-}
-
-class _ItemDemandaState extends State<ItemDemanda> {
-  List _arquivoDoUsuario;
 
   @override
   Widget build(BuildContext context) {
     // Recupera o Usuário
-    final userDao = Provider.of<UserDAO>(context, listen: false);
+    UserDAO authService = Provider.of<UserDAO>(context);
 
     // Recupera a lista de Demandas do usuário
     final Stream<QuerySnapshot> colecaoDemandas = FirebaseFirestore.instance
         .collection('DEMANDAS')
-        .where('usuario', isEqualTo: userDao.userId())
+        .where('usuario', isEqualTo: authService.userId())
         .snapshots();
 
     return StreamBuilder<QuerySnapshot>(
@@ -75,7 +69,7 @@ class _ItemDemandaState extends State<ItemDemanda> {
                     data.docs[index]['empresa_envolvida'];
                 final infoEquipeColaboradores =
                     data.docs[index]['equipe_colaboradores'];
-                final updateDados = snapshot.data.docs[index];
+                final docRef = snapshot.data.docs[index];
 
                 return AnimationConfiguration.staggeredList(
                     position: index,
@@ -143,7 +137,7 @@ class _ItemDemandaState extends State<ItemDemanda> {
                                   choiceAction(
                                       choice.name,
                                       context,
-                                      updateDados,
+                                      docRef,
                                       infoTitulo,
                                       infoTempo,
                                       infoResumo,
@@ -189,7 +183,7 @@ class _ItemDemandaState extends State<ItemDemanda> {
   void choiceAction(
       String choice,
       BuildContext context,
-      QueryDocumentSnapshot updateData,
+      QueryDocumentSnapshot docRef,
       String infoTitulo,
       infoTempo,
       infoResumo,
@@ -214,10 +208,32 @@ class _ItemDemandaState extends State<ItemDemanda> {
                   borderRadius: BorderRadius.circular(12.0)),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     //Deletando o documento do banco de dados
                     debugPrint('A atividade foi deletada');
-                    updateData.reference.delete();
+                    docRef.reference.delete();
+
+                    var subcollectionRef = await FirebaseFirestore.instance
+                        .collection('DEMANDAS')
+                        .doc(docRef.id)
+                        .collection('arquivos')
+                        .get();
+
+                    if (subcollectionRef.docs.isEmpty) return;
+
+                    //Deleta também a subcoleção do documento deletado
+                    for (var document in subcollectionRef.docs) {
+                      debugPrint('$document');
+                      document.reference.delete();
+
+                      // Referência para o arquivo a ser deletado
+                      final desertRef =
+                          firebase_storage.FirebaseStorage.instance.ref().child(
+                              "arquivos/${document.get('file_name_storage')}");
+
+                      // Deleta o arquivo
+                      await desertRef.delete();
+                    }
 
                     //Navegando de volta para a página da lista de propostas
                     Navigator.of(context).pop(true);
@@ -243,42 +259,20 @@ class _ItemDemandaState extends State<ItemDemanda> {
       //Navegar para a tela de edição de demandas
       Navigator.pushNamed(context, '/formDemanda',
           arguments: Demandas(
-            titulo: infoTitulo,
-            tempo: infoTempo,
-            resumo: infoResumo,
-            objetivo: infoObjetivo,
-            contrapartida: infoContrapartida,
-            vinculo: infoVinculo,
-            resultadosEsperados: infoResultadosEsperados,
-            propostaConjunto: infoPropostaConjunto,
-            dadosProponente: infoDadosProponente,
-            empresaEnvolvida: infoEmpresaEnvolvida,
-            equipeColaboradores: infoEquipeColaboradores,
-            areaTematica: infoAreaTematica,
-            docId: updateData.id
-          ));
+              titulo: infoTitulo,
+              tempo: infoTempo,
+              resumo: infoResumo,
+              objetivo: infoObjetivo,
+              contrapartida: infoContrapartida,
+              resultadosEsperados: infoResultadosEsperados,
+              areaTematica: infoAreaTematica,
+              vinculo: infoVinculo,
+              propostaConjunto: infoPropostaConjunto,
+              dadosProponente: infoDadosProponente,
+              empresaEnvolvida: infoEmpresaEnvolvida,
+              equipeColaboradores: infoEquipeColaboradores,
+              docId: docRef.id,
+              editarDemanda: true));
     }
-  }
-
-  subcollectionDate(String documentID) async {
-    var dados = await FirebaseFirestore.instance
-        .collection('DEMANDAS')
-        .doc(documentID)
-        .collection('arquivos')
-        .get();
-
-    for (var document in dados.docs) {
-      setState(() {
-        _arquivoDoUsuario = document.get('file_url');
-      });
-    }
-
-    // dados.docs.map((DocumentSnapshot document) {
-    //   setState(() {
-    //     _arquivoDoUsuario = document.get('file_url');
-    //   });
-    // });
-
-    return _arquivoDoUsuario;
   }
 }

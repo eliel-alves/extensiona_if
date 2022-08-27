@@ -12,7 +12,7 @@ class ListaDemanda extends StatelessWidget {
         title: Text("Minhas propostas", style: AppTheme.typo.title),
       ),
 
-      body: ItemDemanda(),
+      body: const ItemDemanda(),
     );
   }
 }

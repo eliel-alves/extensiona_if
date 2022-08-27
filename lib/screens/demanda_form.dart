@@ -11,23 +11,6 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class FormDemanda extends StatefulWidget {
-  const FormDemanda(
-      {Key key,
-      this.titulo,
-      this.tempo,
-      this.resumo,
-      this.objetivo,
-      this.contrapartida,
-      this.vinculo,
-      this.resultadosEsperados,
-      this.propostaConjunto,
-      this.dadosProponente,
-      this.empresaEnvolvida,
-      this.equipeColaboradores,
-      this.docId,
-      this.areaTematica})
-      : super(key: key);
-
   final String titulo;
   final String tempo;
   final String resumo;
@@ -41,6 +24,25 @@ class FormDemanda extends StatefulWidget {
   final String equipeColaboradores;
   final String areaTematica;
   final String docId;
+  final bool editarDemanda;
+
+  const FormDemanda(
+      {Key key,
+      this.titulo,
+      this.tempo,
+      this.resumo,
+      this.objetivo,
+      this.contrapartida,
+      this.vinculo,
+      this.resultadosEsperados,
+      this.propostaConjunto,
+      this.dadosProponente,
+      this.empresaEnvolvida,
+      this.equipeColaboradores,
+      this.areaTematica,
+      this.docId,
+      this.editarDemanda})
+      : super(key: key);
 
   @override
   State<FormDemanda> createState() => _FormDemandaState();
@@ -84,8 +86,6 @@ class _FormDemandaState extends State<FormDemanda> {
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
   String hintText = 'Área temática';
-
-  List userFiles;
 
   @override
   void initState() {
@@ -244,14 +244,13 @@ class _FormDemandaState extends State<FormDemanda> {
                 onPressed: () => _selecionarArquivos(),
                 child: const Text('Selecionar Arquivos'),
               ),
-              documentID != null
+              widget.editarDemanda
                   ? StreamBuilder<QuerySnapshot>(
                       stream: subcollectionRef,
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasError) {
-                          return const Center(
-                              child: Text('Something went wrong'));
+                          return const Center(child: Text('Erro ...'));
                         }
 
                         if (snapshot.connectionState ==
@@ -262,73 +261,28 @@ class _FormDemandaState extends State<FormDemanda> {
 
                         final data = snapshot.requireData;
 
-                        return Column(
-                          children: [
-                            Wrap(
-                              children: List.generate(data.size, (int index) {
-                                final fileName = data.docs[index]['file_name'];
-                                return listFile(fileName, () {
-                                  debugPrint('$_caminhoDoArquivo');
-                                  debugPrint('${_caminhoDoArquivo.length}');
-                                });
-                              }).toList(),
-                            ),
-                            if (_caminhoDoArquivo != null) ...[
+                        if (snapshot.data.docs.isNotEmpty) {
+                          return Column(
+                            children: [
                               Wrap(
-                                children: List.generate(
-                                    _caminhoDoArquivo.length, (int index) {
+                                children: List.generate(data.size, (int index) {
                                   final fileName =
-                                      _caminhoDoArquivo[index].name;
+                                      data.docs[index]['file_name'];
+                                  final docRef = data.docs[index];
+
                                   return listFile(fileName, () {
-                                    setState(() {
-                                      _caminhoDoArquivo.removeAt(index);
-                                    });
+                                    deleteUserFile(docRef);
                                   });
                                 }).toList(),
-                              )
-                            ]
-                          ],
-                        );
-                      },
-                    )
-                  : Builder(
-                      builder: (BuildContext context) => _caminhoDoArquivo !=
-                              null
-                          ? Container(
-                              padding: const EdgeInsets.only(bottom: 30.0),
-                              height: MediaQuery.of(context).size.height * 0.50,
-                              child: Scrollbar(
-                                  child: ListView.separated(
-                                itemCount: _caminhoDoArquivo != null &&
-                                        _caminhoDoArquivo.isNotEmpty
-                                    ? _caminhoDoArquivo.length
-                                    : 1,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final bool vetNaoVazio =
-                                      _caminhoDoArquivo != null &&
-                                          _caminhoDoArquivo.isNotEmpty;
-                                  final String name = (vetNaoVazio
-                                      ? _caminhoDoArquivo
-                                          .map((e) => e.name)
-                                          .toList()[index]
-                                      : _fileName ?? '...');
-
-                                  final path = kIsWeb
-                                      ? null
-                                      : _caminhoDoArquivo
-                                          .map((e) => e.path)
-                                          .toList()[index]
-                                          .toString();
-
-                                  return ListTile(
-                                    title: Text(
-                                      name,
-                                    ),
-                                    subtitle: Text(path ?? ''),
-                                    trailing: IconButton(
-                                        onPressed: () {
-                                          //debugPrint('$index');
-                                          debugPrint('$_caminhoDoArquivo');
+                              ),
+                              _caminhoDoArquivo != null
+                                  ? Wrap(
+                                      children: List.generate(
+                                          _caminhoDoArquivo.length,
+                                          (int index) {
+                                        final fileName =
+                                            _caminhoDoArquivo[index].name;
+                                        return listFile(fileName, () {
                                           setState(() {
                                             _caminhoDoArquivo.removeAt(index);
 
@@ -336,17 +290,51 @@ class _FormDemandaState extends State<FormDemanda> {
                                               _caminhoDoArquivo = null;
                                             }
                                           });
-                                        },
-                                        icon: const Icon(
-                                            Icons.highlight_remove_rounded)),
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(),
-                              )),
-                            )
-                          : const Text('Nenhum aquivo selecionado...'))
+                                        });
+                                      }).toList(),
+                                    )
+                                  : const Text('')
+                            ],
+                          );
+                        } else {
+                          return _caminhoDoArquivo != null
+                              ? Wrap(
+                                  children: List.generate(
+                                      _caminhoDoArquivo.length, (int index) {
+                                    final fileName =
+                                        _caminhoDoArquivo[index].name;
+                                    return listFile(fileName, () {
+                                      setState(() {
+                                        _caminhoDoArquivo.removeAt(index);
+
+                                        if (_caminhoDoArquivo.isEmpty) {
+                                          _caminhoDoArquivo = null;
+                                        }
+                                      });
+                                    });
+                                  }).toList(),
+                                )
+                              : const Text('Nenhum aquivo selecionado...');
+                        }
+                      },
+                    )
+                  : _caminhoDoArquivo != null
+                      ? Wrap(
+                          children: List.generate(_caminhoDoArquivo.length,
+                              (int index) {
+                            final fileName = _caminhoDoArquivo[index].name;
+                            return listFile(fileName, () {
+                              setState(() {
+                                _caminhoDoArquivo.removeAt(index);
+
+                                if (_caminhoDoArquivo.isEmpty) {
+                                  _caminhoDoArquivo = null;
+                                }
+                              });
+                            });
+                          }).toList(),
+                        )
+                      : const Text('Nenhum aquivo selecionado...')
             ],
           ),
         ),
@@ -356,7 +344,7 @@ class _FormDemandaState extends State<FormDemanda> {
         child: const Icon(Icons.done, color: Colors.white),
         onPressed: () {
           if (_formKey.currentState.validate()) {
-            if (documentID == null) {
+            if (!widget.editarDemanda) {
               _criarDemanda(context);
 
               //SnackBar
@@ -371,6 +359,9 @@ class _FormDemandaState extends State<FormDemanda> {
                   content: Text("Sua demanda foi atualizada com sucesso! "));
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
+
+            //Limpa o formulário após adição ou edição da demanda
+            limpaFormulario();
           }
         },
       ),
@@ -398,6 +389,10 @@ class _FormDemandaState extends State<FormDemanda> {
     });
   }
 
+  void deleteUserFile(QueryDocumentSnapshot docRef) async {
+    await docRef.reference.delete();
+  }
+
   void _editarDemanda() async {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
@@ -422,9 +417,9 @@ class _FormDemandaState extends State<FormDemanda> {
         .catchError((error) => debugPrint(
             "Ocorreu um erro na atualização da sua demanda: $error"));
 
-    limpaFormulario();
-
     Navigator.pop(context, '/listaDemanda');
+
+    uploadFile(documentID);
   }
 
   void _criarDemanda(BuildContext context) async {
@@ -455,34 +450,9 @@ class _FormDemandaState extends State<FormDemanda> {
 
     debugPrint("ID da demanda: " + _novaDemanda.id);
 
-    limpaFormulario();
-
     Navigator.pushReplacementNamed(context, '/listaDemanda');
 
-    debugPrint(_caminhoDoArquivo.length.toString());
-
-    for (var arquivos in _caminhoDoArquivo) {
-      String _nomeArquivo = arquivos.name;
-      String _nomeArquivoExtensao;
-
-      //Faz o upload do arquivo selecionado para o Firebase storage
-      if (_caminhoDoArquivo != null && _caminhoDoArquivo.isNotEmpty) {
-        _nomeArquivo =
-            arquivos.name.substring(0, _nomeArquivo.lastIndexOf('.'));
-        _nomeArquivoExtensao =
-            _nomeArquivo + '_' + _novaDemanda.id + '.' + arquivos.extension;
-
-        debugPrint("Nome do arquivo: " + _nomeArquivoExtensao);
-
-        if (kIsWeb) {
-          _uploadFile(_caminhoDoArquivo.first.bytes, _nomeArquivoExtensao,
-              _novaDemanda.id, _nomeArquivo);
-        } else {
-          _uploadFile(await File(_caminhoDoArquivo.first.path).readAsBytes(),
-              _nomeArquivoExtensao, _novaDemanda.id, _nomeArquivo);
-        }
-      }
-    }
+    uploadFile(_novaDemanda.id);
   }
 
   void limpaFormulario() {
@@ -510,9 +480,36 @@ class _FormDemandaState extends State<FormDemanda> {
     );
   }
 
+  void uploadFile(String docId) async {
+    if (_caminhoDoArquivo == null && _caminhoDoArquivo.isEmpty) return;
+
+    for (var arquivos in _caminhoDoArquivo) {
+      String _nomeArquivo = arquivos.name;
+      String _nomeArquivoExtensao;
+
+      //Faz o upload do arquivo selecionado para o Firebase storage
+      _nomeArquivo = arquivos.name.substring(0, _nomeArquivo.lastIndexOf('.'));
+      _nomeArquivoExtensao =
+          _nomeArquivo + '_' + docId + '.' + arquivos.extension;
+
+      debugPrint("Nome do arquivo: " + _nomeArquivoExtensao);
+
+      if (kIsWeb) {
+        _uploadFileToFirebase(_caminhoDoArquivo.first.bytes,
+            _nomeArquivoExtensao, docId, _nomeArquivo);
+      } else {
+        _uploadFileToFirebase(
+            await File(_caminhoDoArquivo.first.path).readAsBytes(),
+            _nomeArquivoExtensao,
+            docId,
+            _nomeArquivo);
+      }
+    }
+  }
+
   ///Função responsável por fazer o upload do arquivo para o storage
-  Future<void> _uploadFile(Uint8List _data, String nameFile, String demandaId,
-      String nomeArquivoReal) async {
+  Future<void> _uploadFileToFirebase(Uint8List _data, String nameFile,
+      String demandaId, String nomeArquivoReal) async {
     CollectionReference _arquivosDemanda = FirebaseFirestore.instance
         .collection('DEMANDAS')
         .doc(demandaId)
@@ -531,7 +528,11 @@ class _FormDemandaState extends State<FormDemanda> {
       debugPrint('Arquivo enviado com sucesso!');
       debugPrint('URL do arquivo: $url');
       debugPrint(demandaId);
-      _arquivosDemanda.add({'file_url': url, 'file_name': nomeArquivoReal});
+      _arquivosDemanda.add({
+        'file_url': url,
+        'file_name': nomeArquivoReal,
+        'file_name_storage': nameFile
+      });
     } else {
       print(uploadTask.state);
     }

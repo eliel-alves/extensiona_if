@@ -1,37 +1,34 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Demandas {
-  String titulo;
-  String tempo;
-  String resumo;
-  String objetivo;
-  String contrapartida;
-  String resultadosEsperados;
-  String areaTematica;
-  String vinculo;
-  String propostaConjunto;
-  String dadosProponente;
-  String empresaEnvolvida;
-  String equipeColaboradores;
-  String userID;
-  String docId;
+  final String titulo;
+  final String tempo;
+  final String resumo;
+  final String objetivo;
+  final String contrapartida;
+  final String resultadosEsperados;
+  final String areaTematica;
+  final String vinculo;
+  final String propostaConjunto;
+  final String dadosProponente;
+  final String empresaEnvolvida;
+  final String equipeColaboradores;
+  final String docId;
+  final bool editarDemanda;
 
-  Demandas({
-    this.titulo,
-    this.tempo,
-    this.resumo,
-    this.objetivo,
-    this.contrapartida,
-    this.resultadosEsperados,
-    this.areaTematica,
-    this.vinculo,
-    this.propostaConjunto,
-    this.dadosProponente,
-    this.empresaEnvolvida,
-    this.equipeColaboradores,
-    this.userID,
-    this.docId
-  });
+  Demandas(
+      {this.titulo,
+      this.tempo,
+      this.resumo,
+      this.objetivo,
+      this.contrapartida,
+      this.resultadosEsperados,
+      this.areaTematica,
+      this.vinculo,
+      this.propostaConjunto,
+      this.dadosProponente,
+      this.empresaEnvolvida,
+      this.equipeColaboradores,
+      this.docId,
+      this.editarDemanda});
 
   @override
   String toString() {
@@ -39,20 +36,20 @@ class Demandas {
   }
 
   ///Método responsável por acessar as informações dos campos dos documentos cadastrados no Firebase
-  Demandas.fromSnapshot(DocumentSnapshot snapshot) {
-    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-
-    titulo = data['titulo'];
-    tempo = data['tempo'];
-    resultadosEsperados = data['resultados_esperados'];
-    resumo = data['resumo'];
-    objetivo = data['objetivo'];
-    contrapartida = data['contrapartida'];
-    areaTematica = data['area_tematica'];
-    vinculo = data['vinculo'];
-    userID = data['usuario'];
-    docId = snapshot.id;
-  }
+  // Demandas.fromSnapshot(DocumentSnapshot snapshot) {
+  //   Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+  //
+  //   titulo = data['titulo'];
+  //   tempo = data['tempo'];
+  //   resultadosEsperados = data['resultados_esperados'];
+  //   resumo = data['resumo'];
+  //   objetivo = data['objetivo'];
+  //   contrapartida = data['contrapartida'];
+  //   areaTematica = data['area_tematica'];
+  //   vinculo = data['vinculo'];
+  //   userID = data['usuario'];
+  //   docId = snapshot.id;
+  // }
 }
 
 class AreaTematica {
