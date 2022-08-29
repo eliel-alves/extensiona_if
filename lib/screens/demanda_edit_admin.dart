@@ -1,4 +1,5 @@
 
+import 'package:extensiona_if/report/demanda_report.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +14,7 @@ class EditarFormInfoAdmin extends StatefulWidget {
   final String contrapartida;
   final String vinculo;
   final String resultadosEsperados;
-  final QueryDocumentSnapshot updateDados;
+  final DocumentSnapshot updateDados;
 
   const EditarFormInfoAdmin(
       this.titulo,
@@ -34,6 +35,8 @@ class EditarFormInfoAdmin extends StatefulWidget {
 
 class EditarFormInfoState extends State<EditarFormInfoAdmin> {
 
+  // DocumentSnapshot doc = FirebaseFirestore.instance('DEMANDAS')
+
   final TextEditingController _controladorTitulo = TextEditingController();
   final TextEditingController _controladorTempoNecessario = TextEditingController();
   final TextEditingController _controladorResumo = TextEditingController();
@@ -42,7 +45,9 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados = TextEditingController();
 
+
   final _formKey = GlobalKey<FormState>();
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +60,17 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
     _controladorContrapartida.text = widget.contrapartida;
     _controladorVinculo.text = widget.vinculo;
     _controladorResultadosEsperados.text = widget.resultadosEsperados;
+    DocumentSnapshot _docId;
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.updateDados.id)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        _docId = documentSnapshot;
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -88,6 +104,20 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
 
               EditorTextFormField(_controladorResultadosEsperados, "Quais os resultados esperados?  ",
                   "Descreva os resultados esperados", 5, 600, false),
+
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DemandaReport(
+                          docid: widget.updateDados
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Gerar PDF')
+              )
 
               /*SizedBox(
                 height: 40,
@@ -130,6 +160,12 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
       ),
     );
 
+  }
+
+  Future<DocumentSnapshot> getDocument(String id) async {
+    final DocumentSnapshot _docId = await FirebaseFirestore.instance.collection('DEMANDAS').doc(widget.updateDados.id).get();
+
+    return _docId;
   }
 
   void _editarDemanda(BuildContext context) {
