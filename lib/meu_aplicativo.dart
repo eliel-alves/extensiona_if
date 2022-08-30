@@ -1,4 +1,5 @@
 import 'package:extensiona_if/route/route_generator.dart';
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +9,7 @@ class ExtensionaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: FlexColorScheme.light(scheme: FlexScheme.green).toTheme,
+      theme: AppTheme.define(),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       initialRoute: '/',

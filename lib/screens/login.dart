@@ -1,6 +1,7 @@
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/screens/register.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/widgets/widget.dart';
@@ -15,7 +16,6 @@ class AuthenticationPages extends StatefulWidget {
 }
 
 class _AuthenticationPagesState extends State<AuthenticationPages> {
-
   int initialPage = 0;
   PageController pc;
 
@@ -47,9 +47,7 @@ class _AuthenticationPagesState extends State<AuthenticationPages> {
   }
 }
 
-
 class LoginPage extends StatefulWidget {
-
   final PageController pageController;
 
   const LoginPage({Key key, this.pageController}) : super(key: key);
@@ -62,7 +60,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String validaMassage = 'Campo Obrigatório!';
+  String validationMessage = 'Campo Obrigatório!';
+
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -76,83 +75,82 @@ class _LoginPageState extends State<LoginPage> {
         centerTitle: true,
         backgroundColor: AppTheme.colors.dark,
       ),
+      backgroundColor: AppTheme.colors.lightGrey,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(25),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
 
-
               Padding(
-                padding: const EdgeInsets.only(top: 45, bottom: 10),
-                child: Text('LOGIN', style: AppTheme.typo.title),
+                padding: const EdgeInsets.only(top: 50, bottom: 0, right: 40, left: 40),
+                child: Text('Olá, bem-vindo!',
+                    style: AppTheme.typo.homeText),
               ),
 
               registerOrLogin(
-                  'Não possui uma conta?',
-                  'Cadastre-se',
-                      () {
-                    widget.pageController.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.ease);
-                  },
-                  context),
+                'Não possui uma conta?',
+                'Cadastre-se agora!',
+                () {
+                  widget.pageController.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+                },
+                context
+              ),
 
-              EditorAuth(_emailController, 'Email', 'Informe seu email', const Icon(Ionicons.md_mail), 30, false, validaMassage, false),
+              addVerticalSpace(30),
 
-              EditorAuth(_passwordController, 'Senha', 'Informe sua senha', const Icon(Ionicons.md_key), 10, true, validaMassage, false),
+              EditorAuth(
+                  _emailController,
+                  'Email',
+                  'Informe seu email',
+                  const Icon(Icons.mail_outline),
+                  30,
+                  false,
+                  validationMessage,
+                  false),
+
+              EditorAuth(
+                  _passwordController,
+                  'Senha',
+                  'Informe sua senha',
+                  const Icon(Ionicons.md_key),
+                  10,
+                  true,
+                  validationMessage,
+                  false),
 
               trocarSenha(),
 
               SizedBox(
                 width: double.infinity,
-                height: 40,
                 child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        authService.login(_emailController.text, _passwordController.text, context);
-                      }
-                      /*setState(() {
-                        _emailController.text.isEmpty ? _valida = true : _valida = false;
-                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
-                      });
-
-                      if(!_valida) {
-                        authService.login(_emailController.text, _passwordController.text, context);
-                      }*/
-                    },
-                    child: Text('Entrar', style: AppTheme.typo.button),
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      authService.login(_emailController.text,
+                        _passwordController.text, context);
+                    }
+                  },
+                  child: Text('Entrar', style: AppTheme.typo.button),
                   style: ElevatedButton.styleFrom(
-                      primary: AppTheme.colors.green,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                    elevation: 0,
+                    padding: const EdgeInsets.all(23),
+                    primary: AppTheme.colors.blue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
                 ),
               ),
-
-
-              Padding(
-                  padding: const EdgeInsets.only(top: 15), child: Divisor()),
-
-              const SizedBox(height: 10),
-
-              socialButtons(
-                  Colors.white,
-                      () {
-                    authService.signInWithGoogle();
-                  },
-                  "Cadastre-se com o Google",
-                  FontAwesome.google
-              ),
-
+              addVerticalSpace(30),
+              Divisor(),
+              addVerticalSpace(30),
+              socialButtons(Colors.white, () {
+                authService.signInWithGoogle();
+              }, "Cadastre-se com o Google", FontAwesome.google),
               const SizedBox(height: 20),
-
-              socialButtons(
-                  Colors.blue[600],
-                      () {
-                    authService.signInWithFacebook();
-                  },
-                  "Cadastre-se com o Facebook",
-                  FontAwesome.facebook
-              ),
+              socialButtons(Colors.blue[600], () {
+                authService.signInWithFacebook();
+              }, "Cadastre-se com o Facebook", FontAwesome.facebook),
             ],
           ),
         ),
@@ -162,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget trocarSenha() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 19, top: 13),
+      padding: const EdgeInsets.only(bottom: 20, top: 5),
       child: Align(
         alignment: Alignment.bottomRight,
         child: GestureDetector(
@@ -175,8 +173,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
-  Widget socialButtons(Color backgroundColor, Function onTap, String title, IconData iconData) {
+  Widget socialButtons(
+      Color backgroundColor, Function onTap, String title, IconData iconData) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -184,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
         height: 50,
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -197,9 +195,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(iconData),
-
             const SizedBox(width: 10),
-
             Text(title, style: AppTheme.typo.button)
           ],
         ),

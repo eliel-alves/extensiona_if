@@ -12,6 +12,14 @@ class AppTheme {
   static ThemeData define() {
     return ThemeData(
       fontFamily: "Inter",
+      colorScheme: ThemeData().colorScheme.copyWith(
+        primary: colors.blue,
+        error: colors.red
+      ),
+      errorColor: colors.red,
+      inputDecorationTheme: InputDecorationTheme(
+        prefixIconColor: colors.greyText,
+      ),
     );
   }
 }

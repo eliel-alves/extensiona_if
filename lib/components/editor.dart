@@ -1,5 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -37,7 +38,6 @@ import 'package:flutter_icons/flutter_icons.dart';
   }
 }*/
 
-
 class EditorTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final int maxLength;
@@ -46,7 +46,10 @@ class EditorTextFormField extends StatelessWidget {
   final String dica;
   final bool validaField;
 
-  const EditorTextFormField(this.controller, this.labelText, this.dica, this.lines, this.maxLength, this.validaField, {Key key}): super(key: key);
+  const EditorTextFormField(this.controller, this.labelText, this.dica,
+      this.lines, this.maxLength, this.validaField,
+      {Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -60,26 +63,25 @@ class EditorTextFormField extends StatelessWidget {
           fontSize: 18.0,
         ),
         decoration: InputDecoration(
-            labelText: labelText,
-            hintText: dica,
-            helperText: dica,
-            border: const OutlineInputBorder(),
+          labelText: labelText,
+          hintText: dica,
+          helperText: dica,
+          border: const OutlineInputBorder(),
         ),
-        validator: validaField ? (value) {
-          if (value == null || value.isEmpty) {
-            return 'Campo Obrigatório!';
-          }
-          return null;
-        }
+        validator: validaField
+            ? (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Campo Obrigatório!';
+                }
+                return null;
+              }
             : null,
       ),
     );
   }
-
 }
 
 class EditorAuth extends StatefulWidget {
-
   final TextEditingController controlador;
   final String rotulo;
   final String dica;
@@ -92,18 +94,20 @@ class EditorAuth extends StatefulWidget {
   const EditorAuth(
       this.controlador,
       this.rotulo,
-      this.dica, this.icon,
+      this.dica,
+      this.icon,
       this.qtdCaracteres,
       this.verSenha,
       this.errorText,
-      this.confirmPasswordField, {Key key}) : super(key: key);
+      this.confirmPasswordField,
+      {Key key})
+      : super(key: key);
 
   @override
   State<EditorAuth> createState() => _EditorAuthState();
 }
 
 class _EditorAuthState extends State<EditorAuth> {
-
   bool _habilitaVerSenha;
   bool _verSenha;
 
@@ -116,58 +120,71 @@ class _EditorAuthState extends State<EditorAuth> {
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6, top: 6),
+      padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
         obscureText: _verSenha,
         controller: widget.controlador,
-        style: AppTheme.typo.defaultText,
+        style: AppTheme.typo.formText,
         decoration: InputDecoration(
-          labelStyle: AppTheme.typo.defaultText,
+          fillColor: AppTheme.colors.offWhite,
+          contentPadding: const EdgeInsets.all(23),
+          floatingLabelStyle: TextStyle(color: AppTheme.colors.dark, fontWeight: FontWeight.bold),
+          suffixIconConstraints: const BoxConstraints(minWidth: 50),
+          prefixIconConstraints: const BoxConstraints(minWidth: 50),
+          labelStyle: AppTheme.typo.defaultBoldText,
           labelText: widget.rotulo,
           hintText: widget.dica,
           prefixIcon: widget.icon,
-          suffixIcon: _habilitaVerSenha ? (
-              _verSenha ?
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  //Quando o usuário clicar nesse ícone, ele mudará para falso
-                  debugPrint('Você está vendo a sua senha');
-                  _verSenha = false;
-                });
-              },
-              icon: const Icon(Ionicons.md_eye_off)
-          )
-              :
-              IconButton(
-                  onPressed: () {
-                      setState(() {
-                        //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
-                        debugPrint('Você não está vendo a sua senha');
-                        _verSenha = true;
-                      });
-                  },
-                  icon: const Icon(Ionicons.md_eye)
-              )
-      ) : null,
+          suffixIcon: _habilitaVerSenha
+              ? (_verSenha
+                  ? IconButton(
+                      onPressed: () {
+                        setState(() {
+                          //Quando o usuário clicar nesse ícone, ele mudará para falso
+                          debugPrint('Você está vendo a sua senha');
+                          _verSenha = false;
+                        });
+                      },
+                      icon: const Icon(Ionicons.md_eye_off))
+                  : IconButton(
+                      onPressed: () {
+                        setState(() {
+                          //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
+                          debugPrint('Você não está vendo a sua senha');
+                          _verSenha = true;
+                        });
+                      },
+                      icon: const Icon(Ionicons.md_eye)))
+              : null,
           errorText: widget.confirmPasswordField ? widget.errorText : null,
-          border: const OutlineInputBorder()
-        ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return widget.errorText;
-            }
-            return null;
-          }
-      ),
+          errorStyle: const TextStyle(fontSize: 13, letterSpacing: 0, fontWeight: FontWeight.w500),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppTheme.colors.white, width: 2),
+            borderRadius: const BorderRadius.all(Radius.circular(10)
+          )),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
+            borderRadius: const BorderRadius.all(Radius.circular(10),
+          )),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppTheme.colors.blue, width: 2),
+            borderRadius: const BorderRadius.all(Radius.circular(10))),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
+            borderRadius: const BorderRadius.all(Radius.circular(10))),
+          ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return widget.errorText;
+        }
+        return null;
+      }),
     );
   }
 }
 
-class CampoSelecaoArquivos extends StatelessWidget{
-
+class CampoSelecaoArquivos extends StatelessWidget {
   final IconData uploadIcone;
   final String subText;
   final String mainText;
@@ -176,7 +193,8 @@ class CampoSelecaoArquivos extends StatelessWidget{
   final TextStyle styleTextFile;
   final String fileName;
 
-  const CampoSelecaoArquivos(this.uploadIcone, this.subText, this.mainText, this.setUploadAction, this.styleText, this.fileName, this.styleTextFile);
+  const CampoSelecaoArquivos(this.uploadIcone, this.subText, this.mainText,
+      this.setUploadAction, this.styleText, this.fileName, this.styleTextFile);
 
   @override
   Widget build(BuildContext context) {
@@ -195,34 +213,27 @@ class CampoSelecaoArquivos extends StatelessWidget{
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(uploadIcone, size: 60),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                      subText,
-                      style: GoogleFonts.cabin(textStyle: styleText)),
-
+                  Text(subText, style: GoogleFonts.cabin(textStyle: styleText)),
                   GestureDetector(
                     onTap: setUploadAction,
-                    child: Text(
-                        mainText,
-                        style: GoogleFonts.cabin(textStyle: styleText, color: Theme.of(context).colorScheme.primary)),
+                    child: Text(mainText,
+                        style: GoogleFonts.cabin(
+                            textStyle: styleText,
+                            color: Theme.of(context).colorScheme.primary)),
                   )
                 ],
               ),
-
               Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(fileName, style: GoogleFonts.cabin(textStyle: styleTextFile))
-              )
+                  child: Text(fileName,
+                      style: GoogleFonts.cabin(textStyle: styleTextFile)))
             ],
           ),
         ),
       ),
-
     );
   }
-
 }
-

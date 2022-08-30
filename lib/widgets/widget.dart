@@ -1,5 +1,7 @@
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';
 
@@ -25,13 +27,12 @@ class ListTileFiles extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) =>
-      ListTile(
-          trailing: IconButton(
-            icon: const Icon(Icons.highlight_remove_rounded),
-            onPressed: onPressed,
-          ),
-          title: Text(title),
+  Widget build(BuildContext context) => ListTile(
+        trailing: IconButton(
+          icon: const Icon(Icons.highlight_remove_rounded),
+          onPressed: onPressed,
+        ),
+        title: Text(title),
       );
 }
 
@@ -122,14 +123,14 @@ class AppBarLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(
-          'lib/assets/img/logo-light-version.png',
-          width: 240,
+        SvgPicture.asset(
+          'lib/assets/svg/extensiona-logo-light.svg',
+          width: 220,
         ),
-        const SizedBox(height: 20),
+        addVerticalSpace(10),
         Text(
           titulo,
-          style: AppTheme.typo.title,
+          style: AppTheme.typo.defaultText,
         ),
       ],
     );
@@ -201,16 +202,17 @@ class LogoWelcomeScreen extends StatelessWidget {
   }
 }
 
-Widget registerOrLogin(String firstText, String secondText,
-    Function setFormAction, BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 20, top: 20),
-    child: Row(children: <Widget>[
+Widget registerOrLogin(String firstText, String secondText, Function setFormAction, BuildContext context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[
       Text(firstText, style: AppTheme.typo.defaultText),
-      GestureDetector(
-        onTap: setFormAction,
-        child: Text(secondText, style: AppTheme.typo.defaultText),
-      )
-    ]),
-  );
+      TextButton(
+        style: TextButton.styleFrom(
+          primary: AppTheme.colors.blue
+        ),
+        onPressed: setFormAction,
+        child: Text(secondText, style: AppTheme.typo.defaultBoldText)),
+      ]
+    );
 }
