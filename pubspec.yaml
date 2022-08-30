@@ -48,7 +48,7 @@ dependencies:
   multi_select_flutter: ^4.1.2
   pdf: ^3.8.3
   printing: ^5.9.2
-  flutter_svg: ^1.1.4
+  flutter_svg: ^1.0.3
 
 
   # The following adds the Cupertino Icons font to your application.
