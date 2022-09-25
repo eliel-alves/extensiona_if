@@ -78,7 +78,7 @@ class _DemandaReportState extends State<DemandaReport> {
   Future<Uint8List> generateDocument(PdfPageFormat format) async {
     final doc = pw.Document(pageMode: PdfPageMode.outlines);
     // final font1 = await PdfGoogleFonts.interRegular();
-    //final font2 = await PdfGoogleFonts.interBold();
+    // final font2 = await PdfGoogleFonts.interBold();
     final logo = await rootBundle.loadString('lib/assets/svg/logo-dark.svg');
     var font1 = pw.Font.ttf(
         await rootBundle.load("lib/assets/fonts/inter/Inter-Regular.ttf"));
@@ -98,70 +98,43 @@ class _DemandaReportState extends State<DemandaReport> {
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Header(level: 2, text: tituloAssunto),
-            //pw.SizedBox(width: 5),
             pw.Paragraph(text: conteudo),
           ]);
     }
 
     doc.addPage(
-      pw.Page(
-        pageTheme: pw.PageTheme(
-          pageFormat: format.copyWith(
-            marginBottom: 0,
-            marginLeft: 0,
-            marginRight: 0,
-            marginTop: 0,
-          ),
-          orientation: pw.PageOrientation.portrait,
-          // theme: pw.ThemeData.withFont(
-          //   base: font1,
-          //   bold: font2,
-          // ),
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        theme: pw.ThemeData.withFont(
+          base: font1,
+          bold: font2,
         ),
-        build: (context) {
-          return pw.Padding(
-              padding: const pw.EdgeInsets.all(16),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.SvgImage(svg: logo, width: 200),
-                  pw.Container(
-                      padding: const pw.EdgeInsets.all(30),
-                      child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                            pw.Center(
-                                child: pw.Header(
-                                    level: 2, text: 'PROPOSTA DE PROJETO')),
-                            pw.SizedBox(height: 10),
-                            pw.Container(
-                                child: pw.Column(children: [
-                              conteudoHorizontal('Título da proposta:', titulo),
-                              conteudoHorizontal(
-                                  'Autores:', equipeColaboradores),
-                              conteudoHorizontal(
-                                  'Dados do proponente:', dadosProponente),
-                              conteudoHorizontal(
-                                  'Instituições envolvidas:', empresaEnvolvida),
-                            ])),
-                            pw.SizedBox(height: 10),
-                            pw.Container(
-                                child: pw.Column(children: [
-                              conteudoVertical('RESUMO DA PROPOSTA', resumo),
-                              conteudoVertical('ÁREA TEMÁTICA', areaTematica),
-                              conteudoVertical(
-                                  'JUSTIFICATIVA', propostaConjunto),
-                              conteudoVertical('OBJETIVOS', objetivo),
-                              conteudoVertical(
-                                  'RECURSOS DISPONÍVEIS(CONTRAPARTIDA)',
-                                  contrapartida),
-                              conteudoVertical(
-                                  'TEMPO DE EXECUÇÃO(ESTIMADO)', tempo),
-                            ]))
-                          ]))
-                ],
-              ));
-        },
+        //pageFormat: format.copyWith(marginBottom: 1.5 * PdfPageFormat.cm),
+        orientation: pw.PageOrientation.portrait,
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        build: (pw.Context context) => <pw.Widget>[
+          pw.Header(
+              level: 0,
+              title: 'PROPOSTA DE PROJETO',
+              child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: <pw.Widget>[
+                    pw.Text('PROPOSTA DE PROJETO'),
+                    pw.SvgImage(svg: logo, width: 150),
+                  ])),
+          conteudoVertical('TÍTULO DA PROPOSTA', titulo),
+          conteudoVertical('AUTORES', equipeColaboradores),
+          conteudoVertical('DADOS DO PROPONENTE', dadosProponente),
+          conteudoVertical('INSTITUIÇÕES ENVOLVIDAS', empresaEnvolvida),
+          conteudoVertical('RESUMO DA PROPOSTA', resumo),
+          conteudoVertical('ÁREA TEMÁTICA', areaTematica),
+          conteudoVertical('JUSTIFICATIVA', propostaConjunto),
+          conteudoVertical('OBJETIVOS', objetivo),
+          conteudoVertical(
+              'RECURSOS DISPONÍVEIS(CONTRAPARTIDA)', contrapartida),
+          conteudoVertical('TEMPO DE EXECUÇÃO(ESTIMADO)', tempo),
+        ],
       ),
     );
 
