@@ -20,7 +20,7 @@ class AppTypo {
   final title = const TextStyle(fontFamily: "Objectivity", fontSize: 18, fontWeight: FontWeight.w500);
 
   // Texto para Título na AppBar
-  final appBar = const TextStyle(fontFamily: "Objectivity", fontSize: 16, fontWeight: FontWeight.bold);
+  final appBar = const TextStyle(fontFamily: "Inter", fontSize: 18, fontWeight: FontWeight.w500);
 
   // Texto Padrão
   final defaultText = const TextStyle(fontFamily: "Inter", fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0);

@@ -396,6 +396,7 @@ class _FormDemandaState extends State<FormDemanda> {
   void _editarDemanda() async {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
+    final user = UserDAO().auth.currentUser;
 
     demandaRef
         .doc(documentID)

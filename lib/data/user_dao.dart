@@ -65,7 +65,9 @@ class UserDAO extends ChangeNotifier {
           );
 
   // Cadastrar no app
-  void signup(String email, String password, String userName, String userPhone,
+  void signup(String email, String password,
+      String userName, String userPhone,
+      String state, String city,
       BuildContext context) async {
     // Tenta cadastrar o usuário
     try {
@@ -73,7 +75,7 @@ class UserDAO extends ChangeNotifier {
         email: email,
         password: password,
       );
-      addUser(email, password, userName, userPhone);
+      addUser(email, password, userName, userPhone, state, city);
       notifyListeners();
       _getUser();
     } on FirebaseAuthException catch (e) {
@@ -101,10 +103,16 @@ class UserDAO extends ChangeNotifier {
       [String email,
       String password,
       String userName,
-      String userPhone]) async {
+      String userPhone,
+      String state,
+      String city]) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
     await usersRef.doc(userId()).set(
-          Users(userId(), userEmail(), 'user', userName, userPhone, ''),
+          Users(
+            userId(), userEmail(),
+            'user', userName, userPhone,
+            '', state, city
+          ),
         );
   }
 

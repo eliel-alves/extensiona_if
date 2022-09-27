@@ -60,8 +60,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String validationMessage = 'Campo Obrigatório!';
-
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -108,8 +106,8 @@ class _LoginPageState extends State<LoginPage> {
                   const Icon(Icons.mail_outline),
                   30,
                   false,
-                  validationMessage,
-                  false),
+                  'Insira um e-mail válido',
+                  false, false),
 
               EditorAuth(
                   _passwordController,
@@ -118,8 +116,8 @@ class _LoginPageState extends State<LoginPage> {
                   const Icon(Ionicons.md_key),
                   10,
                   true,
-                  validationMessage,
-                  false),
+                  'Insira uma senha',
+                  false, false),
 
               trocarSenha(),
 

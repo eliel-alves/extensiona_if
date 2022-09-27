@@ -17,7 +17,8 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-  List<String> _selectedValue = [];
+  List<String> _categoryFiltered = [];
+  List<String> _cityFiltered = [];
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   //Método responsável por fazer o filtro das áreas temáticas
   filteringData() {
-    if (_selectedValue.isEmpty) {
+    if (_categoryFiltered.isEmpty) {
       // Verifica se o vetor que contém as áreas selecionadas está vazio - irá pegar todas as demandas do banco
       final Stream<QuerySnapshot> _demandaStream =
           FirebaseFirestore.instance.collection('DEMANDAS').snapshots();
@@ -37,7 +38,7 @@ class _AdminScreenState extends State<AdminScreen> {
       final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
           .instance
           .collection('DEMANDAS')
-          .where('area_tematica', whereIn: _selectedValue)
+          .where('area_tematica', whereIn: _categoryFiltered)
           .snapshots();
       return StreamBuilderDemandas(stream: _filterDemandaStream);
     }
@@ -49,8 +50,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Propostas registradas", style: AppTheme.typo.title),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text("Propostas Registradas", style: AppTheme.typo.appBar),
         actions: [
           IconButton(
               onPressed: () {
@@ -70,7 +70,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (!snapshot.hasData) {
-                    return const Text('Carregando ...');
+                    return const Text('Carregando...');
                   } else {
                     final _items = snapshot.data.docs
                         .map((DocumentSnapshot document) =>
@@ -78,43 +78,44 @@ class _AdminScreenState extends State<AdminScreen> {
                                 document['nome'], document['nome']))
                         .toList();
 
-                    final _itemsChip = _selectedValue
+                    final _itemsChip = _categoryFiltered
                         .map((e) => MultiSelectItem<String>(e, e))
                         .toList();
 
                     return MultiSelectDialogField(
-                      items: _items,
-                      title: Text("Selecionar áreas temáticas",
-                          style: AppTheme.typo.defaultText),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(40)),
-                        border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2),
-                      ),
-                      buttonIcon: Icon(FontAwesome.chevron_circle_down,
-                          color: Theme.of(context).colorScheme.primary),
-                      buttonText:
-                          Text("Áreas Temáticas", style: AppTheme.typo.button),
-                      onConfirm: (results) {
-                        setState(() {
-                          _selectedValue = results;
-                        });
-                        debugPrint(_selectedValue.toString());
-                      },
-                      chipDisplay: MultiSelectChipDisplay<String>(
-                        items: _itemsChip,
-                        onTap: (value) {
+                        items: _items,
+                        title: Text("Filtrar por Áreas Temáticas",
+                            style: AppTheme.typo.defaultBoldText),
+                        decoration: BoxDecoration(
+                          color: AppTheme.colors.white,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2),
+                        ),
+                        buttonIcon: Icon(Icons.expand_more,
+                            color: AppTheme.colors.greyText),
+                        buttonText: Text("Áreas Temáticas",
+                            style: AppTheme.typo.button),
+                        onConfirm: (results) {
                           setState(() {
-                            debugPrint(value);
-                            _selectedValue.remove(value);
+                            _categoryFiltered = results;
                           });
-                          debugPrint(_selectedValue.toString());
+                          debugPrint(_categoryFiltered.toString());
                         },
-                      ),
-                    );
+                        cancelText: const Text('CANCELAR'),
+                        confirmText: const Text('FILTRAR'),
+                        chipDisplay: MultiSelectChipDisplay<String>(
+                          items: _itemsChip,
+                          onTap: (value) {
+                            setState(() {
+                              debugPrint(value);
+                              _categoryFiltered.remove(value);
+                            });
+                            debugPrint(_categoryFiltered.toString());
+                          },
+                        ));
                   }
                 }),
             filteringData()
@@ -238,10 +239,9 @@ Widget estilizacaoLista(
           ),
           const SizedBox(width: 4),
           Text(infoStatus[0].toString().toUpperCase() +
-              infoStatus.toString().substring(
-                  1, infoStatus.toString().length)),
+              infoStatus.toString().substring(1, infoStatus.toString().length)),
         ] //     Text(DateTime(infoData).year.toString());
-        ),
+            ),
       ),
       children: [
         Padding(
@@ -254,39 +254,43 @@ Widget estilizacaoLista(
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => DemandaReport(
-                          docid: updateDados
-                      ),
+                      builder: (_) => DemandaReport(docid: updateDados),
                     ),
                   );
                 },
-                icon: Icon(FontAwesome.print, size: 20, color: Colors.grey.shade800),
+                icon: Icon(FontAwesome.print,
+                    size: 20, color: Colors.grey.shade800),
               ),
-              SizedBox(width: 10,),
+              SizedBox(
+                width: 10,
+              ),
               IconButton(
                 onPressed: () {
                   debugPrint('consultou a demanda');
                   final Future future = Navigator.push(context,
                       MaterialPageRoute(builder: (context) {
-                        return EditarFormInfoAdmin(
-                            infoTitulo,
-                            infoTempo,
-                            infoResumo,
-                            infoObjetivo,
-                            infoContrapartida,
-                            infoVinculo,
-                            infoResultadosEsperados,
-                            updateDados);
-                      }));
+                    return EditarFormInfoAdmin(
+                        infoTitulo,
+                        infoTempo,
+                        infoResumo,
+                        infoObjetivo,
+                        infoContrapartida,
+                        infoVinculo,
+                        infoResultadosEsperados,
+                        updateDados);
+                  }));
 
                   future.then((demandaAtualizada) {
                     debugPrint("$demandaAtualizada");
                     debugPrint('A proposta foi alterada');
                   });
                 },
-                icon: Icon(FontAwesome.pencil, size: 20, color: Colors.grey.shade800),
+                icon: Icon(FontAwesome.pencil,
+                    size: 20, color: Colors.grey.shade800),
               ),
-              SizedBox(width: 10,),
+              SizedBox(
+                width: 10,
+              ),
               IconButton(
                 onPressed: () {
                   showDialog(
@@ -295,11 +299,13 @@ Widget estilizacaoLista(
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: const Text('Deletar Proposta'),
-                          content: const Text('Você deseja deletar esta proposta?'),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                          actions: <Widget> [
+                          content:
+                              const Text('Você deseja deletar esta proposta?'),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0)),
+                          actions: <Widget>[
                             TextButton(
-                              onPressed: (){
+                              onPressed: () {
                                 //Deleta a proposta cadastrada no Firebase
                                 debugPrint('Foi deletado a proposta');
                                 updateDados.reference.delete();
@@ -308,12 +314,14 @@ Widget estilizacaoLista(
                                 Navigator.pop(context);
 
                                 //Dispara um SnackBar
-                                const SnackBar snackBar = SnackBar(content: Text("A proposta foi deletada com sucesso! "));
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                const SnackBar snackBar = SnackBar(
+                                    content: Text(
+                                        "A proposta foi deletada com sucesso! "));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
                               },
                               child: const Text('Sim'),
                             ),
-
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
@@ -324,16 +332,15 @@ Widget estilizacaoLista(
                             ),
                           ],
                         );
-                      }
-                  );
+                      });
                 },
                 tooltip: 'Remover Proposta',
-                icon: Icon(FontAwesome.trash, size: 20, color: Colors.grey.shade800),
+                icon: Icon(FontAwesome.trash,
+                    size: 20, color: Colors.grey.shade800),
               )
             ],
           ),
         )
-        
       ],
     ),
   );

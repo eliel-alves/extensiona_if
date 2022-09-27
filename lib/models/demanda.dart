@@ -63,24 +63,19 @@ class AreaTematica {
 }
 
 class Users {
-  Users(
-    this.userId,
-    this.email,
-    this.tipo,
-    this.userName,
-    this.userPhone,
-    this.userPhoto,
-  );
+  Users(this.userId, this.email, this.tipo, this.userName, this.userPhone,
+      this.userPhoto, this.userState, this.userCity);
 
   Users.fromJson(Map<String, Object> json)
       : this(
-          json['id'] as String,
-          json['email'] as String,
-          json['tipo'] as String,
-          json['name'] as String,
-          json['telefone'] as String,
-          json['url_photo'] as String,
-        );
+            json['id'] as String,
+            json['email'] as String,
+            json['tipo'] as String,
+            json['name'] as String,
+            json['telefone'] as String,
+            json['url_photo'] as String,
+            json['estado'] as String,
+            json['cidade'] as String);
 
   final String userId;
   final String email;
@@ -88,6 +83,8 @@ class Users {
   final String userName;
   final String userPhone;
   final String userPhoto;
+  final String userState;
+  final String userCity;
 
   Map<String, Object> toJson() {
     return {
@@ -97,6 +94,8 @@ class Users {
       'name': userName,
       'telefone': userPhone,
       'url_photo': userPhoto,
+      'estado': userState,
+      'cidade': userCity
     };
   }
 }
