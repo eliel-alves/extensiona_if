@@ -172,7 +172,7 @@ class _RegisterUserState extends State<RegisterUser> {
                   style: ElevatedButton.styleFrom(
                       elevation: 0,
                       padding: const EdgeInsets.all(23),
-                      backgroundColor: AppTheme.colors.blue,
+                      primary: AppTheme.colors.blue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10))),
                 ),
