@@ -3,7 +3,6 @@ import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/report/demanda_report.dart';
 import 'package:extensiona_if/screens/demanda_edit_admin.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -167,181 +166,389 @@ Widget criarLista(QuerySnapshot dataSnapshot) {
         final infoResultadosEsperados =
             dataSnapshot.docs[index]['resultados_esperados'];
         // final infoAreaTematica = dataSnapshot.docs[index]['area_tematica'];
-        final updateDados = dataSnapshot.docs[index];
+        final docRef = dataSnapshot.docs[index];
 
-        return estilizacaoLista(
-            context,
-            infoTitulo,
-            infoTempo,
-            infoResumo,
-            infoStatus,
-            infoObjetivo,
-            infoContrapartida,
-            infoVinculo,
-            infoResultadosEsperados,
-            updateDados);
+        return EstilizacaoLista(
+          infoTitulo: infoTitulo,
+          infoTempo: infoTempo,
+          infoResumo: infoResumo,
+          infoStatus: infoStatus,
+          infoObjetivo: infoObjetivo,
+          infoContrapartida: infoContrapartida,
+          infoVinculo: infoVinculo,
+          infoResultadosEsperados: infoResultadosEsperados,
+          docRef: docRef,
+        );
       });
 }
 
-Widget estilizacaoLista(
-    BuildContext context,
-    String infoTitulo,
-    String infoTempo,
-    String infoResumo,
-    String infoStatus,
-    String infoObjetivo,
-    String infoContrapartida,
-    String infoVinculo,
-    String infoResultadosEsperados,
-    DocumentSnapshot updateDados) {
-  return Container(
-    margin: const EdgeInsets.only(bottom: 20),
-    // height: 70.0,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: const BorderRadius.all(Radius.circular(10)),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 40,
-          spreadRadius: 10,
-        ),
-      ],
-    ),
-    child: ExpansionTile(
-      leading: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Icon(FontAwesome.file),
-          ]),
-      title: Text(infoTitulo),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 5),
-        child: Row(children: [
-          // Informação Tempo
-          Icon(
-            Icons.alarm_outlined,
-            size: 18,
-            color: AppTheme.colors.blue,
-          ),
-          const SizedBox(width: 4),
-          Text(infoTempo),
+class EstilizacaoLista extends StatefulWidget {
+  final String infoTitulo;
+  final String infoTempo;
+  final String infoResumo;
+  final String infoStatus;
+  final String infoObjetivo;
+  final String infoContrapartida;
+  final String infoVinculo;
+  final String infoResultadosEsperados;
+  final DocumentSnapshot docRef;
 
-          // Espaçamento entre as informações
-          const SizedBox(width: 10),
+  const EstilizacaoLista(
+      {Key key,
+      this.infoTitulo,
+      this.infoTempo,
+      this.infoResumo,
+      this.infoStatus,
+      this.infoObjetivo,
+      this.infoContrapartida,
+      this.infoVinculo,
+      this.infoResultadosEsperados,
+      this.docRef})
+      : super(key: key);
 
-          // Informação Status
-          Icon(
-            Icons.flag_outlined,
-            size: 18,
-            color: AppTheme.colors.blue,
-          ),
-          const SizedBox(width: 4),
-          Text(infoStatus[0].toString().toUpperCase() +
-              infoStatus.toString().substring(1, infoStatus.toString().length)),
-        ] //     Text(DateTime(infoData).year.toString());
-            ),
-      ),
-      children: [
-        Padding(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DemandaReport(docid: updateDados),
-                    ),
-                  );
-                },
-                icon: Icon(FontAwesome.print,
-                    size: 20, color: Colors.grey.shade800),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              IconButton(
-                onPressed: () {
-                  debugPrint('consultou a demanda');
-                  final Future future = Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return EditarFormInfoAdmin(
-                        infoTitulo,
-                        infoTempo,
-                        infoResumo,
-                        infoObjetivo,
-                        infoContrapartida,
-                        infoVinculo,
-                        infoResultadosEsperados,
-                        updateDados);
-                  }));
-
-                  future.then((demandaAtualizada) {
-                    debugPrint("$demandaAtualizada");
-                    debugPrint('A proposta foi alterada');
-                  });
-                },
-                icon: Icon(FontAwesome.pencil,
-                    size: 20, color: Colors.grey.shade800),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Deletar Proposta'),
-                          content:
-                              const Text('Você deseja deletar esta proposta?'),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0)),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                //Deleta a proposta cadastrada no Firebase
-                                debugPrint('Foi deletado a proposta');
-                                updateDados.reference.delete();
-
-                                //Fecha a janela de exclusão
-                                Navigator.pop(context);
-
-                                //Dispara um SnackBar
-                                const SnackBar snackBar = SnackBar(
-                                    content: Text(
-                                        "A proposta foi deletada com sucesso! "));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              },
-                              child: const Text('Sim'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                //Navigator.of(context).pop();
-                                debugPrint('Não foi deletado a proposta');
-                              },
-                              child: const Text('Não'),
-                            ),
-                          ],
-                        );
-                      });
-                },
-                tooltip: 'Remover Proposta',
-                icon: Icon(FontAwesome.trash,
-                    size: 20, color: Colors.grey.shade800),
-              )
-            ],
-          ),
-        )
-      ],
-    ),
-  );
+  @override
+  State<EstilizacaoLista> createState() => _EstilizacaoListaState();
 }
+
+class _EstilizacaoListaState extends State<EstilizacaoLista> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      // height: 70.0,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 40,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: ExpansionTile(
+        leading: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(FontAwesome.file),
+            ]),
+        title: Text(widget.infoTitulo),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: Row(children: [
+            // Informação Tempo
+            Icon(
+              Icons.alarm_outlined,
+              size: 18,
+              color: AppTheme.colors.blue,
+            ),
+            const SizedBox(width: 4),
+            Text(widget.infoTempo),
+
+            // Espaçamento entre as informações
+            const SizedBox(width: 10),
+
+            // Informação Status
+            Icon(
+              Icons.flag_outlined,
+              size: 18,
+              color: AppTheme.colors.blue,
+            ),
+            const SizedBox(width: 4),
+            Text(widget.infoStatus[0].toString().toUpperCase() +
+                widget.infoStatus
+                    .toString()
+                    .substring(1, widget.infoStatus.toString().length)),
+          ] //     Text(DateTime(infoData).year.toString());
+              ),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    var subcolecaoRef = await FirebaseFirestore.instance
+                        .collection('DEMANDAS')
+                        .doc(widget.docRef.id)
+                        .collection('arquivos')
+                        .get();
+
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DemandaReport(
+                            docid: widget.docRef,
+                            vetDadoSubcolecao: subcolecaoRef.docs),
+                      ),
+                    );
+                  },
+                  icon: Icon(FontAwesome.print,
+                      size: 20, color: Colors.grey.shade800),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                IconButton(
+                  onPressed: () {
+                    debugPrint('consultou a demanda');
+                    final Future future = Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return EditarFormInfoAdmin(
+                          widget.infoTitulo,
+                          widget.infoTempo,
+                          widget.infoResumo,
+                          widget.infoObjetivo,
+                          widget.infoContrapartida,
+                          widget.infoVinculo,
+                          widget.infoResultadosEsperados,
+                          widget.docRef);
+                    }));
+
+                    future.then((demandaAtualizada) {
+                      debugPrint("$demandaAtualizada");
+                      debugPrint('A proposta foi alterada');
+                    });
+                  },
+                  icon: Icon(FontAwesome.pencil,
+                      size: 20, color: Colors.grey.shade800),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Deletar Proposta'),
+                            content: const Text(
+                                'Você deseja deletar esta proposta?'),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0)),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  //Deleta a proposta cadastrada no Firebase
+                                  debugPrint('Foi deletado a proposta');
+                                  widget.docRef.reference.delete();
+
+                                  //Fecha a janela de exclusão
+                                  Navigator.pop(context);
+
+                                  //Dispara um SnackBar
+                                  const SnackBar snackBar = SnackBar(
+                                      content: Text(
+                                          "A proposta foi deletada com sucesso! "));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                },
+                                child: const Text('Sim'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  //Navigator.of(context).pop();
+                                  debugPrint('Não foi deletado a proposta');
+                                },
+                                child: const Text('Não'),
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  tooltip: 'Remover Proposta',
+                  icon: Icon(FontAwesome.trash,
+                      size: 20, color: Colors.grey.shade800),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+// Widget estilizacasoLista(
+//     BuildContext context,
+//     String infoTitulo,
+//     String infoTempo,
+//     String infoResumo,
+//     String infoStatus,
+//     String infoObjetivo,
+//     String infoContrapartida,
+//     String infoVinculo,
+//     String infoResultadosEsperados,
+//     DocumentSnapshot updateDados) {
+//   return Container(
+//     margin: const EdgeInsets.only(bottom: 20),
+//     // height: 70.0,
+//     decoration: BoxDecoration(
+//       color: Colors.white,
+//       borderRadius: const BorderRadius.all(Radius.circular(10)),
+//       boxShadow: [
+//         BoxShadow(
+//           color: Colors.black.withOpacity(0.1),
+//           blurRadius: 40,
+//           spreadRadius: 10,
+//         ),
+//       ],
+//     ),
+//     child: ExpansionTile(
+//       leading: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: const [
+//             Icon(FontAwesome.file),
+//           ]),
+//       title: Text(infoTitulo),
+//       subtitle: Padding(
+//         padding: const EdgeInsets.only(top: 5),
+//         child: Row(children: [
+//           // Informação Tempo
+//           Icon(
+//             Icons.alarm_outlined,
+//             size: 18,
+//             color: AppTheme.colors.blue,
+//           ),
+//           const SizedBox(width: 4),
+//           Text(infoTempo),
+//
+//           // Espaçamento entre as informações
+//           const SizedBox(width: 10),
+//
+//           // Informação Status
+//           Icon(
+//             Icons.flag_outlined,
+//             size: 18,
+//             color: AppTheme.colors.blue,
+//           ),
+//           const SizedBox(width: 4),
+//           Text(infoStatus[0].toString().toUpperCase() +
+//               infoStatus.toString().substring(1, infoStatus.toString().length)),
+//         ] //     Text(DateTime(infoData).year.toString());
+//             ),
+//       ),
+//       children: [
+//         Padding(
+//           padding: const EdgeInsets.all(10),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.end,
+//             children: [
+//               IconButton(
+//                 onPressed: () async {
+//                   var subcolecaoRef = await FirebaseFirestore.instance
+//                       .collection('DEMANDAS')
+//                       .doc(updateDados.id)
+//                       .collection('arquivos')
+//                       .get();
+//
+//                   List vetArquivos;
+//
+//                   for (var arquivo in subcolecaoRef.docs) {
+//                     vetArquivos = arquivo.get('file_url');
+//                   }
+//
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute(
+//                       builder: (_) => DemandaReport(
+//                           docid: updateDados, vetDadoSubcolecao: vetArquivos),
+//                     ),
+//                   );
+//                 },
+//                 icon: Icon(FontAwesome.print,
+//                     size: 20, color: Colors.grey.shade800),
+//               ),
+//               const SizedBox(
+//                 width: 10,
+//               ),
+//               IconButton(
+//                 onPressed: () {
+//                   debugPrint('consultou a demanda');
+//                   final Future future = Navigator.push(context,
+//                       MaterialPageRoute(builder: (context) {
+//                     return EditarFormInfoAdmin(
+//                         infoTitulo,
+//                         infoTempo,
+//                         infoResumo,
+//                         infoObjetivo,
+//                         infoContrapartida,
+//                         infoVinculo,
+//                         infoResultadosEsperados,
+//                         updateDados);
+//                   }));
+//
+//                   future.then((demandaAtualizada) {
+//                     debugPrint("$demandaAtualizada");
+//                     debugPrint('A proposta foi alterada');
+//                   });
+//                 },
+//                 icon: Icon(FontAwesome.pencil,
+//                     size: 20, color: Colors.grey.shade800),
+//               ),
+//               const SizedBox(
+//                 width: 10,
+//               ),
+//               IconButton(
+//                 onPressed: () {
+//                   showDialog(
+//                       context: context,
+//                       barrierDismissible: false,
+//                       builder: (BuildContext context) {
+//                         return AlertDialog(
+//                           title: const Text('Deletar Proposta'),
+//                           content:
+//                               const Text('Você deseja deletar esta proposta?'),
+//                           shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(12.0)),
+//                           actions: <Widget>[
+//                             TextButton(
+//                               onPressed: () {
+//                                 //Deleta a proposta cadastrada no Firebase
+//                                 debugPrint('Foi deletado a proposta');
+//                                 updateDados.reference.delete();
+//
+//                                 //Fecha a janela de exclusão
+//                                 Navigator.pop(context);
+//
+//                                 //Dispara um SnackBar
+//                                 const SnackBar snackBar = SnackBar(
+//                                     content: Text(
+//                                         "A proposta foi deletada com sucesso! "));
+//                                 ScaffoldMessenger.of(context)
+//                                     .showSnackBar(snackBar);
+//                               },
+//                               child: const Text('Sim'),
+//                             ),
+//                             TextButton(
+//                               onPressed: () {
+//                                 Navigator.pop(context);
+//                                 //Navigator.of(context).pop();
+//                                 debugPrint('Não foi deletado a proposta');
+//                               },
+//                               child: const Text('Não'),
+//                             ),
+//                           ],
+//                         );
+//                       });
+//                 },
+//                 tooltip: 'Remover Proposta',
+//                 icon: Icon(FontAwesome.trash,
+//                     size: 20, color: Colors.grey.shade800),
+//               )
+//             ],
+//           ),
+//         )
+//       ],
+//     ),
+//   );
+// }

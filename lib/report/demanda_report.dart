@@ -8,17 +8,17 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 class DemandaReport extends StatefulWidget {
-  DocumentSnapshot docid;
-  DemandaReport({this.docid});
+  final DocumentSnapshot docid;
+  final List vetDadoSubcolecao;
+
+  const DemandaReport({Key key, this.docid, this.vetDadoSubcolecao})
+      : super(key: key);
 
   @override
-  State<DemandaReport> createState() => _DemandaReportState(docid: docid);
+  State<DemandaReport> createState() => _DemandaReportState();
 }
 
 class _DemandaReportState extends State<DemandaReport> {
-  DocumentSnapshot docid;
-  _DemandaReportState({this.docid});
-
   // final pdf = pw.Document();
   String titulo;
   String resumo;
@@ -32,25 +32,25 @@ class _DemandaReportState extends State<DemandaReport> {
   String propostaConjunto;
   String objetivo;
   String contrapartida;
-  List anexos;
+  List vetAnexos;
 
   @override
   void initState() {
     setState(() {
-      titulo = docid.get('titulo');
-      resumo = docid.get('resumo');
-      status = docid.get('status');
-      tempo = docid.get('tempo');
-      equipeColaboradores = docid.get('equipe_colaboradores');
-      dadosProponente = docid.get('dados_proponente');
-      empresaEnvolvida = docid.get('empresa_envolvida');
-      vinculo = docid.get('vinculo');
-      areaTematica = docid.get('area_tematica');
-      propostaConjunto = docid.get('proposta_conjunto');
-      objetivo = docid.get('objetivo');
-      contrapartida = docid.get('contrapartida');
+      titulo = widget.docid.get('titulo');
+      resumo = widget.docid.get('resumo');
+      status = widget.docid.get('status');
+      tempo = widget.docid.get('tempo');
+      equipeColaboradores = widget.docid.get('equipe_colaboradores');
+      dadosProponente = widget.docid.get('dados_proponente');
+      empresaEnvolvida = widget.docid.get('empresa_envolvida');
+      vinculo = widget.docid.get('vinculo');
+      areaTematica = widget.docid.get('area_tematica');
+      propostaConjunto = widget.docid.get('proposta_conjunto');
+      objetivo = widget.docid.get('objetivo');
+      contrapartida = widget.docid.get('contrapartida');
+      vetAnexos = widget.vetDadoSubcolecao;
     });
-
     super.initState();
   }
 
@@ -134,6 +134,19 @@ class _DemandaReportState extends State<DemandaReport> {
           conteudoVertical(
               'RECURSOS DISPONÍVEIS(CONTRAPARTIDA)', contrapartida),
           conteudoVertical('TEMPO DE EXECUÇÃO(ESTIMADO)', tempo),
+          pw.Header(level: 2, text: 'ANEXOS'),
+          pw.ListView.builder(
+            itemCount: vetAnexos.length,
+            itemBuilder: (context, index) {
+              final url = vetAnexos[index]['file_url'];
+
+              return pw.Bullet(text: url);
+
+              //return pw.Link(destination: url, child: pw.Text('arquivo'));
+
+              // return pw.UrlLink(destination: url, child: pw.Text('Arquivo'));
+            },
+          )
         ],
       ),
     );
