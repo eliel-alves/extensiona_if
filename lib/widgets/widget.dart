@@ -1,5 +1,6 @@
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -202,17 +203,48 @@ class LogoWelcomeScreen extends StatelessWidget {
   }
 }
 
-Widget registerOrLogin(String firstText, String secondText, Function setFormAction, BuildContext context) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[
-      Text(firstText, style: AppTheme.typo.defaultText),
-      TextButton(
-        style: TextButton.styleFrom(
-          primary: AppTheme.colors.blue
-        ),
+Widget registerOrLogin(String firstText, String secondText,
+    Function setFormAction, BuildContext context) {
+  return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+    Text(firstText, style: AppTheme.typo.defaultText),
+    TextButton(
+        style: TextButton.styleFrom(primary: AppTheme.colors.blue),
         onPressed: setFormAction,
         child: Text(secondText, style: AppTheme.typo.defaultBoldText)),
-      ]
-    );
+  ]);
+}
+
+class Options extends StatelessWidget {
+  final String title;
+  final String titleContent;
+  final Function onTap;
+
+  const Options(this.title, this.titleContent, this.onTap, {Key key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: InkWell(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(title, style: AppTheme.typo.title),
+                const SizedBox(width: 15),
+                Text(titleContent, style: AppTheme.typo.defaultText),
+              ],
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded)
+          ],
+        ),
+      ),
+      onTap: onTap,
+    ));
+  }
 }

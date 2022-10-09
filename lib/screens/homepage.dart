@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/models/demanda.dart';
 import 'package:flutter/material.dart';
@@ -52,8 +53,24 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
             ListTileOptions(
                 icone: Icons.account_circle_rounded,
                 title: 'Meu perfil',
-                onTap: () {
-                  Navigator.pushNamed(context, '/profile');
+                onTap: () async {
+                  var userRef = await FirebaseFirestore.instance
+                      .collection('USUARIOS')
+                      .doc(authService.userId())
+                      .get();
+
+                  var userInfo = Users.fromJson(userRef.data());
+
+                  Navigator.pushNamed(context, '/profile',
+                      arguments: Users(
+                          userInfo.userId,
+                          userInfo.email,
+                          userInfo.tipo,
+                          userInfo.userName,
+                          userInfo.userPhone,
+                          userInfo.userPhoto,
+                          userInfo.userState,
+                          userInfo.userCity));
                 }),
             ListTileOptions(
                 icone: Icons.logout_rounded,

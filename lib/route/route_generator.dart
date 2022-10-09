@@ -42,7 +42,17 @@ class RouteGenerator {
       case '/listaDemanda':
         return MaterialPageRoute(builder: (_) => const ListaDemanda());
       case '/profile':
-        return MaterialPageRoute(builder: (_) => MyProfile());
+        Users argument = settings.arguments as Users;
+        return MaterialPageRoute(
+            builder: (_) => MyProfile(
+                userId: argument.userId,
+                email: argument.email,
+                tipo: argument.tipo,
+                userName: argument.userName,
+                userPhone: argument.userPhone,
+                userPhoto: argument.userPhoto,
+                userState: argument.userState,
+                userCity: argument.userCity));
 
       default:
         //caso não tenha o nome da rota definida no switch statement

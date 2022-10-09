@@ -1,6 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -127,9 +126,12 @@ class _EditorAuthState extends State<EditorAuth> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
+          //enabled: false,
+         // readOnly: widget.readOnly,
           obscureText: _verSenha,
           controller: widget.controlador,
-          keyboardType: widget.maskField ? TextInputType.number : TextInputType.text,
+          keyboardType:
+              widget.maskField ? TextInputType.number : TextInputType.text,
           inputFormatters: widget.maskField ? [maskPhone] : null,
           style: AppTheme.typo.formText,
           decoration: InputDecoration(
