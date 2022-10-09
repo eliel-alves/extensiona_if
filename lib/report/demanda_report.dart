@@ -54,6 +54,7 @@ class _DemandaReportState extends State<DemandaReport> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +98,7 @@ class _DemandaReportState extends State<DemandaReport> {
       return pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Header(level: 2, text: tituloAssunto),
+            pw.Header(level: 3, text: tituloAssunto),
             pw.Paragraph(text: conteudo),
           ]);
     }
@@ -140,7 +141,11 @@ class _DemandaReportState extends State<DemandaReport> {
             itemBuilder: (context, index) {
               final url = vetAnexos[index]['file_url'];
 
-              return pw.Bullet(text: url);
+             return pw.Padding(
+                padding: const pw.EdgeInsets.only(bottom: 10),
+                child: _UrlText(url, url)
+              );
+              //return pw.Bullet(text: url);
 
               //return pw.Link(destination: url, child: pw.Text('arquivo'));
 
@@ -152,5 +157,25 @@ class _DemandaReportState extends State<DemandaReport> {
     );
 
     return doc.save();
+  }
+}
+
+
+class _UrlText extends pw.StatelessWidget {
+  _UrlText(this.text, this.url);
+
+  final String text;
+  final String url;
+
+  @override
+  pw.Widget build(pw.Context context) {
+    return pw.UrlLink(
+      destination: url,
+      child: pw.Text(text,
+          style: const pw.TextStyle(
+            decoration: pw.TextDecoration.underline,
+            color: PdfColors.blue,
+          )),
+    );
   }
 }
