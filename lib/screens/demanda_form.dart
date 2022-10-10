@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:extensiona_if/widgets/drawer_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -116,8 +117,9 @@ class _FormDemandaState extends State<FormDemanda> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Formulário de cadastro", style: AppTheme.typo.title),
+        title: Text("Formulário de Cadastro", style: AppTheme.typo.title),
       ),
+      drawer: drawerNavigation(context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(14),
         child: Form(

@@ -225,7 +225,16 @@ class Options extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        child: InkWell(
+      margin: const EdgeInsets.only(bottom: 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+        side: BorderSide(
+          color: AppTheme.colors.offWhite,
+          width: 2.0,
+        ),
+      ),
+      elevation: 0,
+      child: InkWell(
       child: Container(
         padding: const EdgeInsets.all(16),
         child: Row(

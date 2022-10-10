@@ -49,7 +49,8 @@ class _AdminScreenState extends State<AdminScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Propostas Registradas", style: AppTheme.typo.appBar),
+        title: Text("Propostas Registradas", style: AppTheme.typo.title),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
               onPressed: () {

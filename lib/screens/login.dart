@@ -72,18 +72,21 @@ class _LoginPageState extends State<LoginPage> {
         title: const AppBarLogo("Escola de Extensão do IFSul"),
         centerTitle: true,
         backgroundColor: AppTheme.colors.dark,
+        automaticallyImplyLeading: false
       ),
       backgroundColor: AppTheme.colors.lightGrey,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(25),
-        child: Form(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(25),
+          child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
 
               Padding(
-                padding: const EdgeInsets.only(top: 50, bottom: 0, right: 40, left: 40),
+                padding: const EdgeInsets.only(top: 0, bottom: 0, right: 40, left: 40),
                 child: Text('Olá, bem-vindo!',
                     style: AppTheme.typo.homeText),
               ),
@@ -139,20 +142,20 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(10))),
                 ),
               ),
-              addVerticalSpace(30),
-              Divisor(),
-              addVerticalSpace(30),
-              socialButtons(Colors.white, () {
-                authService.signInWithGoogle();
-              }, "Cadastre-se com o Google", FontAwesome.google),
-              const SizedBox(height: 20),
-              socialButtons(Colors.blue[600], () {
-                authService.signInWithFacebook();
-              }, "Cadastre-se com o Facebook", FontAwesome.facebook),
+              // addVerticalSpace(30),
+              // Divisor(),
+              // addVerticalSpace(30),
+              // socialButtons(Colors.white, () {
+              //   authService.signInWithGoogle();
+              // }, "Cadastre-se com o Google", FontAwesome.google),
+              // const SizedBox(height: 20),
+              // socialButtons(Colors.blue[600], () {
+              //   authService.signInWithFacebook();
+              // }, "Cadastre-se com o Facebook", FontAwesome.facebook),
             ],
           ),
         ),
-      ),
+      ),)
     );
   }
 

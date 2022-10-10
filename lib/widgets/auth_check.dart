@@ -6,14 +6,14 @@ import 'package:extensiona_if/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ManegeAuthState extends StatefulWidget {
-  const ManegeAuthState({Key key}) : super(key: key);
+class ManageAuthState extends StatefulWidget {
+  const ManageAuthState({Key key}) : super(key: key);
 
   @override
-  State<ManegeAuthState> createState() => _ManegeAuthStateState();
+  State<ManageAuthState> createState() => _ManageAuthStateState();
 }
 
-class _ManegeAuthStateState extends State<ManegeAuthState> {
+class _ManageAuthStateState extends State<ManageAuthState> {
   @override
   Widget build(BuildContext context) {
     UserDAO auth = Provider.of<UserDAO>(context);

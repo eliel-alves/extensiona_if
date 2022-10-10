@@ -13,7 +13,7 @@ class RouteGenerator {
 
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const ManegeAuthState());
+        return MaterialPageRoute(builder: (_) => const ManageAuthState());
       case '/authPages':
         return MaterialPageRoute(builder: (_) => const AuthenticationPages());
       case '/login':
@@ -45,14 +45,7 @@ class RouteGenerator {
         Users argument = settings.arguments as Users;
         return MaterialPageRoute(
             builder: (_) => MyProfile(
-                userId: argument.userId,
-                email: argument.email,
-                tipo: argument.tipo,
-                userName: argument.userName,
-                userPhone: argument.userPhone,
-                userPhoto: argument.userPhoto,
-                userState: argument.userState,
-                userCity: argument.userCity));
+                userId: argument.userId));
 
       default:
         //caso não tenha o nome da rota definida no switch statement

@@ -17,7 +17,7 @@ class AppTypo {
   final button = const TextStyle(fontFamily: "Inter", fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0);
 
   // Texto para Títulos
-  final title = const TextStyle(fontFamily: "Objectivity", fontSize: 18, fontWeight: FontWeight.w500);
+  final title = const TextStyle(fontFamily: "Inter", fontSize: 18, fontWeight: FontWeight.w700);
 
   // Texto para Título na AppBar
   final appBar = const TextStyle(fontFamily: "Inter", fontSize: 18, fontWeight: FontWeight.w500);

@@ -1,185 +1,82 @@
 import 'dart:convert';
-import 'package:extensiona_if/components/editor.dart';
-import 'package:extensiona_if/data/user_dao.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/utils.dart';
-import 'package:extensiona_if/widgets/widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-class RegisterUser extends StatefulWidget {
-  final PageController pageController;
+class ChangeStateCity extends StatefulWidget {
+  final String selectedState;
+  final String selectedCity;
+  final String docId;
 
-  const RegisterUser({Key key, this.pageController}) : super(key: key);
+  const ChangeStateCity(
+      {Key key, this.selectedCity, this.selectedState, this.docId})
+      : super(key: key);
 
   @override
-  State<RegisterUser> createState() => _RegisterUserState();
+  State<ChangeStateCity> createState() => _ChangeStateCityState();
 }
 
-class _RegisterUserState extends State<RegisterUser> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _confirmPassword = TextEditingController();
-
-  bool _valida = false;
-
-  String confirmPasswordMessage = 'Campo Obrigatório!';
-
+class _ChangeStateCityState extends State<ChangeStateCity> {
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
+    _myState = widget.selectedState;
+    _myCity = widget.selectedCity;
     _getStateList();
+    _getCitiesList();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    UserDAO authService = Provider.of<UserDAO>(context);
-
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 150,
-        title: const AppBarLogo("Escola de Extensão do IFSul"),
-        centerTitle: true,
-        backgroundColor: AppTheme.colors.dark,
+        title: Text('Editar Estado e Cidade', style: AppTheme.typo.title),
       ),
-      backgroundColor: AppTheme.colors.lightGrey,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(25),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 50, bottom: 0, right: 40, left: 40),
-                child: Text('Cadastre-se', style: AppTheme.typo.homeText),
-              ),
+      body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                buildDropdownState(),
+                addVerticalSpace(20),
+                buildDropdownCity(),
+                addVerticalSpace(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Cancelar')),
+                    addHorizontalSpace(10),
+                    ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState.validate()) {
+                            if (_myCity == null) {}
 
-              registerOrLogin('Já possui uma conta?', 'Entrar', () {
-                widget.pageController.animateToPage(0,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.ease);
-              }, context),
+                            final doc = await FirebaseFirestore.instance
+                                .collection('USUARIOS')
+                                .doc(widget.docId)
+                                .get();
 
-              addVerticalSpace(30),
+                            doc.reference.update(
+                                {'estado': _myState, 'cidade': _myCity});
 
-              // campo nome
-              EditorAuth(
-                  _nameController,
-                  'Nome',
-                  'Informe o seu nome',
-                  const Icon(Icons.person_outline),
-                  20,
-                  false,
-                  'Informe um nome',
-                  false,
-                  false),
-
-              // campo email
-              EditorAuth(
-                  _emailController,
-                  'Email',
-                  'Informe seu email',
-                  const Icon(Icons.mail_outlined),
-                  30,
-                  false,
-                  'Informe um e-mail',
-                  false,
-                  false),
-
-              // campo telefone
-              EditorAuth(
-                  _phoneController,
-                  'Telefone',
-                  'Informe o seu telefone',
-                  const Icon(Icons.phone_outlined),
-                  20,
-                  false,
-                  'Informe um telefone',
-                  false,
-                  true),
-
-              // campo estado
-              buildDropdownState(),
-
-              addVerticalSpace(20),
-
-              buildDropdownCity(),
-
-              addVerticalSpace(20),
-
-              // campo senha
-              EditorAuth(
-                  _passwordController,
-                  'Senha',
-                  'Informe sua senha',
-                  const Icon(Ionicons.md_key),
-                  10,
-                  true,
-                  'Informe uma senha',
-                  false,
-                  false),
-
-              // campo confirmar senha
-              EditorAuth(
-                  _confirmPassword,
-                  'Confirmar senha',
-                  'Insira novamente a sua senha',
-                  const Icon(Ionicons.md_key),
-                  10,
-                  true,
-                  'Informa a mesma senha',
-                  _valida,
-                  false),
-
-              addVerticalSpace(12),
-
-              // botão registrar
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      if (_confirmPassword.text == _passwordController.text) {
-                        authService.signup(
-                            _emailController.text,
-                            _passwordController.text,
-                            _nameController.text,
-                            _phoneController.text,
-                            _myState, _myCity,
-                            context);
-                      } else {
-                        setState(() {
-                          _valida = true;
-                          confirmPasswordMessage =
-                              'Senha Incorreta! Verifique novamente a sua senha';
-                        });
-                      }
-                    }
-                  },
-                  child: Text(
-                    'Cadastrar Nova Conta',
-                    style: AppTheme.typo.button,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      padding: const EdgeInsets.all(23),
-                      primary: AppTheme.colors.blue,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10))),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text('Salvar'))
+                  ],
+                )
+              ],
+            ),
+          )),
     );
   }
 
@@ -322,7 +219,9 @@ class _RegisterUserState extends State<RegisterUser> {
       contentPadding: const EdgeInsets.only(right: 10, top: 20, bottom: 20),
       prefixIconConstraints: const BoxConstraints(minWidth: 50),
       prefixStyle: TextStyle(color: AppTheme.colors.black),
-      prefixIcon: label == 'Estado' ? const Icon(Icons.location_on_outlined) : const Icon(Icons.location_city_outlined),
+      prefixIcon: label == 'Estado'
+          ? const Icon(Icons.location_on_outlined)
+          : const Icon(Icons.location_city_outlined),
       errorStyle: const TextStyle(
           fontSize: 13, letterSpacing: 0, fontWeight: FontWeight.w500),
       enabledBorder: OutlineInputBorder(
