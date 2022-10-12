@@ -218,42 +218,46 @@ class Options extends StatelessWidget {
   final String title;
   final String titleContent;
   final Function onTap;
+  final bool editImage;
 
-  const Options(this.title, this.titleContent, this.onTap, {Key key})
+  const Options(this.title, this.titleContent, this.editImage, this.onTap,
+      {Key key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-        side: BorderSide(
-          color: AppTheme.colors.offWhite,
-          width: 2.0,
+        margin: const EdgeInsets.only(bottom: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          side: BorderSide(
+            color: AppTheme.colors.offWhite,
+            width: 2.0,
+          ),
         ),
-      ),
-      elevation: 0,
-      child: InkWell(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
+        elevation: 0,
+        child: InkWell(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: AppTheme.typo.title),
-                const SizedBox(width: 15),
-                Text(titleContent, style: AppTheme.typo.defaultText),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(title, style: AppTheme.typo.title),
+                    const SizedBox(width: 15),
+                    Text(titleContent, style: AppTheme.typo.defaultText),
+                  ],
+                ),
+                editImage
+                    ? const Icon(Icons.camera_alt_rounded)
+                    : const Icon(Icons.arrow_forward_ios_rounded)
               ],
             ),
-            const Icon(Icons.arrow_forward_ios_rounded)
-          ],
-        ),
-      ),
-      onTap: onTap,
-    ));
+          ),
+          onTap: onTap,
+        ));
   }
 }

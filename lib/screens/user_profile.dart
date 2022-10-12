@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/data/user_dao.dart';
@@ -5,6 +8,8 @@ import 'package:extensiona_if/widgets/drawer_navigation.dart';
 import 'package:extensiona_if/widgets/editor_city_state.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:extensiona_if/widgets/widget.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -44,15 +49,14 @@ class _MyProfileState extends State<MyProfile> {
                   if (snapshot.hasData) {
                     final userInfo = snapshot.data;
 
-                    return _buildUserPage(
-                        context,
-                        userInfo['name'],
-                        userInfo['email'],
-                        userInfo['url_photo'],
-                        userInfo['telefone'],
-                        userInfo['id'],
-                        userInfo['cidade'],
-                        userInfo['estado']);
+                    return BuildUserPage(
+                        nome: userInfo['name'],
+                        email: userInfo['email'],
+                        foto: userInfo['url_photo'],
+                        telefone: userInfo['telefone'],
+                        id: userInfo['id'],
+                        cidade: userInfo['cidade'],
+                        estado: userInfo['estado']);
                   } else if (snapshot.hasError) {
                     return const Text(
                         'Ocorreu algum erro ao tentar recuperar informações do usuário');
@@ -68,96 +72,157 @@ class _MyProfileState extends State<MyProfile> {
   }
 }
 
-Widget _buildUserPage(
-  context,
-  nome,
-  email,
-  foto,
-  telefone,
-  id,
-  cidade,
-  estado,
-) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: foto == ''
-                ? const AssetImage('lib/assets/img/user-default.jpg')
-                : NetworkImage(foto),
-          ),
-        ],
-      ),
-      addVerticalSpace(30),
-      Text('Informações Básicas', style: AppTheme.typo.title),
-      addVerticalSpace(10),
-      Options('Nome:', nome, () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => EditarInfoUsuario(
-                  titulo: 'Nome',
-                  conteudo: nome,
-                  rotulo: 'Nome',
-                  dica: 'Informe o seu nome',
-                  errorText: 'Informe um nome',
-                  icon: const Icon(Icons.person_outline),
-                  qtdCaracteres: 20,
-                  maskField: false,
-                  docId: id,
-                  dbName: 'name')),
-        );
-      }),
-      Options('Localidade:', '$cidade/$estado', () {
-        Navigator.push(
+class BuildUserPage extends StatefulWidget {
+  final String nome;
+  final String email;
+  final String foto;
+  final String telefone;
+  final String id;
+  final String cidade;
+  final String estado;
+
+  const BuildUserPage(
+      {Key key,
+      this.nome,
+      this.email,
+      this.foto,
+      this.telefone,
+      this.id,
+      this.cidade,
+      this.estado})
+      : super(key: key);
+
+  @override
+  State<BuildUserPage> createState() => _BuildUserPageState();
+}
+
+class _BuildUserPageState extends State<BuildUserPage> {
+  //Converte String para Uint8List
+  bytes() {
+    List<int> list = widget.foto.codeUnits;
+    Uint8List bytes = Uint8List.fromList(list);
+    debugPrint('$bytes');
+    return bytes;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: widget.foto == ''
+                  ? const AssetImage('lib/assets/img/user-default.jpg')
+                  : MemoryImage(bytes()),
+            ),
+          ],
+        ),
+        addVerticalSpace(30),
+        Text('Informações Básicas', style: AppTheme.typo.title),
+        addVerticalSpace(10),
+        Options('Nome:', widget.nome, false, () {
+          Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ChangeStateCity(
-                    selectedCity: cidade, selectedState: estado, docId: id)));
-      }),
-      addVerticalSpace(30),
-      Text('Informações de Contato', style: AppTheme.typo.title),
-      const SizedBox(height: 10),
-      Options('E-mail:', email, () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => EditarInfoUsuario(
-                  titulo: 'E-mail',
-                  conteudo: email,
-                  rotulo: 'E-mail',
-                  dica: 'Informe seu email',
-                  errorText: 'Informe um e-mail',
-                  icon: const Icon(Icons.mail_outlined),
-                  qtdCaracteres: 30,
-                  maskField: false,
-                  docId: id,
-                  dbName: 'email')),
-        );
-      }),
-      Options('Telefone:', telefone, () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => EditarInfoUsuario(
-                  titulo: 'Telefone',
-                  conteudo: telefone,
-                  rotulo: 'Telefone',
-                  dica: 'Informe o seu telefone',
-                  errorText: 'Informe um telefone',
-                  icon: const Icon(Icons.phone_outlined),
-                  qtdCaracteres: 20,
-                  maskField: true,
-                  docId: id,
-                  dbName: 'telefone')),
-        );
-      }),
-    ],
-  );
+                builder: (context) => EditarInfoUsuario(
+                    titulo: 'Nome',
+                    conteudo: widget.nome,
+                    rotulo: 'Nome',
+                    dica: 'Informe o seu nome',
+                    errorText: 'Informe um nome',
+                    icon: const Icon(Icons.person_outline),
+                    qtdCaracteres: 20,
+                    maskField: false,
+                    docId: widget.id,
+                    dbName: 'name')),
+          );
+        }),
+        Options('Localidade:', '${widget.cidade}/${widget.estado}', false, () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChangeStateCity(
+                      selectedCity: widget.cidade,
+                      selectedState: widget.estado,
+                      docId: widget.id)));
+        }),
+        Options('Foto:', 'Adicione uma foto para personalizar sua conta', true,
+            () {
+          selecionarFoto(widget.id);
+        }),
+        addVerticalSpace(30),
+        Text('Informações de Contato', style: AppTheme.typo.title),
+        const SizedBox(height: 10),
+        Options('E-mail:', widget.email, false, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EditarInfoUsuario(
+                    titulo: 'E-mail',
+                    conteudo: widget.email,
+                    rotulo: 'E-mail',
+                    dica: 'Informe seu email',
+                    errorText: 'Informe um e-mail',
+                    icon: const Icon(Icons.mail_outlined),
+                    qtdCaracteres: 30,
+                    maskField: false,
+                    docId: widget.id,
+                    dbName: 'email')),
+          );
+        }),
+        Options('Telefone:', widget.telefone, false, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EditarInfoUsuario(
+                    titulo: 'Telefone',
+                    conteudo: widget.telefone,
+                    rotulo: 'Telefone',
+                    dica: 'Informe o seu telefone',
+                    errorText: 'Informe um telefone',
+                    icon: const Icon(Icons.phone_outlined),
+                    qtdCaracteres: 20,
+                    maskField: true,
+                    docId: widget.id,
+                    dbName: 'telefone')),
+          );
+        }),
+      ],
+    );
+  }
+
+  void selecionarFoto(String docId) async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['png', 'jpeg', 'jpg'],
+        allowMultiple: false);
+
+    if (result == null) return;
+
+    if (kIsWeb) {
+      final fileBytes = result.files.first.bytes;
+      uploadImageFile(fileBytes, docId);
+    } else {
+      final filePath = result.files.first.path;
+      uploadImageFile(await File(filePath).readAsBytes(), docId);
+    }
+  }
+
+  void uploadImageFile(Uint8List _data, String docId) async {
+    final docRef = await FirebaseFirestore.instance
+        .collection('USUARIOS')
+        .doc(docId)
+        .get();
+
+    //Converte Uint8List para String
+    final caminhoDoArquivo = String.fromCharCodes(_data);
+
+    docRef.reference.update({'url_photo': caminhoDoArquivo});
+  }
 }
 
 class EditarInfoUsuario extends StatefulWidget {
