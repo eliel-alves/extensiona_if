@@ -247,7 +247,7 @@ class Options extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(title, style: AppTheme.typo.title),
-                    const SizedBox(width: 15),
+                    addHorizontalSpace(15),
                     Text(titleContent, style: AppTheme.typo.defaultText),
                   ],
                 ),

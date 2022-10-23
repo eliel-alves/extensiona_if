@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 class UserDAO extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
@@ -65,10 +65,8 @@ class UserDAO extends ChangeNotifier {
           );
 
   // Cadastrar no app
-  void signup(String email, String password,
-      String userName, String userPhone,
-      String state, String city,
-      BuildContext context) async {
+  void signup(String email, String password, String userName, String userPhone,
+      String state, String city, BuildContext context) async {
     // Tenta cadastrar o usuário
     try {
       await auth.createUserWithEmailAndPassword(
@@ -108,11 +106,8 @@ class UserDAO extends ChangeNotifier {
       String city]) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
     await usersRef.doc(userId()).set(
-          Users(
-            userId(), userEmail(),
-            'user', userName, userPhone,
-            '', state, city
-          ),
+          Users(userId(), userEmail(), 'user', userName, userPhone, '', state,
+              city, ''),
         );
   }
 
@@ -177,7 +172,9 @@ class UserDAO extends ChangeNotifier {
         _getUser();
         notifyListeners();
       } catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
       }
     } else {
       final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -236,4 +233,3 @@ class UserDAO extends ChangeNotifier {
     }
   }
 }
-

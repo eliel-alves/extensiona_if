@@ -50,15 +50,7 @@ Widget drawerNavigation(context) {
               var userInfo = Users.fromJson(userRef.data());
 
               Navigator.pushNamed(context, '/profile',
-                  arguments: Users(
-                      userInfo.userId,
-                      userInfo.email,
-                      userInfo.tipo,
-                      userInfo.userName,
-                      userInfo.userPhone,
-                      userInfo.userPhoto,
-                      userInfo.userState,
-                      userInfo.userCity));
+                  arguments: userInfo.userId);
             }),
         ListTileOptions(
             icone: Icons.logout_rounded,
@@ -78,7 +70,11 @@ Widget drawerNavigation(context) {
                         TextButton(
                           onPressed: () {
                             debugPrint('O usuário saiu do app');
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ManageAuthState()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ManageAuthState()));
                             authService.logout();
                           },
                           child: const Text('SIM'),

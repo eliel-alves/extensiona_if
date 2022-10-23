@@ -226,13 +226,13 @@ class ItemDemanda extends StatelessWidget {
                       debugPrint('$document');
                       document.reference.delete();
 
-                      // Referência para o arquivo a ser deletado
-                      final desertRef =
+                      // Referência do arquivo a ser deletado
+                      final storageRef =
                           firebase_storage.FirebaseStorage.instance.ref().child(
                               "arquivos/${document.get('file_name_storage')}");
 
                       // Deleta o arquivo
-                      await desertRef.delete();
+                      await storageRef.delete();
                     }
 
                     //Navegando de volta para a página da lista de propostas

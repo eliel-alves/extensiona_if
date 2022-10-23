@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class MyProfile extends StatefulWidget {
   final String userId;
@@ -56,7 +57,8 @@ class _MyProfileState extends State<MyProfile> {
                         telefone: userInfo['telefone'],
                         id: userInfo['id'],
                         cidade: userInfo['cidade'],
-                        estado: userInfo['estado']);
+                        estado: userInfo['estado'],
+                        nomeArquivoFoto: userInfo['nome_arquivo_foto']);
                   } else if (snapshot.hasError) {
                     return const Text(
                         'Ocorreu algum erro ao tentar recuperar informações do usuário');
@@ -80,6 +82,7 @@ class BuildUserPage extends StatefulWidget {
   final String id;
   final String cidade;
   final String estado;
+  final String nomeArquivoFoto;
 
   const BuildUserPage(
       {Key key,
@@ -89,7 +92,8 @@ class BuildUserPage extends StatefulWidget {
       this.telefone,
       this.id,
       this.cidade,
-      this.estado})
+      this.estado,
+      this.nomeArquivoFoto})
       : super(key: key);
 
   @override
@@ -117,7 +121,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
               radius: 50,
               backgroundImage: widget.foto == ''
                   ? const AssetImage('lib/assets/img/user-default.jpg')
-                  : MemoryImage(bytes()),
+                  : NetworkImage(widget.foto),
             ),
           ],
         ),
@@ -150,9 +154,8 @@ class _BuildUserPageState extends State<BuildUserPage> {
                       selectedState: widget.estado,
                       docId: widget.id)));
         }),
-        Options('Foto:', 'Adicione uma foto para personalizar sua conta', true,
-            () {
-          selecionarFoto(widget.id);
+        Options('Foto:', 'Selecionar uma foto', true, () {
+          selecionarFoto(widget.id, widget.nomeArquivoFoto);
         }),
         addVerticalSpace(30),
         Text('Informações de Contato', style: AppTheme.typo.title),
@@ -195,7 +198,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
     );
   }
 
-  void selecionarFoto(String docId) async {
+  void selecionarFoto(String docId, String nomeArquivo) async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['png', 'jpeg', 'jpg'],
@@ -203,25 +206,49 @@ class _BuildUserPageState extends State<BuildUserPage> {
 
     if (result == null) return;
 
+    String _nomeFoto = result.files.first.name +
+        '_' +
+        docId +
+        '.' +
+        result.files.first.extension;
+
     if (kIsWeb) {
       final fileBytes = result.files.first.bytes;
-      uploadImageFile(fileBytes, docId);
+      uploadImageFile(fileBytes, _nomeFoto, nomeArquivo, docId);
     } else {
       final filePath = result.files.first.path;
-      uploadImageFile(await File(filePath).readAsBytes(), docId);
+      uploadImageFile(
+          await File(filePath).readAsBytes(), _nomeFoto, nomeArquivo, docId);
     }
   }
 
-  void uploadImageFile(Uint8List _data, String docId) async {
+  void uploadImageFile(Uint8List _data, String nomeFoto, String nomeRefArquivo,
+      String docId) async {
     final docRef = await FirebaseFirestore.instance
         .collection('USUARIOS')
         .doc(docId)
         .get();
 
-    //Converte Uint8List para String
-    final caminhoDoArquivo = String.fromCharCodes(_data);
+    firebase_storage.Reference reference =
+        firebase_storage.FirebaseStorage.instance.ref('foto_perfil/$nomeFoto');
 
-    docRef.reference.update({'url_photo': caminhoDoArquivo});
+    ///Mostrar a progressão do upload
+    firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
+
+    ///Pega o download url do arquivo
+    String url = await uploadTask.ref.getDownloadURL();
+
+    if (widget.foto != '') {
+      // Referência do arquivo a ser deletado
+      final storageRef = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child("foto_perfil/$nomeRefArquivo");
+
+      // Deleta o arquivo
+      await storageRef.delete();
+    }
+
+    docRef.reference.update({'url_photo': url, "nome_arquivo_foto": nomeFoto});
   }
 }
 
