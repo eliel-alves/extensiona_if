@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/drawer_navigation.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class FormDemanda extends StatefulWidget {
   final String areaTematica;
   final String docId;
   final bool editarDemanda;
+  final Users usuario;
 
   const FormDemanda(
       {Key key,
@@ -42,7 +44,8 @@ class FormDemanda extends StatefulWidget {
       this.equipeColaboradores,
       this.areaTematica,
       this.docId,
-      this.editarDemanda})
+      this.editarDemanda,
+      this.usuario})
       : super(key: key);
 
   @override
@@ -175,7 +178,7 @@ class _FormDemandaState extends State<FormDemanda> {
                           "Número de meses para ser realizada",
                           1,
                           150,
-                          true)),
+                          false)),
                 ],
               ),
               EditorTextFormField(
@@ -219,7 +222,7 @@ class _FormDemandaState extends State<FormDemanda> {
                   "Por que precisa da Instituição de Ensino?",
                   7,
                   600,
-                  true),
+                  false),
               EditorTextFormField(
                   _controladorDadosProponete,
                   "Dados do Proponente?  ",
@@ -240,7 +243,7 @@ class _FormDemandaState extends State<FormDemanda> {
                   "Nome, formação, dados gerais, etc, ",
                   7,
                   600,
-                  true),
+                  false),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _selecionarArquivos(),
@@ -429,6 +432,10 @@ class _FormDemandaState extends State<FormDemanda> {
     // Recupera o usuário
     final userDao = Provider.of<UserDAO>(context, listen: false);
 
+    // Define a localidade da demanda de acordo com a localidade do usuário
+    final String _localidade = '(' + widget.usuario.userState + ') ' + widget.usuario.userCity;
+    
+
     //Adicionando um novo documento a nossa coleção -> Demandas
     DocumentReference _novaDemanda = await FirebaseFirestore.instance
         .collection('DEMANDAS')
@@ -448,6 +455,7 @@ class _FormDemandaState extends State<FormDemanda> {
       'empresa_envolvida': _controladorEmpresaEnvolvida.text,
       'equipe_colaboradores': _controladorEquipeColaboradores.text,
       'area_tematica': areaTematicaSelecionada,
+      'localidade': _localidade
     }).catchError((error) =>
             debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 

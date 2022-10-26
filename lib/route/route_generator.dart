@@ -38,6 +38,7 @@ class RouteGenerator {
                   areaTematica: argument.areaTematica,
                   docId: argument.docId,
                   editarDemanda: argument.editarDemanda,
+                  usuario: argument.usuario
                 ));
       case '/listaDemanda':
         return MaterialPageRoute(builder: (_) => const ListaDemanda());

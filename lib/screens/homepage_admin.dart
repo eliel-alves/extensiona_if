@@ -3,6 +3,7 @@ import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/report/demanda_report.dart';
 import 'package:extensiona_if/screens/demanda_edit_admin.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -16,8 +17,8 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-  List<String> _categoryFiltered = [];
-  List<String> _cityFiltered = [];
+  List<String> _areaFiltered = [];
+  List<String> _locationFiltered = [];
 
   @override
   void initState() {
@@ -27,18 +28,36 @@ class _AdminScreenState extends State<AdminScreen> {
 
   //Método responsável por fazer o filtro das áreas temáticas
   filteringData() {
-    if (_categoryFiltered.isEmpty) {
-      // Verifica se o vetor que contém as áreas selecionadas está vazio - irá pegar todas as demandas do banco
+    if (_areaFiltered.isEmpty && _locationFiltered.isEmpty) {
+      // Verifica se o vetor que contém as áreas selecionadas e a localização está vazio
       final Stream<QuerySnapshot> _demandaStream =
           FirebaseFirestore.instance.collection('DEMANDAS').snapshots();
       return StreamBuilderDemandas(stream: _demandaStream);
-    } else {
-      // caso não esteja, ele realizará o filtro baseado nos valores que ele encontrar no vetor _selectedValue
+    } else if (_areaFiltered.isEmpty) {
+      // caso não esteja, ele realizará o filtro baseado nos valores que ele encontrar no vetor _categoryFiltered
       final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
           .instance
           .collection('DEMANDAS')
-          .where('area_tematica', whereIn: _categoryFiltered)
+          .where('localidade', whereIn: _locationFiltered)
           .snapshots();
+      return StreamBuilderDemandas(stream: _filterDemandaStream);
+    } else if (_locationFiltered.isEmpty) {
+      // caso não esteja no primeiro vetor, ele realizará o filtro baseado nos valores que ele encontrar no vetor _locationFiltered
+      final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
+          .instance
+          .collection('DEMANDAS')
+          .where('area_tematica', whereIn: _areaFiltered)
+          .snapshots();
+      return StreamBuilderDemandas(stream: _filterDemandaStream);
+    } else {
+      // por fim, se os dois vetores tiver algum filtro, ele faz um filtro utilizando os dois vetores
+      final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
+          .instance
+          .collection('DEMANDAS')
+          .where('area_tematica', whereIn: _areaFiltered)
+          .where('localidade', whereIn: _locationFiltered)
+          .snapshots();
+
       return StreamBuilderDemandas(stream: _filterDemandaStream);
     }
   }
@@ -78,7 +97,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                 document['nome'], document['nome']))
                         .toList();
 
-                    final _itemsChip = _categoryFiltered
+                    final _itemsChip = _areaFiltered
                         .map((e) => MultiSelectItem<String>(e, e))
                         .toList();
 
@@ -100,9 +119,9 @@ class _AdminScreenState extends State<AdminScreen> {
                             style: AppTheme.typo.button),
                         onConfirm: (results) {
                           setState(() {
-                            _categoryFiltered = results;
+                            _areaFiltered = results;
                           });
-                          debugPrint(_categoryFiltered.toString());
+                          debugPrint(_areaFiltered.toString());
                         },
                         cancelText: const Text('CANCELAR'),
                         confirmText: const Text('FILTRAR'),
@@ -111,13 +130,70 @@ class _AdminScreenState extends State<AdminScreen> {
                           onTap: (value) {
                             setState(() {
                               debugPrint(value);
-                              _categoryFiltered.remove(value);
+                              _areaFiltered.remove(value);
                             });
-                            debugPrint(_categoryFiltered.toString());
+                            debugPrint(_areaFiltered.toString());
                           },
                         ));
                   }
                 }),
+            addVerticalSpace(10),
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('DEMANDAS')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Text('Carregando...');
+                  } else {
+                    final _items = snapshot.data.docs
+                        .map((DocumentSnapshot document) =>
+                            MultiSelectItem<String>(
+                                document['localidade'], document['localidade']))
+                        .toList();
+
+                    final _itemsChip = _locationFiltered
+                        .map((e) => MultiSelectItem<String>(e, e))
+                        .toList();
+
+                    return MultiSelectDialogField(
+                        items: _items,
+                        title: Text("Filtrar por Localidade",
+                            style: AppTheme.typo.defaultBoldText),
+                        decoration: BoxDecoration(
+                          color: AppTheme.colors.white,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2),
+                        ),
+                        buttonIcon: Icon(Icons.expand_more,
+                            color: AppTheme.colors.greyText),
+                        buttonText:
+                            Text("Localidade", style: AppTheme.typo.button),
+                        onConfirm: (results) {
+                          setState(() {
+                            _locationFiltered = results;
+                          });
+                          debugPrint(_locationFiltered.toString());
+                        },
+                        cancelText: const Text('CANCELAR'),
+                        confirmText: const Text('FILTRAR'),
+                        chipDisplay: MultiSelectChipDisplay<String>(
+                          items: _itemsChip,
+                          onTap: (value) {
+                            setState(() {
+                              debugPrint(value);
+                              _locationFiltered.remove(value);
+                            });
+                            debugPrint(_locationFiltered.toString());
+                          },
+                        ));
+                  }
+                }),
+            addVerticalSpace(10),
             filteringData()
           ],
         ),
@@ -279,7 +355,6 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
                         .collection('arquivos')
                         .get();
 
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -308,6 +383,7 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
                           widget.infoContrapartida,
                           widget.infoVinculo,
                           widget.infoResultadosEsperados,
+                          widget.infoStatus,
                           widget.docRef);
                     }));
 
@@ -377,179 +453,3 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
     );
   }
 }
-
-// Widget estilizacasoLista(
-//     BuildContext context,
-//     String infoTitulo,
-//     String infoTempo,
-//     String infoResumo,
-//     String infoStatus,
-//     String infoObjetivo,
-//     String infoContrapartida,
-//     String infoVinculo,
-//     String infoResultadosEsperados,
-//     DocumentSnapshot updateDados) {
-//   return Container(
-//     margin: const EdgeInsets.only(bottom: 20),
-//     // height: 70.0,
-//     decoration: BoxDecoration(
-//       color: Colors.white,
-//       borderRadius: const BorderRadius.all(Radius.circular(10)),
-//       boxShadow: [
-//         BoxShadow(
-//           color: Colors.black.withOpacity(0.1),
-//           blurRadius: 40,
-//           spreadRadius: 10,
-//         ),
-//       ],
-//     ),
-//     child: ExpansionTile(
-//       leading: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: const [
-//             Icon(FontAwesome.file),
-//           ]),
-//       title: Text(infoTitulo),
-//       subtitle: Padding(
-//         padding: const EdgeInsets.only(top: 5),
-//         child: Row(children: [
-//           // Informação Tempo
-//           Icon(
-//             Icons.alarm_outlined,
-//             size: 18,
-//             color: AppTheme.colors.blue,
-//           ),
-//           const SizedBox(width: 4),
-//           Text(infoTempo),
-//
-//           // Espaçamento entre as informações
-//           const SizedBox(width: 10),
-//
-//           // Informação Status
-//           Icon(
-//             Icons.flag_outlined,
-//             size: 18,
-//             color: AppTheme.colors.blue,
-//           ),
-//           const SizedBox(width: 4),
-//           Text(infoStatus[0].toString().toUpperCase() +
-//               infoStatus.toString().substring(1, infoStatus.toString().length)),
-//         ] //     Text(DateTime(infoData).year.toString());
-//             ),
-//       ),
-//       children: [
-//         Padding(
-//           padding: const EdgeInsets.all(10),
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.end,
-//             children: [
-//               IconButton(
-//                 onPressed: () async {
-//                   var subcolecaoRef = await FirebaseFirestore.instance
-//                       .collection('DEMANDAS')
-//                       .doc(updateDados.id)
-//                       .collection('arquivos')
-//                       .get();
-//
-//                   List vetArquivos;
-//
-//                   for (var arquivo in subcolecaoRef.docs) {
-//                     vetArquivos = arquivo.get('file_url');
-//                   }
-//
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                       builder: (_) => DemandaReport(
-//                           docid: updateDados, vetDadoSubcolecao: vetArquivos),
-//                     ),
-//                   );
-//                 },
-//                 icon: Icon(FontAwesome.print,
-//                     size: 20, color: Colors.grey.shade800),
-//               ),
-//               const SizedBox(
-//                 width: 10,
-//               ),
-//               IconButton(
-//                 onPressed: () {
-//                   debugPrint('consultou a demanda');
-//                   final Future future = Navigator.push(context,
-//                       MaterialPageRoute(builder: (context) {
-//                     return EditarFormInfoAdmin(
-//                         infoTitulo,
-//                         infoTempo,
-//                         infoResumo,
-//                         infoObjetivo,
-//                         infoContrapartida,
-//                         infoVinculo,
-//                         infoResultadosEsperados,
-//                         updateDados);
-//                   }));
-//
-//                   future.then((demandaAtualizada) {
-//                     debugPrint("$demandaAtualizada");
-//                     debugPrint('A proposta foi alterada');
-//                   });
-//                 },
-//                 icon: Icon(FontAwesome.pencil,
-//                     size: 20, color: Colors.grey.shade800),
-//               ),
-//               const SizedBox(
-//                 width: 10,
-//               ),
-//               IconButton(
-//                 onPressed: () {
-//                   showDialog(
-//                       context: context,
-//                       barrierDismissible: false,
-//                       builder: (BuildContext context) {
-//                         return AlertDialog(
-//                           title: const Text('Deletar Proposta'),
-//                           content:
-//                               const Text('Você deseja deletar esta proposta?'),
-//                           shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(12.0)),
-//                           actions: <Widget>[
-//                             TextButton(
-//                               onPressed: () {
-//                                 //Deleta a proposta cadastrada no Firebase
-//                                 debugPrint('Foi deletado a proposta');
-//                                 updateDados.reference.delete();
-//
-//                                 //Fecha a janela de exclusão
-//                                 Navigator.pop(context);
-//
-//                                 //Dispara um SnackBar
-//                                 const SnackBar snackBar = SnackBar(
-//                                     content: Text(
-//                                         "A proposta foi deletada com sucesso! "));
-//                                 ScaffoldMessenger.of(context)
-//                                     .showSnackBar(snackBar);
-//                               },
-//                               child: const Text('Sim'),
-//                             ),
-//                             TextButton(
-//                               onPressed: () {
-//                                 Navigator.pop(context);
-//                                 //Navigator.of(context).pop();
-//                                 debugPrint('Não foi deletado a proposta');
-//                               },
-//                               child: const Text('Não'),
-//                             ),
-//                           ],
-//                         );
-//                       });
-//                 },
-//                 tooltip: 'Remover Proposta',
-//                 icon: Icon(FontAwesome.trash,
-//                     size: 20, color: Colors.grey.shade800),
-//               )
-//             ],
-//           ),
-//         )
-//       ],
-//     ),
-//   );
-// }

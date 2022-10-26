@@ -36,6 +36,17 @@ class UserDAO extends ChangeNotifier {
     return auth.currentUser?.photoURL ?? 'lib/assets/img/logo_user.png';
   }
 
+  Future<String> userLocation() async {
+    var userRef = await FirebaseFirestore.instance
+        .collection('USUARIOS')
+        .doc(userId())
+        .get();
+
+    var userInfo = Users.fromJson(userRef.data());
+
+    return userInfo.userCity;
+  }
+
   UserDAO() {
     _authCheck();
   }

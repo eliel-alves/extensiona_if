@@ -1,4 +1,5 @@
 import 'package:extensiona_if/report/demanda_report.dart';
+import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,7 @@ class EditarFormInfoAdmin extends StatefulWidget {
   final String contrapartida;
   final String vinculo;
   final String resultadosEsperados;
+  final String status;
   final DocumentSnapshot updateDados;
 
   const EditarFormInfoAdmin(
@@ -22,6 +24,7 @@ class EditarFormInfoAdmin extends StatefulWidget {
       this.contrapartida,
       this.vinculo,
       this.resultadosEsperados,
+      this.status,
       this.updateDados);
 
   @override
@@ -41,6 +44,13 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados =
       TextEditingController();
+  String _statusDemandaAtual;
+
+  @override
+  initState() {
+    _statusDemandaAtual = widget.status;
+    super.initState();
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -54,6 +64,13 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
     _controladorContrapartida.text = widget.contrapartida;
     _controladorVinculo.text = widget.vinculo;
     _controladorResultadosEsperados.text = widget.resultadosEsperados;
+
+    List<String> _optionsStatus = [
+      'registrado',
+      'em análise',
+      'aprovado',
+      'indeferido'
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -69,6 +86,28 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
             children: [
               EditorTextFormField(_controladorTitulo, "Título da proposta",
                   "Título da Proposta", 1, 150, true),
+              DropdownButtonFormField(
+                isExpanded: true,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  helperText: 'O status da demanda atual',
+                  hintText: 'Selecione o status da demanda atual',
+                ),
+                items: _optionsStatus.map((String item) {
+                  return DropdownMenuItem<String>(
+                    child: Text(toCapitalization(item)),
+                    value: item,
+                  );
+                }).toList(),
+                onChanged: (statusValue) {
+                  setState(() {
+                    _statusDemandaAtual = statusValue;
+                  });
+                  debugPrint(statusValue);
+                },
+                value: _statusDemandaAtual,
+              ),
+              addVerticalSpace(13),
               EditorTextFormField(
                   _controladorTempoNecessario,
                   "Informe o tempo necessário",
@@ -175,7 +214,7 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
           'vinculo': _controladorVinculo.text,
           'resultados_esperados': _controladorResultadosEsperados.text,
           // A demanda é atualizada para o status "aprovado" caso o administrador salve
-          'status': 'aprovado'
+          'status': _statusDemandaAtual
         })
         .then((value) =>
             debugPrint("Sua proposta foi atualizada no banco de dados"))

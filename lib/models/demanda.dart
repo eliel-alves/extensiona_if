@@ -13,6 +13,7 @@ class Demandas {
   final String equipeColaboradores;
   final String docId;
   final bool editarDemanda;
+  final Users usuario;
 
   Demandas(
       {this.titulo,
@@ -28,7 +29,8 @@ class Demandas {
       this.empresaEnvolvida,
       this.equipeColaboradores,
       this.docId,
-      this.editarDemanda});
+      this.editarDemanda,
+      this.usuario});
 
   @override
   String toString() {

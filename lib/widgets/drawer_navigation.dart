@@ -26,11 +26,24 @@ Widget drawerNavigation(context) {
           ),
         ),
         ListTileOptions(
+            icone: Icons.home_outlined,
+            title: 'Página Inicial',
+            onTap: () {
+              Navigator.pushNamed(context, '/');
+            }),
+        ListTileOptions(
             icone: Icons.assignment_rounded,
             title: 'Formulário',
-            onTap: () {
+            onTap: () async {
+              var userRef = await FirebaseFirestore.instance
+                  .collection('USUARIOS')
+                  .doc(authService.userId())
+                  .get();
+
+              var userInfo = Users.fromJson(userRef.data());
+
               Navigator.pushNamed(context, '/formDemanda',
-                  arguments: Demandas(editarDemanda: false));
+                  arguments: Demandas(editarDemanda: false, usuario: userInfo));
             }),
         ListTileOptions(
             icone: Icons.list_alt_rounded,
