@@ -25,7 +25,7 @@ class EditarFormInfoAdmin extends StatefulWidget {
       this.vinculo,
       this.resultadosEsperados,
       this.status,
-      this.updateDados, {Key key}) : super(key: key);
+      this.updateDados);
 
   @override
   State<StatefulWidget> createState() {

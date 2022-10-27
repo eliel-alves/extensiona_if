@@ -401,6 +401,7 @@ class _FormDemandaState extends State<FormDemanda> {
   void _editarDemanda() async {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
+    final user = UserDAO().auth.currentUser;
 
     demandaRef
         .doc(documentID)
@@ -544,7 +545,7 @@ class _FormDemandaState extends State<FormDemanda> {
         'file_name_storage': nameFile
       });
     } else {
-      debugPrint(uploadTask.state.toString());
+      print(uploadTask.state);
     }
   }
 }

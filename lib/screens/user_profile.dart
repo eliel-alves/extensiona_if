@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/data/user_dao.dart';
