@@ -202,7 +202,7 @@ class CampoSelecaoArquivos extends StatelessWidget {
   final String fileName;
 
   const CampoSelecaoArquivos(this.uploadIcone, this.subText, this.mainText,
-      this.setUploadAction, this.styleText, this.fileName, this.styleTextFile);
+      this.setUploadAction, this.styleText, this.fileName, this.styleTextFile, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

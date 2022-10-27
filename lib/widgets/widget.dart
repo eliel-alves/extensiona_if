@@ -1,6 +1,5 @@
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,7 +44,7 @@ class IconesMedia extends StatelessWidget {
   final double paddingLight;
 
   const IconesMedia(this.imgMedia, this.press, this.text, this.paddingRight,
-      this.paddingLight);
+      this.paddingLight, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +82,8 @@ class IconesMedia extends StatelessWidget {
 class Divisor extends StatelessWidget {
   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
+  const Divisor({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     // Size size = MediaQuery.of(context).size;
@@ -118,7 +119,7 @@ class Divisor extends StatelessWidget {
 class AppBarLogo extends StatelessWidget {
   final String titulo;
 
-  const AppBarLogo(this.titulo);
+  const AppBarLogo(this.titulo, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +144,7 @@ class AppBarLogoUser extends StatelessWidget {
   final String userPhoto;
   final String emailUser;
 
-  const AppBarLogoUser(this.styleTextTitle, this.userPhoto, this.emailUser);
+  const AppBarLogoUser(this.styleTextTitle, this.userPhoto, this.emailUser, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +180,7 @@ class AppBarLogoUser extends StatelessWidget {
 class LogoWelcomeScreen extends StatelessWidget {
   final TextStyle styleTextTitle;
 
-  const LogoWelcomeScreen(this.styleTextTitle);
+  const LogoWelcomeScreen(this.styleTextTitle, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
