@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/data/user_dao.dart';
@@ -99,14 +100,6 @@ class BuildUserPage extends StatefulWidget {
 }
 
 class _BuildUserPageState extends State<BuildUserPage> {
-  //Converte String para Uint8List
-  bytes() {
-    List<int> list = widget.foto.codeUnits;
-    Uint8List bytes = Uint8List.fromList(list);
-    debugPrint('$bytes');
-    return bytes;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
