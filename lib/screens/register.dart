@@ -27,7 +27,7 @@ class _RegisterUserState extends State<RegisterUser> {
 
   bool _valida = false;
 
-  String confirmPasswordMessage = 'Campo Obrigatório!';
+  String confirmPasswordMessage = 'Informa a mesma senha!';
 
   final _formKey = GlobalKey<FormState>();
 
@@ -62,11 +62,11 @@ class _RegisterUserState extends State<RegisterUser> {
                 child: Text('Cadastre-se', style: AppTheme.typo.homeText),
               ),
 
-              registerOrLogin('Já possui uma conta?', 'Entrar', () {
+              toggleButton('Já possui uma conta?', 'Entrar', () {
                 widget.pageController.animateToPage(0,
                     duration: const Duration(milliseconds: 400),
                     curve: Curves.ease);
-              }, context),
+              }),
 
               addVerticalSpace(30),
 
@@ -135,8 +135,8 @@ class _RegisterUserState extends State<RegisterUser> {
                   const Icon(Ionicons.md_key),
                   10,
                   true,
-                  'Informa a mesma senha',
-                  _valida,
+                  confirmPasswordMessage,
+                  false,
                   false),
 
               addVerticalSpace(12),
@@ -153,13 +153,14 @@ class _RegisterUserState extends State<RegisterUser> {
                             _passwordController.text,
                             _nameController.text,
                             _phoneController.text,
-                            _myState, _myCity,
+                            _myState,
+                            _myCity,
                             context);
                       } else {
                         setState(() {
                           _valida = true;
                           confirmPasswordMessage =
-                              'Senha Incorreta! Verifique novamente a sua senha';
+                              'Senha Incorreta! Verifique novamente a senha digitada';
                         });
                       }
                     }
@@ -214,6 +215,7 @@ class _RegisterUserState extends State<RegisterUser> {
                   });
 
                   _getCitiesList();
+                  debugPrint('Permitir seleção');
                 },
                 items: statesList?.map<DropdownMenuItem<String>>((item) {
                       return DropdownMenuItem(
@@ -308,7 +310,7 @@ class _RegisterUserState extends State<RegisterUser> {
         citiesList = data;
       });
 
-      // debugPrint(citiesList.toString());
+      debugPrint(citiesList.toString());
     });
   }
 
@@ -322,7 +324,9 @@ class _RegisterUserState extends State<RegisterUser> {
       contentPadding: const EdgeInsets.only(right: 10, top: 20, bottom: 20),
       prefixIconConstraints: const BoxConstraints(minWidth: 50),
       prefixStyle: TextStyle(color: AppTheme.colors.black),
-      prefixIcon: label == 'Estado' ? const Icon(Icons.location_on_outlined) : const Icon(Icons.location_city_outlined),
+      prefixIcon: label == 'Estado'
+          ? const Icon(Icons.location_on_outlined)
+          : const Icon(Icons.location_city_outlined),
       errorStyle: const TextStyle(
           fontSize: 13, letterSpacing: 0, fontWeight: FontWeight.w500),
       enabledBorder: OutlineInputBorder(

@@ -3,7 +3,6 @@ import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -38,7 +37,7 @@ class ItemDemanda extends StatelessWidget {
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
-            child: SpinKitFadingCircle(color: Colors.green, size: 120),
+            child: CircularProgressIndicator(),
           );
         }
 

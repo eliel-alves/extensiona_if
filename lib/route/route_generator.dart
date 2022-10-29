@@ -14,32 +14,31 @@ class RouteGenerator {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => const ManageAuthState());
-      case '/authPages':
-        return MaterialPageRoute(builder: (_) => const AuthenticationPages());
       case '/login':
-        return MaterialPageRoute(builder: (_) => const LoginPage());
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      //case '/login':
+      //return MaterialPageRoute(builder: (_) => const LoginPage());
       case '/register':
         return MaterialPageRoute(builder: (_) => const RegisterUser());
       case '/formDemanda':
         Demandas argument = settings.arguments as Demandas;
         return MaterialPageRoute(
             builder: (_) => FormDemanda(
-                  titulo: argument.titulo,
-                  tempo: argument.tempo,
-                  resumo: argument.resumo,
-                  objetivo: argument.objetivo,
-                  contrapartida: argument.contrapartida,
-                  vinculo: argument.vinculo,
-                  resultadosEsperados: argument.resultadosEsperados,
-                  propostaConjunto: argument.propostaConjunto,
-                  dadosProponente: argument.dadosProponente,
-                  empresaEnvolvida: argument.empresaEnvolvida,
-                  equipeColaboradores: argument.equipeColaboradores,
-                  areaTematica: argument.areaTematica,
-                  docId: argument.docId,
-                  editarDemanda: argument.editarDemanda,
-                  usuario: argument.usuario
-                ));
+                titulo: argument.titulo,
+                tempo: argument.tempo,
+                resumo: argument.resumo,
+                objetivo: argument.objetivo,
+                contrapartida: argument.contrapartida,
+                vinculo: argument.vinculo,
+                resultadosEsperados: argument.resultadosEsperados,
+                propostaConjunto: argument.propostaConjunto,
+                dadosProponente: argument.dadosProponente,
+                empresaEnvolvida: argument.empresaEnvolvida,
+                equipeColaboradores: argument.equipeColaboradores,
+                areaTematica: argument.areaTematica,
+                docId: argument.docId,
+                editarDemanda: argument.editarDemanda,
+                usuario: argument.usuario));
       case '/listaDemanda':
         return MaterialPageRoute(builder: (_) => const ListaDemanda());
       case '/profile':

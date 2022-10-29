@@ -127,7 +127,7 @@ class _EditorAuthState extends State<EditorAuth> {
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
           //enabled: false,
-         // readOnly: widget.readOnly,
+          // readOnly: widget.readOnly,
           obscureText: _verSenha,
           controller: widget.controlador,
           keyboardType:
@@ -202,7 +202,9 @@ class CampoSelecaoArquivos extends StatelessWidget {
   final String fileName;
 
   const CampoSelecaoArquivos(this.uploadIcone, this.subText, this.mainText,
-      this.setUploadAction, this.styleText, this.fileName, this.styleTextFile, {Key key}) : super(key: key);
+      this.setUploadAction, this.styleText, this.fileName, this.styleTextFile,
+      {Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

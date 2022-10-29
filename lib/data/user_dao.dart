@@ -90,11 +90,11 @@ class UserDAO extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       // Possíveis erros
       if (e.code == 'weak-password') {
-        //throw AuthException('Sua senha é muito fraca');
-        errorMessage = 'Sua senha é muito fraca';
+        // throw AuthException('A senha é muito fraca!');
+        errorMessage = 'A senha é muito fraca!';
       } else if (e.code == 'email-already-in-use') {
-        //throw AuthException('Este email já está cadastrado');
-        errorMessage = 'Este email já está cadastrado';
+        //throw AuthException('Este email já foi cadastrado');
+        errorMessage = 'Este email já foi cadastrado';
       }
 
       // Mostrando o erro pro usuário
