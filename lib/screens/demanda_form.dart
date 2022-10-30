@@ -25,6 +25,7 @@ class FormDemanda extends StatefulWidget {
   final String empresaEnvolvida;
   final String equipeColaboradores;
   final String areaTematica;
+  final String localidade;
   final String docId;
   final bool editarDemanda;
   final Users usuario;
@@ -43,6 +44,7 @@ class FormDemanda extends StatefulWidget {
       this.empresaEnvolvida,
       this.equipeColaboradores,
       this.areaTematica,
+      this.localidade,
       this.docId,
       this.editarDemanda,
       this.usuario})
@@ -396,11 +398,10 @@ class _FormDemandaState extends State<FormDemanda> {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
 
-    // Define a nova localidade da demanda de acordo com a localidade do usuário
-    final String _localidade =
-        '(' + widget.usuario.userState + ') ' + widget.usuario.userCity;
+    final String _areaLocalidade =
+        areaTematicaSelecionada + '-' + widget.localidade;
 
-    final String _areaLocalidade = areaTematicaSelecionada + '-' + _localidade;
+    debugPrint(widget.localidade);
 
     demandaRef
         .doc(documentID)
@@ -417,7 +418,7 @@ class _FormDemandaState extends State<FormDemanda> {
           'empresa_envolvida': _controladorEmpresaEnvolvida.text,
           'equipe_colaboradores': _controladorEquipeColaboradores.text,
           'area_tematica': areaTematicaSelecionada,
-          'localidade': _localidade,
+          'localidade': widget.localidade,
           'filtro_area_localidade': _areaLocalidade
         })
         .then((value) => debugPrint("Demanda atualizada"))

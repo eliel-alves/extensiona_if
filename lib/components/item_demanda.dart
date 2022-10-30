@@ -68,6 +68,7 @@ class ItemDemanda extends StatelessWidget {
                     data.docs[index]['empresa_envolvida'];
                 final infoEquipeColaboradores =
                     data.docs[index]['equipe_colaboradores'];
+                final infoLocalidade = data.docs[index]['localidade'];
                 final docRef = snapshot.data.docs[index];
 
                 return AnimationConfiguration.staggeredList(
@@ -148,7 +149,8 @@ class ItemDemanda extends StatelessWidget {
                                       infoDadosProponente,
                                       infoEmpresaEnvolvida,
                                       infoEquipeColaboradores,
-                                      infoAreaTematica);
+                                      infoAreaTematica,
+                                      infoLocalidade);
                                 },
                                 itemBuilder: (BuildContext context) {
                                   return <PopupMenuEntry<Options>>[
@@ -194,7 +196,8 @@ class ItemDemanda extends StatelessWidget {
       infoDadosProponente,
       infoEmpresaEnvolvida,
       infoEquipeColaboradores,
-      infoAreaTematica) {
+      infoAreaTematica,
+      infoLocalidade) {
     if (choice == 'deletar') {
       showDialog(
           context: context,
@@ -271,7 +274,8 @@ class ItemDemanda extends StatelessWidget {
               empresaEnvolvida: infoEmpresaEnvolvida,
               equipeColaboradores: infoEquipeColaboradores,
               docId: docRef.id,
-              editarDemanda: true));
+              editarDemanda: true,
+              localidade: infoLocalidade));
     }
   }
 }

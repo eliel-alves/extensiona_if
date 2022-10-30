@@ -11,6 +11,7 @@ class Demandas {
   final String dadosProponente;
   final String empresaEnvolvida;
   final String equipeColaboradores;
+  final String localidade;
   final String docId;
   final bool editarDemanda;
   final Users usuario;
@@ -30,6 +31,7 @@ class Demandas {
       this.equipeColaboradores,
       this.docId,
       this.editarDemanda,
+      this.localidade,
       this.usuario});
 
   @override

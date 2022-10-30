@@ -36,6 +36,7 @@ class RouteGenerator {
                 empresaEnvolvida: argument.empresaEnvolvida,
                 equipeColaboradores: argument.equipeColaboradores,
                 areaTematica: argument.areaTematica,
+                localidade: argument.localidade,
                 docId: argument.docId,
                 editarDemanda: argument.editarDemanda,
                 usuario: argument.usuario));
