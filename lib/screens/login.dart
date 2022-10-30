@@ -21,6 +21,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formLoginKey = GlobalKey<FormState>();
   final _formCadastroKey = GlobalKey<FormState>();
+  final _formResetPasswordKey = GlobalKey<FormState>();
+
+//Controlador do campo do formulário de troca de senha
+  final TextEditingController _verifyEmailController = TextEditingController();
 
   //Controladores dos campos do formulário de login
   final TextEditingController _emailController = TextEditingController();
@@ -36,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _confirmPassword = TextEditingController();
 
   bool _valida = false;
+  bool isforgotPasswordScream = false;
 
   bool isLogin = true;
   String title;
@@ -110,76 +115,134 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget forms(width) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(title, style: AppTheme.typo.homeText),
-          addVerticalSpace(16),
-          toggleButton(
-              buttonText, toggleButtonText, () => setFormAction(!isLogin)),
-          addVerticalSpace(30),
-          formulario,
-          if (forgotPassword)
-            Align(
-              alignment: Alignment.bottomRight,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text('Esqueceu sua senha?'),
+    if (isforgotPasswordScream) {
+      return Container(
+        width: width,
+        padding: const EdgeInsets.only(right: 40, left: 40),
+        child: Form(
+          key: _formResetPasswordKey,
+          child: Column(
+            children: [
+              EditorAuth(
+                  _verifyEmailController,
+                  'Email',
+                  'Informe seu email',
+                  const Icon(Icons.mail_outline),
+                  30,
+                  false,
+                  'Insira um e-mail válido',
+                  false,
+                  false),
+              addVerticalSpace(20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formResetPasswordKey.currentState.validate()) {
+                      context.read<UserDAO>().resetPassword(
+                          _verifyEmailController.text.trim(), context);
+
+                      //Limpa o campo
+                      _verifyEmailController.text = '';
+                    }
+                  },
+                  child: Text('Recuperar senha', style: AppTheme.typo.button),
+                  style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      padding: const EdgeInsets.all(23),
+                      primary: AppTheme.colors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                ),
               ),
-            ),
-          addVerticalSpace(20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                if (isLogin) {
-                  if (_formLoginKey.currentState.validate()) {
-                    debugPrint('login');
-                    // Chama o método de login
-                    context.read<UserDAO>().login(_emailController.text,
-                        _passwordController.text, context);
-                  }
-                } else {
-                  if (_formCadastroKey.currentState.validate()) {
-                    if (_confirmPassword.text ==
-                        _registerPasswordController.text) {
-                      debugPrint('cadastro');
-                      // Chama o método de cadastro
-                      context.read<UserDAO>().signup(
-                          _registerEmailController.text,
-                          _registerPasswordController.text,
-                          _nameController.text,
-                          _phoneController.text,
-                          _myState,
-                          _myCity,
-                          context);
-                      setState(() {
-                        _valida = false;
-                      });
-                    } else {
-                      setState(() {
-                        _valida = true;
-                      });
+              addVerticalSpace(20),
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isforgotPasswordScream = false;
+                    });
+                  },
+                  child: const Text('Voltar para o login'))
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        width: width,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(title, style: AppTheme.typo.homeText),
+            addVerticalSpace(16),
+            toggleButton(
+                buttonText, toggleButtonText, () => setFormAction(!isLogin)),
+            addVerticalSpace(30),
+            formulario,
+            if (forgotPassword)
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isforgotPasswordScream = !isforgotPasswordScream;
+                    });
+                  },
+                  child: const Text('Esqueceu sua senha?'),
+                ),
+              ),
+            addVerticalSpace(20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (isLogin) {
+                    if (_formLoginKey.currentState.validate()) {
+                      debugPrint('login');
+                      // Chama o método de login
+                      context.read<UserDAO>().login(_emailController.text,
+                          _passwordController.text, context);
+                    }
+                  } else {
+                    if (_formCadastroKey.currentState.validate()) {
+                      if (_confirmPassword.text ==
+                          _registerPasswordController.text) {
+                        debugPrint('cadastro');
+                        // Chama o método de cadastro
+                        context.read<UserDAO>().signup(
+                            _registerEmailController.text,
+                            _registerPasswordController.text,
+                            _nameController.text,
+                            _phoneController.text,
+                            _myState,
+                            _myCity,
+                            context);
+                        setState(() {
+                          _valida = false;
+                        });
+                      } else {
+                        setState(() {
+                          _valida = true;
+                        });
+                      }
                     }
                   }
-                }
-              },
-              child: Text(actionButton, style: AppTheme.typo.button),
-              style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  padding: const EdgeInsets.all(23),
-                  primary: AppTheme.colors.blue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
+                },
+                child: Text(actionButton, style: AppTheme.typo.button),
+                style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    padding: const EdgeInsets.all(23),
+                    primary: AppTheme.colors.blue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 
   Widget formLogin(GlobalKey _formKey) {
@@ -292,7 +355,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Icon(Ionicons.md_key),
                     10,
                     true,
-                    'Informa a mesma senha!',
+                    'Informar a mesma senha!',
                     _valida,
                     false),
               )

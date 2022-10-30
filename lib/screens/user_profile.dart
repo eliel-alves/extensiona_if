@@ -119,7 +119,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
         addVerticalSpace(30),
         Text('Informações Básicas', style: AppTheme.typo.title),
         addVerticalSpace(10),
-        Options('Nome:', widget.nome, false, () {
+        Options(widget.nome, false, () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -135,8 +135,8 @@ class _BuildUserPageState extends State<BuildUserPage> {
                     docId: widget.id,
                     dbName: 'name')),
           );
-        }),
-        Options('Localidade:', '${widget.cidade}/${widget.estado}', false, () {
+        }, false, title: 'Nome:'),
+        Options('${widget.cidade}/${widget.estado}', false, () {
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -144,14 +144,14 @@ class _BuildUserPageState extends State<BuildUserPage> {
                       selectedCity: widget.cidade,
                       selectedState: widget.estado,
                       docId: widget.id)));
-        }),
-        Options('Foto:', 'Selecionar uma foto', true, () {
+        }, false, title: 'Localidade:'),
+        Options('Selecionar uma foto', true, () {
           selecionarFoto(widget.id, widget.nomeArquivoFoto);
-        }),
+        }, false, title: 'Foto:'),
         addVerticalSpace(30),
         Text('Informações de Contato', style: AppTheme.typo.title),
-        const SizedBox(height: 10),
-        Options('E-mail:', widget.email, false, () {
+        addVerticalSpace(10),
+        Options(widget.email, false, () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -167,8 +167,8 @@ class _BuildUserPageState extends State<BuildUserPage> {
                     docId: widget.id,
                     dbName: 'email')),
           );
-        }),
-        Options('Telefone:', widget.telefone, false, () {
+        }, false, title: 'E-mail:'),
+        Options(widget.telefone, false, () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -184,7 +184,11 @@ class _BuildUserPageState extends State<BuildUserPage> {
                     docId: widget.id,
                     dbName: 'telefone')),
           );
-        }),
+        }, false, title: 'Telefone:'),
+        addVerticalSpace(30),
+        Text('Mais opções', style: AppTheme.typo.title),
+        addVerticalSpace(10),
+        Options('Excluir sua conta', false, () {}, true)
       ],
     );
   }

@@ -396,6 +396,12 @@ class _FormDemandaState extends State<FormDemanda> {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
 
+    // Define a nova localidade da demanda de acordo com a localidade do usuário
+    final String _localidade =
+        '(' + widget.usuario.userState + ') ' + widget.usuario.userCity;
+
+    final String _areaLocalidade = areaTematicaSelecionada + '-' + _localidade;
+
     demandaRef
         .doc(documentID)
         .update({
@@ -411,6 +417,8 @@ class _FormDemandaState extends State<FormDemanda> {
           'empresa_envolvida': _controladorEmpresaEnvolvida.text,
           'equipe_colaboradores': _controladorEquipeColaboradores.text,
           'area_tematica': areaTematicaSelecionada,
+          'localidade': _localidade,
+          'filtro_area_localidade': _areaLocalidade
         })
         .then((value) => debugPrint("Demanda atualizada"))
         .catchError((error) => debugPrint(

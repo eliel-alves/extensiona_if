@@ -73,9 +73,11 @@ class Options extends StatelessWidget {
   final String titleContent;
   final Function onTap;
   final bool editImage;
+  final bool isDeleteAccountOption;
 
-  const Options(this.title, this.titleContent, this.editImage, this.onTap,
-      {Key key})
+  const Options(
+      this.titleContent, this.editImage, this.onTap, this.isDeleteAccountOption,
+      {Key key, this.title})
       : super(key: key);
 
   @override
@@ -97,10 +99,12 @@ class Options extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  //textBaseline: TextBaseline.alphabetic,
                   children: [
-                    Text(title, style: AppTheme.typo.title),
+                    isDeleteAccountOption
+                        ? const Icon(Icons.delete_forever_rounded)
+                        : Text(title, style: AppTheme.typo.title),
                     addHorizontalSpace(15),
                     Text(titleContent, style: AppTheme.typo.defaultText),
                   ],
