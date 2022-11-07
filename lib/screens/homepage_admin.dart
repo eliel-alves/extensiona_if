@@ -19,11 +19,33 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   List<String> _areaFiltered = [];
   List<String> _locationFiltered = [];
+  List<String> _areaLocationFiltered = [];
 
   @override
   void initState() {
     super.initState();
     filteringData();
+  }
+
+  filterAreaLocation() {
+    //Concatena as áreas selecionadas com as localidades
+
+    String _areaLocalidade;
+
+    for (var area in _areaFiltered) {
+      for (var localidade in _locationFiltered) {
+        _areaLocalidade = area + '-' + localidade;
+        _areaLocationFiltered.add(_areaLocalidade);
+      }
+    }
+
+    return _areaLocationFiltered;
+  }
+
+  removeAreaLocation(index) {
+    setState(() {
+      _areaLocationFiltered.removeAt(index);
+    });
   }
 
   //Método responsável por fazer o filtro das áreas temáticas
@@ -50,14 +72,13 @@ class _AdminScreenState extends State<AdminScreen> {
           .snapshots();
       return StreamBuilderDemandas(stream: _filterDemandaStream);
     } else {
-      // por fim, se os dois vetores tiver algum filtro, ele faz um filtro utilizando os dois vetores
+      // por fim, se os dois vetores tiver alguma informação, ele faz um filtro utilizando os dois vetores
+
       final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
           .instance
           .collection('DEMANDAS')
-          .where('area_tematica', whereIn: _areaFiltered)
-          .where('localidade', whereIn: _locationFiltered)
+          .where('filtro_area_localidade', whereIn: filterAreaLocation())
           .snapshots();
-
       return StreamBuilderDemandas(stream: _filterDemandaStream);
     }
   }
@@ -89,7 +110,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (!snapshot.hasData) {
-                    return const Text('Carregando...');
+                    return const CircularProgressIndicator();
                   } else {
                     final _items = snapshot.data.docs
                         .map((DocumentSnapshot document) =>
@@ -132,7 +153,18 @@ class _AdminScreenState extends State<AdminScreen> {
                               debugPrint(value);
                               _areaFiltered.remove(value);
                             });
-                            debugPrint(_areaFiltered.toString());
+
+                            _areaLocationFiltered = [];
+                            for (var areaLocation in _areaLocationFiltered) {
+                              if (areaLocation.contains(value)) {
+                                debugPrint('Index = $areaLocation');
+                                var index =
+                                    _areaLocationFiltered.indexOf(areaLocation);
+                                removeAreaLocation(index);
+                              }
+                            }
+                            debugPrint('vetor de areas e localidades:' +
+                                _areaLocationFiltered.toString());
                           },
                         ));
                   }
@@ -145,7 +177,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (!snapshot.hasData) {
-                    return const Text('Carregando...');
+                    return const CircularProgressIndicator();
                   } else {
                     final _items = snapshot.data.docs
                         .map((DocumentSnapshot document) =>
@@ -188,7 +220,19 @@ class _AdminScreenState extends State<AdminScreen> {
                               debugPrint(value);
                               _locationFiltered.remove(value);
                             });
-                            debugPrint(_locationFiltered.toString());
+
+                            _areaLocationFiltered = [];
+                            for (var areaLocation in _areaLocationFiltered) {
+                              if (areaLocation.contains(value)) {
+                                debugPrint('Index = $areaLocation');
+                                var index =
+                                    _areaLocationFiltered.indexOf(areaLocation);
+                                removeAreaLocation(index);
+                              }
+                            }
+                            debugPrint('vetor de areas e localidades:' +
+                                _areaLocationFiltered.toString());
+                            // debugPrint(_locationFiltered.toString());
                           },
                         ));
                   }

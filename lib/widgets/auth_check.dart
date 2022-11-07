@@ -16,12 +16,12 @@ class ManageAuthState extends StatefulWidget {
 class _ManageAuthStateState extends State<ManageAuthState> {
   @override
   Widget build(BuildContext context) {
-    UserDAO auth = Provider.of<UserDAO>(context);
+    UserDAO authService = Provider.of<UserDAO>(context);
 
-    if (auth.isLoading) {
+    if (authService.isLoading) {
       return loading();
-    } else if (auth.usuario == null) {
-      return const AuthenticationPages();
+    } else if (authService.usuario == null) {
+      return const LoginScreen();
     } else {
       return const RoleBasedUI();
     }

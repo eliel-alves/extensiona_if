@@ -32,7 +32,7 @@ Widget drawerNavigation(context) {
               Navigator.pushNamed(context, '/');
             }),
         ListTileOptions(
-            icone: Icons.assignment_rounded,
+            icone: Icons.assignment_outlined,
             title: 'Formulário',
             onTap: () async {
               var userRef = await FirebaseFirestore.instance
@@ -52,7 +52,7 @@ Widget drawerNavigation(context) {
               Navigator.pushNamed(context, '/listaDemanda');
             }),
         ListTileOptions(
-            icone: Icons.account_circle_rounded,
+            icone: Icons.account_circle_outlined,
             title: 'Meu perfil',
             onTap: () async {
               var userRef = await FirebaseFirestore.instance

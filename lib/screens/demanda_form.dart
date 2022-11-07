@@ -25,6 +25,7 @@ class FormDemanda extends StatefulWidget {
   final String empresaEnvolvida;
   final String equipeColaboradores;
   final String areaTematica;
+  final String localidade;
   final String docId;
   final bool editarDemanda;
   final Users usuario;
@@ -43,6 +44,7 @@ class FormDemanda extends StatefulWidget {
       this.empresaEnvolvida,
       this.equipeColaboradores,
       this.areaTematica,
+      this.localidade,
       this.docId,
       this.editarDemanda,
       this.usuario})
@@ -74,11 +76,7 @@ class _FormDemandaState extends State<FormDemanda> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String documentID = '';
-
-  final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
-  final styleTextFile =
-      const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
+  String documentID;
 
   String _fileName;
   bool _carregando = false;
@@ -86,8 +84,6 @@ class _FormDemandaState extends State<FormDemanda> {
   final FileType _tipoArquivo = FileType.custom;
 
   String areaTematicaSelecionada;
-
-  final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
   String hintText = 'Área temática';
 
@@ -403,6 +399,11 @@ class _FormDemandaState extends State<FormDemanda> {
         FirebaseFirestore.instance.collection('DEMANDAS');
     final user = UserDAO().auth.currentUser;
 
+    final String _areaLocalidade =
+        areaTematicaSelecionada + '-' + widget.localidade;
+
+    debugPrint(widget.localidade);
+
     demandaRef
         .doc(documentID)
         .update({
@@ -418,6 +419,8 @@ class _FormDemandaState extends State<FormDemanda> {
           'empresa_envolvida': _controladorEmpresaEnvolvida.text,
           'equipe_colaboradores': _controladorEquipeColaboradores.text,
           'area_tematica': areaTematicaSelecionada,
+          'localidade': widget.localidade,
+          'filtro_area_localidade': _areaLocalidade
         })
         .then((value) => debugPrint("Demanda atualizada"))
         .catchError((error) => debugPrint(
@@ -433,8 +436,10 @@ class _FormDemandaState extends State<FormDemanda> {
     final userDao = Provider.of<UserDAO>(context, listen: false);
 
     // Define a localidade da demanda de acordo com a localidade do usuário
-    final String _localidade = '(' + widget.usuario.userState + ') ' + widget.usuario.userCity;
-    
+    final String _localidade =
+        '(' + widget.usuario.userState + ') ' + widget.usuario.userCity;
+
+    final String _areaLocalidade = areaTematicaSelecionada + '-' + _localidade;
 
     //Adicionando um novo documento a nossa coleção -> Demandas
     DocumentReference _novaDemanda = await FirebaseFirestore.instance
@@ -455,7 +460,8 @@ class _FormDemandaState extends State<FormDemanda> {
       'empresa_envolvida': _controladorEmpresaEnvolvida.text,
       'equipe_colaboradores': _controladorEquipeColaboradores.text,
       'area_tematica': areaTematicaSelecionada,
-      'localidade': _localidade
+      'localidade': _localidade,
+      'filtro_area_localidade': _areaLocalidade
     }).catchError((error) =>
             debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 
@@ -484,7 +490,7 @@ class _FormDemandaState extends State<FormDemanda> {
   Widget listFile(String fileName, VoidCallback onTap) {
     return ListTile(
       title: Text(fileName),
-      trailing: IconButton(
+      leading: IconButton(
         icon: const Icon(Icons.highlight_remove_rounded),
         onPressed: onTap,
       ),

@@ -90,11 +90,11 @@ class UserDAO extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       // Possíveis erros
       if (e.code == 'weak-password') {
-        //throw AuthException('Sua senha é muito fraca');
-        errorMessage = 'Sua senha é muito fraca';
+        // throw AuthException('A senha é muito fraca!');
+        errorMessage = 'A senha é muito fraca!';
       } else if (e.code == 'email-already-in-use') {
-        //throw AuthException('Este email já está cadastrado');
-        errorMessage = 'Este email já está cadastrado';
+        //throw AuthException('Este email já foi cadastrado');
+        errorMessage = 'Este email já foi cadastrado';
       }
 
       // Mostrando o erro pro usuário
@@ -155,6 +155,18 @@ class UserDAO extends ChangeNotifier {
     _getUser();
   }
 
+  Future<void> resetPassword(String email, BuildContext context) async {
+    await auth.sendPasswordResetEmail(email: email).then((value) {
+      String message =
+          'Pronto! Um link para criação de uma nova senha foi enviado para seu e-mail.';
+      debugPrint(message);
+
+      SnackBar snackBar = SnackBar(content: Text(message));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
   /*//
   Future<void> checkUser(String userID) async {
     // Pega o documento que possui em seu campo id o valor do id do usuário logado
