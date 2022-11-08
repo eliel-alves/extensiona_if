@@ -3,6 +3,7 @@ import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/report/demanda_report.dart';
 import 'package:extensiona_if/screens/demanda_edit_admin.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:extensiona_if/widgets/admin_drawer_navigation.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -10,7 +11,9 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen({Key key}) : super(key: key);
+  final String tipoUsuario;
+
+  const AdminScreen({Key key, this.tipoUsuario}) : super(key: key);
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();
@@ -90,15 +93,15 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Propostas Registradas", style: AppTheme.typo.title),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-              onPressed: () {
-                userDao.logout();
-              },
-              icon: const Icon(Icons.logout))
-        ],
+        automaticallyImplyLeading: widget.tipoUsuario == 'super_admin' ? true : false,
+        actions: widget.tipoUsuario == 'super_admin' ?
+          null : [ IconButton(
+            onPressed: () {
+              userDao.logout();
+            },
+            icon: const Icon(Icons.logout))],
       ),
+      drawer: widget.tipoUsuario == 'super_admin' ? AdminDrawerNavigation(context) : null,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

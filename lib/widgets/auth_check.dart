@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/screens/homepage.dart';
 import 'package:extensiona_if/screens/homepage_admin.dart';
+import 'package:extensiona_if/screens/homepage_super_admin.dart';
 import 'package:extensiona_if/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -69,7 +70,9 @@ class RoleBasedUI extends StatelessWidget {
     //     child: Text('Usuário não encontrado'),
     //   );
     // }
-    if (snapshot.get('tipo') == 'admin') {
+    if (snapshot.get('tipo') == 'super_admin') {
+      return const SuperAdminScreen();
+    } else if (snapshot.get('tipo') == 'admin') {
       return const AdminScreen();
     } else {
       return const AllUsersHomePage();

@@ -1,6 +1,8 @@
 import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/screens/demanda_form.dart';
 import 'package:extensiona_if/screens/demanda_lista.dart';
+import 'package:extensiona_if/screens/homepage_admin.dart';
+import 'package:extensiona_if/screens/homepage_super_admin.dart';
 import 'package:extensiona_if/screens/login.dart';
 import 'package:extensiona_if/screens/register.dart';
 import 'package:extensiona_if/screens/user_profile.dart';
@@ -42,6 +44,11 @@ class RouteGenerator {
                 usuario: argument.usuario));
       case '/listaDemanda':
         return MaterialPageRoute(builder: (_) => const ListaDemanda());
+      case '/adminListaDemanda':
+        final argument = settings.arguments as String;
+        return MaterialPageRoute(builder: (_) => AdminScreen(tipoUsuario: argument));
+      case '/usersList':
+        return MaterialPageRoute(builder: (_) => const SuperAdminScreen());
       case '/profile':
         final argument = settings.arguments as String;
         return MaterialPageRoute(builder: (_) => MyProfile(userId: argument));

@@ -6,7 +6,7 @@ import 'package:extensiona_if/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-Widget drawerNavigation(context) {
+Widget AdminDrawerNavigation(context) {
   UserDAO authService = Provider.of<UserDAO>(context);
 
   return Drawer(
@@ -26,34 +26,14 @@ Widget drawerNavigation(context) {
           ),
         ),
         ListTileOptions(
-            icone: Icons.home_outlined,
-            title: 'Página Inicial',
+            icone: Icons.group_outlined,
+            title: 'Gerenciar Usuários',
             onTap: () {
-              Navigator.pushNamed(context, '/');
-            }),
-        ListTileOptions(
-            icone: Icons.assignment_outlined,
-            title: 'Formulário',
-            onTap: () async {
-              var userRef = await FirebaseFirestore.instance
-                  .collection('USUARIOS')
-                  .doc(authService.userId())
-                  .get();
-
-              var userInfo = Users.fromJson(userRef.data());
-
-              Navigator.pushNamed(context, '/formDemanda',
-                  arguments: Demandas(editarDemanda: false, usuario: userInfo));
+              Navigator.pushNamed(context, '/usersList');
             }),
         ListTileOptions(
             icone: Icons.list_alt_rounded,
-            title: 'Minhas Propostas',
-            onTap: () {
-              Navigator.pushNamed(context, '/listaDemanda');
-            }),
-        ListTileOptions(
-            icone: Icons.account_circle_outlined,
-            title: 'Meu perfil',
+            title: 'Demandas Cadastradas',
             onTap: () async {
               var userRef = await FirebaseFirestore.instance
                   .collection('USUARIOS')
@@ -61,9 +41,7 @@ Widget drawerNavigation(context) {
                   .get();
 
               var userInfo = Users.fromJson(userRef.data());
-
-              Navigator.pushNamed(context, '/profile',
-                  arguments: userInfo.userId);
+              Navigator.pushNamed(context, '/adminListaDemanda', arguments: userInfo.tipo);
             }),
         ListTileOptions(
             icone: Icons.logout_rounded,
@@ -87,7 +65,7 @@ Widget drawerNavigation(context) {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const ManageAuthState()));
+                                    const ManageAuthState()));
                             authService.logout();
                           },
                           child: const Text('SIM'),
