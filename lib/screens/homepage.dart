@@ -37,7 +37,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
             crossAxisCount: width > 1200 ? 4 : width > 800 ? 3 : 2,
-            childAspectRatio: 1.35,
+            childAspectRatio: width > 900 ? 1.4 : 0.75,
             children: [
               _buildCard(
                   'Criar Proposta',

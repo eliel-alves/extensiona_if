@@ -1,28 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/models/demanda.dart';
+import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/auth_check.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 Widget AdminDrawerNavigation(context) {
   UserDAO authService = Provider.of<UserDAO>(context);
 
   return Drawer(
+    backgroundColor: AppTheme.colors.lightGrey,
     child: ListView(
       padding: EdgeInsets.zero,
       children: <Widget>[
         DrawerHeader(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: AppTheme.colors.dark,
           ),
-          child: const Text(
-            'Mais Opções',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-            ),
+          child: SvgPicture.asset(
+              'lib/assets/svg/extensiona-logo-light.svg',
+              width: 200
           ),
         ),
         ListTileOptions(
@@ -43,6 +43,14 @@ Widget AdminDrawerNavigation(context) {
               var userInfo = Users.fromJson(userRef.data());
               Navigator.pushNamed(context, '/adminListaDemanda', arguments: userInfo.tipo);
             }),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Divider(
+            color: AppTheme.colors.grey,
+            height: 10,
+            thickness: 2,
+          ),
+        ),
         ListTileOptions(
             icone: Icons.logout_rounded,
             title: 'Sair',

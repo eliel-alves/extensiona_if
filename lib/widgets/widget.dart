@@ -13,7 +13,16 @@ class ListTileOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      ListTile(leading: Icon(icone), title: Text(title), onTap: onTap);
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: ListTile(
+          leading: Icon(icone),
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Inter', fontSize: 15)),
+          onTap: onTap,
+          iconColor: AppTheme.colors.blue,
+          textColor: AppTheme.colors.dark,
+        ),
+      );
 }
 
 class ListTileFiles extends StatelessWidget {
@@ -26,12 +35,12 @@ class ListTileFiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListTile(
-        trailing: IconButton(
-          icon: const Icon(Icons.highlight_remove_rounded),
-          onPressed: onPressed,
-        ),
-        title: Text(title),
-      );
+    trailing: IconButton(
+      icon: const Icon(Icons.highlight_remove_rounded),
+      onPressed: onPressed,
+    ),
+    title: Text(title),
+  );
 }
 
 class AppBarLogo extends StatelessWidget {
