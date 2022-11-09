@@ -23,6 +23,10 @@ class _AdminScreenState extends State<AdminScreen> {
   List<String> _areaFiltered = [];
   List<String> _locationFiltered = [];
   List<String> _areaLocationFiltered = [];
+  List<String> _uniqueLocalidadeList = [];
+
+  final _formKeyArea = GlobalKey<FormFieldState>();
+  final _formKeyLocalidade = GlobalKey<FormFieldState>();
 
   @override
   void initState() {
@@ -93,15 +97,21 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Propostas Registradas", style: AppTheme.typo.title),
-        automaticallyImplyLeading: widget.tipoUsuario == 'super_admin' ? true : false,
-        actions: widget.tipoUsuario == 'super_admin' ?
-          null : [ IconButton(
-            onPressed: () {
-              userDao.logout();
-            },
-            icon: const Icon(Icons.logout))],
+        automaticallyImplyLeading:
+            widget.tipoUsuario == 'super_admin' ? true : false,
+        actions: widget.tipoUsuario == 'super_admin'
+            ? null
+            : [
+                IconButton(
+                    onPressed: () {
+                      userDao.logout();
+                    },
+                    icon: const Icon(Icons.logout))
+              ],
       ),
-      drawer: widget.tipoUsuario == 'super_admin' ? AdminDrawerNavigation(context) : null,
+      drawer: widget.tipoUsuario == 'super_admin'
+          ? AdminDrawerNavigation(context)
+          : null,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -126,50 +136,64 @@ class _AdminScreenState extends State<AdminScreen> {
                         .toList();
 
                     return MultiSelectDialogField(
-                        items: _items,
-                        title: Text("Filtrar por Áreas Temáticas",
-                            style: AppTheme.typo.defaultBoldText),
-                        decoration: BoxDecoration(
-                          color: AppTheme.colors.white,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          border: Border.all(
-                              color: Theme.of(context).colorScheme.primary,
-                              width: 2),
-                        ),
-                        buttonIcon: Icon(Icons.expand_more,
-                            color: AppTheme.colors.greyText),
-                        buttonText: Text("Áreas Temáticas",
-                            style: AppTheme.typo.button),
-                        onConfirm: (results) {
+                      items: _items,
+                      key: _formKeyArea,
+                      title: Text("Filtrar por Áreas Temáticas",
+                          style: AppTheme.typo.defaultBoldText),
+                      decoration: BoxDecoration(
+                        color: AppTheme.colors.white,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2),
+                      ),
+                      buttonIcon: Icon(Icons.expand_more,
+                          color: AppTheme.colors.greyText),
+                      buttonText:
+                          Text("Áreas Temáticas", style: AppTheme.typo.button),
+                      onConfirm: (results) {
+                        if (_formKeyArea.currentState.validate()) {
                           setState(() {
                             _areaFiltered = results;
                           });
                           debugPrint(_areaFiltered.toString());
-                        },
-                        cancelText: const Text('CANCELAR'),
-                        confirmText: const Text('FILTRAR'),
-                        chipDisplay: MultiSelectChipDisplay<String>(
-                          items: _itemsChip,
-                          onTap: (value) {
-                            setState(() {
-                              debugPrint(value);
-                              _areaFiltered.remove(value);
-                            });
+                        } else {
+                          return;
+                        }
+                      },
+                      cancelText: const Text('CANCELAR'),
+                      confirmText: const Text('FILTRAR'),
+                      chipDisplay: MultiSelectChipDisplay<String>(
+                        items: _itemsChip,
+                        onTap: (value) {
+                          setState(() {
+                            debugPrint(value);
+                            _areaFiltered.remove(value);
+                          });
+                          debugPrint(_areaFiltered.toString());
 
-                            _areaLocationFiltered = [];
-                            for (var areaLocation in _areaLocationFiltered) {
-                              if (areaLocation.contains(value)) {
-                                debugPrint('Index = $areaLocation');
-                                var index =
-                                    _areaLocationFiltered.indexOf(areaLocation);
-                                removeAreaLocation(index);
-                              }
+                          _areaLocationFiltered = [];
+                          for (var areaLocation in _areaLocationFiltered) {
+                            if (areaLocation.contains(value)) {
+                              debugPrint('Index = $areaLocation');
+                              var index =
+                                  _areaLocationFiltered.indexOf(areaLocation);
+                              removeAreaLocation(index);
                             }
-                            debugPrint('vetor de areas e localidades:' +
-                                _areaLocationFiltered.toString());
-                          },
-                        ));
+                          }
+                          debugPrint('vetor de areas e localidades:' +
+                              _areaLocationFiltered.toString());
+                        },
+                      ),
+                      validator: (list) {
+                        if (list.length > 10) {
+                          return 'O número máximo de opções selecionáveis é 10';
+                        }
+
+                        return null;
+                      },
+                    );
                   }
                 }),
             addVerticalSpace(10),
@@ -182,11 +206,21 @@ class _AdminScreenState extends State<AdminScreen> {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
                   } else {
-                    final _items = snapshot.data.docs
-                        .map((DocumentSnapshot document) =>
-                            MultiSelectItem<String>(
-                                document['localidade'], document['localidade']))
+                    for (var itens in snapshot.data.docs) {
+                      _uniqueLocalidadeList.add(itens.get('localidade'));
+                    }
+
+                    final _items = _uniqueLocalidadeList
+                        .toSet()
+                        .map((document) =>
+                            MultiSelectItem<String>(document, document))
                         .toList();
+
+                    // final _items = snapshot.data.docs
+                    //     .map((DocumentSnapshot document) =>
+                    //         MultiSelectItem<String>(
+                    //             document['localidade'], document['localidade']))
+                    //     .toList();
 
                     final _itemsChip = _locationFiltered
                         .map((e) => MultiSelectItem<String>(e, e))
@@ -194,6 +228,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
                     return MultiSelectDialogField(
                         items: _items,
+                        key: _formKeyLocalidade,
                         title: Text("Filtrar por Localidade",
                             style: AppTheme.typo.defaultBoldText),
                         decoration: BoxDecoration(
@@ -209,16 +244,20 @@ class _AdminScreenState extends State<AdminScreen> {
                         buttonText:
                             Text("Localidade", style: AppTheme.typo.button),
                         onConfirm: (results) {
-                          setState(() {
-                            _locationFiltered = results;
-                          });
-                          debugPrint(_locationFiltered.toString());
+                          if (_formKeyLocalidade.currentState.validate()) {
+                            setState(() {
+                              _locationFiltered = results;
+                            });
+                            debugPrint(_locationFiltered.toString());
+                          }
                         },
                         cancelText: const Text('CANCELAR'),
                         confirmText: const Text('FILTRAR'),
                         chipDisplay: MultiSelectChipDisplay<String>(
                           items: _itemsChip,
                           onTap: (value) {
+                            debugPrint(value);
+
                             setState(() {
                               debugPrint(value);
                               _locationFiltered.remove(value);
@@ -237,7 +276,14 @@ class _AdminScreenState extends State<AdminScreen> {
                                 _areaLocationFiltered.toString());
                             // debugPrint(_locationFiltered.toString());
                           },
-                        ));
+                        ),
+                        validator: (list) {
+                          if (list.length > 10) {
+                            return 'O número máximo de opções selecionáveis é 10';
+                          }
+
+                          return null;
+                        });
                   }
                 }),
             addVerticalSpace(10),
