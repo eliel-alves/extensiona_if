@@ -256,6 +256,7 @@ class EditarInfoUsuario extends StatefulWidget {
   final Icon icon;
   final int qtdCaracteres;
   final bool maskField;
+  final bool validator;
   final String docId;
   final String dbName;
 
@@ -269,6 +270,7 @@ class EditarInfoUsuario extends StatefulWidget {
       this.icon,
       this.qtdCaracteres,
       this.maskField,
+      this.validator,
       this.docId,
       this.dbName})
       : super(key: key);
@@ -346,7 +348,8 @@ class _EditarInfoUsuarioState extends State<EditarInfoUsuario> {
                             false,
                             widget.errorText,
                             false,
-                            widget.maskField),
+                            widget.maskField,
+                            widget.validator),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

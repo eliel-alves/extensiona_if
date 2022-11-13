@@ -91,6 +91,7 @@ class EditorAuth extends StatefulWidget {
   final bool verSenha;
   final bool confirmPasswordField;
   final bool maskField;
+  final bool validator;
 
   const EditorAuth(
       this.controlador,
@@ -102,6 +103,7 @@ class EditorAuth extends StatefulWidget {
       this.errorText,
       this.confirmPasswordField,
       this.maskField,
+      this.validator,
       {Key key})
       : super(key: key);
 
@@ -112,6 +114,7 @@ class EditorAuth extends StatefulWidget {
 class _EditorAuthState extends State<EditorAuth> {
   bool _habilitaVerSenha;
   bool _verSenha;
+  bool _validation;
   var maskPhone = MaskTextInputFormatter(mask: '(##) #####-####');
 
   @override
@@ -119,6 +122,7 @@ class _EditorAuthState extends State<EditorAuth> {
     super.initState();
     _habilitaVerSenha = widget.verSenha;
     _verSenha = widget.verSenha;
+    _validation = widget.validator;
   }
 
   @override
@@ -182,12 +186,13 @@ class _EditorAuthState extends State<EditorAuth> {
                 borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
                 borderRadius: const BorderRadius.all(Radius.circular(10))),
           ),
-          validator: (value) {
+          validator: _validation ? (value) {
             if (value == null || value.isEmpty) {
               return widget.errorText;
             }
             return null;
-          }),
+          } : null
+        )
     );
   }
 }

@@ -38,8 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
+  final TextEditingController _lattesController = TextEditingController();
 
   bool _valida = false;
+  bool _representative = true;
   bool isforgotPasswordScream = false;
 
   bool isLogin = true;
@@ -132,7 +134,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   false,
                   'Insira um e-mail válido',
                   false,
-                  false),
+                  false,
+                  true),
+
               addVerticalSpace(20),
               SizedBox(
                 width: double.infinity,
@@ -200,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   if (isLogin) {
                     if (_formLoginKey.currentState.validate()) {
-                      debugPrint('login');
+                      // debugPrint('login');
                       // Chama o método de login
                       context.read<UserDAO>().login(_emailController.text,
                           _passwordController.text, context);
@@ -259,7 +263,9 @@ class _LoginScreenState extends State<LoginScreen> {
               false,
               'Insira um e-mail válido',
               false,
-              false),
+              false,
+              true),
+
           EditorAuth(
               _passwordController,
               'Senha',
@@ -269,7 +275,8 @@ class _LoginScreenState extends State<LoginScreen> {
               true,
               'Insira uma senha',
               false,
-              false),
+              false,
+              true),
         ],
       ),
     );
@@ -290,7 +297,8 @@ class _LoginScreenState extends State<LoginScreen> {
               false,
               'Informe um nome',
               false,
-              false),
+              false,
+              true),
 
           // campo email
           EditorAuth(
@@ -302,7 +310,8 @@ class _LoginScreenState extends State<LoginScreen> {
               false,
               'Informe um e-mail',
               false,
-              false),
+              false,
+              true),
 
           // campo telefone
           EditorAuth(
@@ -314,7 +323,46 @@ class _LoginScreenState extends State<LoginScreen> {
               false,
               'Informe um telefone',
               false,
+              true,
               true),
+
+          // campo quero ser representante
+          Row(
+            children: [
+              Checkbox(
+                  value: _representative,
+                  activeColor: AppTheme.colors.blue,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _representative = value;
+                    });
+                    debugPrint('deseja ser representante: ' + _representative.toString());
+                  }
+              ),
+              Text(
+                'Deseja ser um representante de sua instituição?',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  color: AppTheme.colors.greyText
+              ))
+            ],
+          ),
+
+          addVerticalSpace(20),
+
+          // campo telefone
+          EditorAuth(
+              _lattesController,
+              'Lattes',
+              'Link do seu Currículo Lattes',
+              const Icon(Icons.description_outlined),
+              256,
+              false,
+              'Informe o link do seu currículo',
+              false,
+              false,
+              _representative),
 
           Row(children: [
             // campo estado
@@ -333,15 +381,16 @@ class _LoginScreenState extends State<LoginScreen> {
               // campo senha
               Expanded(
                 child: EditorAuth(
-                    _registerPasswordController,
-                    'Senha',
-                    'Informe sua senha',
-                    const Icon(Ionicons.md_key),
-                    10,
-                    true,
-                    'Informe uma senha',
-                    false,
-                    false),
+                  _registerPasswordController,
+                  'Senha',
+                  'Informe sua senha',
+                  const Icon(Ionicons.md_key),
+                  10,
+                  true,
+                  'Informe uma senha',
+                  false,
+                  false,
+                  true),
               ),
 
               addHorizontalSpace(10),
@@ -349,15 +398,16 @@ class _LoginScreenState extends State<LoginScreen> {
               // campo confirmar senha
               Expanded(
                 child: EditorAuth(
-                    _confirmPassword,
-                    'Confirmar senha',
-                    'Insira novamente a sua senha',
-                    const Icon(Ionicons.md_key),
-                    10,
-                    true,
-                    'Informar a mesma senha!',
-                    _valida,
-                    false),
+                  _confirmPassword,
+                  'Confirmar senha',
+                  'Insira novamente a sua senha',
+                  const Icon(Ionicons.md_key),
+                  10,
+                  true,
+                  'Informar a mesma senha!',
+                  _valida,
+                  false,
+                  true),
               )
             ],
           )
@@ -394,11 +444,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   setState(() {
                     _myState = newValue;
                     _myCity = null;
-                    debugPrint('depois estado: ' + _myState);
+                    // debugPrint('depois estado: ' + _myState);
                   });
 
                   _getCitiesList();
-                  debugPrint('Permitir seleção');
+                  // debugPrint('Permitir seleção');
                 },
                 items: statesList?.map<DropdownMenuItem<String>>((item) {
                       return DropdownMenuItem(
@@ -442,7 +492,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onChanged: (String newValue) {
                   setState(() {
                     _myCity = newValue;
-                    debugPrint('depois cidade: ' + _myCity);
+                    // debugPrint('depois cidade: ' + _myCity);
                   });
                 },
                 items: citiesList?.map((item) {
@@ -494,7 +544,7 @@ class _LoginScreenState extends State<LoginScreen> {
         citiesList = data;
       });
 
-      debugPrint(citiesList.toString());
+      // debugPrint(citiesList.toString());
     });
   }
 

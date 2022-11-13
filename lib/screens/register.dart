@@ -25,6 +25,7 @@ class _RegisterUserState extends State<RegisterUser> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
 
+  bool _represent = false;
   bool _valida = false;
 
   String confirmPasswordMessage = 'Informa a mesma senha!';
@@ -80,7 +81,8 @@ class _RegisterUserState extends State<RegisterUser> {
                   false,
                   'Informe um nome',
                   false,
-                  false),
+                  false,
+                  true),
 
               // campo email
               EditorAuth(
@@ -92,7 +94,8 @@ class _RegisterUserState extends State<RegisterUser> {
                   false,
                   'Informe um e-mail',
                   false,
-                  false),
+                  false,
+                  true),
 
               // campo telefone
               EditorAuth(
@@ -104,8 +107,25 @@ class _RegisterUserState extends State<RegisterUser> {
                   false,
                   'Informe um telefone',
                   false,
+                  true,
                   true),
 
+              addVerticalSpace(20),
+
+              Row(
+                children: [
+                  Checkbox(
+                      value: _represent,
+                      onChanged: (value) {
+                        value = !value;
+                        debugPrint('Valor do Checbox: ' + _represent.toString());
+                      }
+                  ),
+                  Text('Deseja ser um representante de sua instituição?')
+                ],
+              ),
+
+              addVerticalSpace(20),
               // campo estado
               buildDropdownState(),
 
@@ -125,7 +145,8 @@ class _RegisterUserState extends State<RegisterUser> {
                   true,
                   'Informe uma senha',
                   false,
-                  false),
+                  false,
+                  true),
 
               // campo confirmar senha
               EditorAuth(
@@ -137,7 +158,8 @@ class _RegisterUserState extends State<RegisterUser> {
                   true,
                   confirmPasswordMessage,
                   false,
-                  false),
+                  false,
+                  true),
 
               addVerticalSpace(12),
 
@@ -211,11 +233,9 @@ class _RegisterUserState extends State<RegisterUser> {
                   setState(() {
                     _myState = newValue;
                     _myCity = null;
-                    debugPrint('depois estado: ' + _myState);
                   });
 
                   _getCitiesList();
-                  debugPrint('Permitir seleção');
                 },
                 items: statesList?.map<DropdownMenuItem<String>>((item) {
                       return DropdownMenuItem(
@@ -258,7 +278,6 @@ class _RegisterUserState extends State<RegisterUser> {
                 onChanged: (String newValue) {
                   setState(() {
                     _myCity = newValue;
-                    debugPrint('depois cidade: ' + _myCity);
                   });
                 },
                 items: citiesList?.map((item) {
@@ -309,8 +328,6 @@ class _RegisterUserState extends State<RegisterUser> {
       setState(() {
         citiesList = data;
       });
-
-      debugPrint(citiesList.toString());
     });
   }
 
