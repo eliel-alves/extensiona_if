@@ -114,7 +114,7 @@ class EditorAuth extends StatefulWidget {
 class _EditorAuthState extends State<EditorAuth> {
   bool _habilitaVerSenha;
   bool _verSenha;
-  bool _validation;
+  //bool _validation;
   var maskPhone = MaskTextInputFormatter(mask: '(##) #####-####');
 
   @override
@@ -122,78 +122,81 @@ class _EditorAuthState extends State<EditorAuth> {
     super.initState();
     _habilitaVerSenha = widget.verSenha;
     _verSenha = widget.verSenha;
-    _validation = widget.validator;
+    // _validation = widget.validator;
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: TextFormField(
-          //enabled: false,
-          // readOnly: widget.readOnly,
-          obscureText: _verSenha,
-          controller: widget.controlador,
-          keyboardType:
-              widget.maskField ? TextInputType.number : TextInputType.text,
-          inputFormatters: widget.maskField ? [maskPhone] : null,
-          style: AppTheme.typo.formText,
-          decoration: InputDecoration(
-            fillColor: AppTheme.colors.offWhite,
-            contentPadding: const EdgeInsets.all(23),
-            floatingLabelStyle: TextStyle(
-                color: AppTheme.colors.dark, fontWeight: FontWeight.bold),
-            suffixIconConstraints: const BoxConstraints(minWidth: 50),
-            prefixIconConstraints: const BoxConstraints(minWidth: 50),
-            labelStyle: AppTheme.typo.defaultBoldText,
-            labelText: widget.rotulo,
-            hintText: widget.dica,
-            prefixIcon: widget.icon,
-            suffixIcon: _habilitaVerSenha
-                ? (_verSenha
-                    ? IconButton(
-                        onPressed: () {
-                          setState(() {
-                            //Quando o usuário clicar nesse ícone, ele mudará para falso
-                            debugPrint('Você está vendo a sua senha');
-                            _verSenha = false;
-                          });
-                        },
-                        icon: const Icon(Ionicons.md_eye_off))
-                    : IconButton(
-                        onPressed: () {
-                          setState(() {
-                            //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
-                            debugPrint('Você não está vendo a sua senha');
-                            _verSenha = true;
-                          });
-                        },
-                        icon: const Icon(Ionicons.md_eye)))
-                : null,
-            errorText: widget.confirmPasswordField ? widget.errorText : null,
-            errorStyle: const TextStyle(
-                fontSize: 13, letterSpacing: 0, fontWeight: FontWeight.w500),
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppTheme.colors.white, width: 2),
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppTheme.colors.blue, width: 2),
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-          ),
-          validator: _validation ? (value) {
-            if (value == null || value.isEmpty) {
-              return widget.errorText;
-            }
-            return null;
-          } : null
-        )
-    );
+        padding: const EdgeInsets.only(bottom: 20),
+        child: TextFormField(
+            //enabled: false,
+            // readOnly: widget.readOnly,
+            obscureText: _verSenha,
+            controller: widget.controlador,
+            keyboardType:
+                widget.maskField ? TextInputType.number : TextInputType.text,
+            inputFormatters: widget.maskField ? [maskPhone] : null,
+            style: AppTheme.typo.formText,
+            decoration: InputDecoration(
+              fillColor: AppTheme.colors.offWhite,
+              contentPadding: const EdgeInsets.all(23),
+              floatingLabelStyle: TextStyle(
+                  color: AppTheme.colors.dark, fontWeight: FontWeight.bold),
+              suffixIconConstraints: const BoxConstraints(minWidth: 50),
+              prefixIconConstraints: const BoxConstraints(minWidth: 50),
+              labelStyle: AppTheme.typo.defaultBoldText,
+              labelText: widget.rotulo,
+              hintText: widget.dica,
+              prefixIcon: widget.icon,
+              suffixIcon: _habilitaVerSenha
+                  ? (_verSenha
+                      ? IconButton(
+                          onPressed: () {
+                            setState(() {
+                              //Quando o usuário clicar nesse ícone, ele mudará para falso
+                              debugPrint('Você está vendo a sua senha');
+                              _verSenha = false;
+                            });
+                          },
+                          icon: const Icon(Ionicons.md_eye_off))
+                      : IconButton(
+                          onPressed: () {
+                            setState(() {
+                              //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
+                              debugPrint('Você não está vendo a sua senha');
+                              _verSenha = true;
+                            });
+                          },
+                          icon: const Icon(Ionicons.md_eye)))
+                  : null,
+              errorText: widget.confirmPasswordField ? widget.errorText : null,
+              errorStyle: const TextStyle(
+                  fontSize: 13, letterSpacing: 0, fontWeight: FontWeight.w500),
+              enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: AppTheme.colors.white, width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+              errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.colors.blue, width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+              focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+            ),
+            validator: widget.validator
+                ? (value) {
+                    if (value == null || value.isEmpty) {
+                      return widget.errorText;
+                    }
+                    return null;
+                  }
+                : (value) {
+                    return null;
+                  }));
   }
 }
 
