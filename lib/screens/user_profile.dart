@@ -8,9 +8,11 @@ import 'package:extensiona_if/widgets/editor_city_state.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -100,6 +102,9 @@ class BuildUserPage extends StatefulWidget {
 }
 
 class _BuildUserPageState extends State<BuildUserPage> {
+  final TextEditingController _userProvidedPassword = TextEditingController();
+  final _formPasswordKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -188,7 +193,101 @@ class _BuildUserPageState extends State<BuildUserPage> {
         addVerticalSpace(30),
         Text('Mais opções', style: AppTheme.typo.title),
         addVerticalSpace(10),
-        Options('Excluir sua conta', false, () {}, true)
+        Options('Excluir sua conta', false, () async {
+          //final user = FirebaseAuth.instance.currentUser;
+
+//           final userCollection = await FirebaseFirestore.instance
+//               .collection('USUARIOS')
+//               .doc(user.uid)
+//               .get();
+
+//           final userDemandas = await FirebaseFirestore.instance
+//               .collection('DEMANDAS')
+//               .where('usuario', isEqualTo: user.uid)
+//               .get();
+
+// //'Tem certeza que desejas deletar sua conta e todos os seus dados?'
+//           popupBox(
+//               context,
+//               'Deletar conta',
+//               SizedBox(
+//                 height: 150,
+//                 child: Form(
+//                   key: _formPasswordKey,
+//                   child: Column(
+//                     children: [
+//                       const Text(
+//                           'Para continuar, primeiro confirme sua identidade'),
+//                       addVerticalSpace(16),
+//                       EditorAuth(
+//                           _userProvidedPassword,
+//                           'Senha',
+//                           'Digite sua senha',
+//                           const Icon(Ionicons.md_key),
+//                           10,
+//                           true,
+//                           'Insira sua senha',
+//                           false,
+//                           false,
+//                           true)
+//                     ],
+//                   ),
+//                 ),
+//               ), () {
+//             if (_formPasswordKey.currentState.validate()) {
+//               final credential = EmailAuthProvider.credential(
+//                   email: user.email, password: _userProvidedPassword.text);
+
+//               user.reauthenticateWithCredential(credential).then((value) async {
+//                 //Deleta a conta do usuário
+//                 await user?.delete();
+
+//                 //Deleta todos os registros desse usuário
+//                 userCollection.reference.delete();
+
+//                 for (var docRef in userDemandas.docs) {
+//                   //Deleta os arquivos de upload feitos pelo usuário
+
+//                   var subcollectionRef = await FirebaseFirestore.instance
+//                       .collection('DEMANDAS')
+//                       .doc(docRef.id)
+//                       .collection('arquivos')
+//                       .get();
+
+//                   if (subcollectionRef.docs.isEmpty) return;
+
+//                   //Deleta a subcoleção dos documento do usuário
+//                   for (var document in subcollectionRef.docs) {
+//                     debugPrint('$document');
+//                     document.reference.delete();
+
+//                     // Referência do arquivo a ser deletado
+//                     final storageFilesRef = firebase_storage
+//                         .FirebaseStorage.instance
+//                         .ref()
+//                         .child("arquivos/${document.get('file_name_storage')}");
+
+//                     final storagePhotoRef =
+//                         firebase_storage.FirebaseStorage.instance.ref().child(
+//                             "foto_perfil/${userCollection.get('nome_arquivo_foto')}");
+
+//                     // Deleta o arquivo
+//                     await storageFilesRef.delete();
+
+//                     await storagePhotoRef.delete();
+//                   }
+
+//                   //Deleta os dados da coleção de demandas
+//                   await docRef.reference.delete();
+//                 }
+
+//                 Navigator.of(context).pop(true);
+//               }).catchError((error) {
+//                 debugPrint("Erro ao deletar esta conta de usuário: $error");
+//               });
+//             }
+//           });
+        }, true)
       ],
     );
   }

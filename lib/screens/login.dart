@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/widgets/widget.dart';
@@ -79,29 +80,29 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget buildLayout() {
-    return SingleChildScrollView(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          var size = MediaQuery.of(context).size;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var size = MediaQuery.of(context).size;
 
-          if (constraints.maxWidth < 900) {
-            return Column(
+        if (constraints.maxWidth < 900) {
+          return SingleChildScrollView(
+            child: Column(
               children: [
                 logo(size.height / 5, size.width),
                 addVerticalSpace(16),
                 forms(size.width)
               ],
-            );
-          } else {
-            return Row(
-              children: [
-                logo(size.height, constraints.maxWidth / 2),
-                forms(constraints.maxWidth / 2)
-              ],
-            );
-          }
-        },
-      ),
+            ),
+          );
+        } else {
+          return Row(
+            children: [
+              logo(size.height, constraints.maxWidth / 2),
+              SingleChildScrollView(child: forms(constraints.maxWidth / 2))
+            ],
+          );
+        }
+      },
     );
   }
 
@@ -136,7 +137,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   false,
                   false,
                   true),
-
               addVerticalSpace(20),
               SizedBox(
                 width: double.infinity,
@@ -265,7 +265,6 @@ class _LoginScreenState extends State<LoginScreen> {
               false,
               false,
               true),
-
           EditorAuth(
               _passwordController,
               'Senha',
@@ -336,16 +335,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     setState(() {
                       _representative = value;
                     });
-                    debugPrint('deseja ser representante: ' + _representative.toString());
-                  }
-              ),
-              Text(
-                'Deseja ser um representante de sua instituição?',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 16,
-                  color: AppTheme.colors.greyText
-              ))
+                    debugPrint('deseja ser representante: ' +
+                        _representative.toString());
+                  }),
+              Text('Deseja ser um representante de sua instituição?',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      color: AppTheme.colors.greyText))
             ],
           ),
 
@@ -381,16 +378,16 @@ class _LoginScreenState extends State<LoginScreen> {
               // campo senha
               Expanded(
                 child: EditorAuth(
-                  _registerPasswordController,
-                  'Senha',
-                  'Informe sua senha',
-                  const Icon(Ionicons.md_key),
-                  10,
-                  true,
-                  'Informe uma senha',
-                  false,
-                  false,
-                  true),
+                    _registerPasswordController,
+                    'Senha',
+                    'Informe sua senha',
+                    const Icon(Ionicons.md_key),
+                    10,
+                    true,
+                    'Informe uma senha',
+                    false,
+                    false,
+                    true),
               ),
 
               addHorizontalSpace(10),
@@ -398,16 +395,16 @@ class _LoginScreenState extends State<LoginScreen> {
               // campo confirmar senha
               Expanded(
                 child: EditorAuth(
-                  _confirmPassword,
-                  'Confirmar senha',
-                  'Insira novamente a sua senha',
-                  const Icon(Ionicons.md_key),
-                  10,
-                  true,
-                  'Informar a mesma senha!',
-                  _valida,
-                  false,
-                  true),
+                    _confirmPassword,
+                    'Confirmar senha',
+                    'Insira novamente a sua senha',
+                    const Icon(Ionicons.md_key),
+                    10,
+                    true,
+                    'Informar a mesma senha!',
+                    _valida,
+                    false,
+                    true),
               )
             ],
           )

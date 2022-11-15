@@ -12,12 +12,15 @@ class ListTileOptions extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) =>
-      Padding(
+  Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ListTile(
           leading: Icon(icone),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Inter', fontSize: 15)),
+          title: Text(title,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Inter',
+                  fontSize: 15)),
           onTap: onTap,
           iconColor: AppTheme.colors.blue,
           textColor: AppTheme.colors.dark,
@@ -35,12 +38,12 @@ class ListTileFiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListTile(
-    trailing: IconButton(
-      icon: const Icon(Icons.highlight_remove_rounded),
-      onPressed: onPressed,
-    ),
-    title: Text(title),
-  );
+        trailing: IconButton(
+          icon: const Icon(Icons.highlight_remove_rounded),
+          onPressed: onPressed,
+        ),
+        title: Text(title),
+      );
 }
 
 class AppBarLogo extends StatelessWidget {
@@ -127,6 +130,33 @@ class Options extends StatelessWidget {
           onTap: onTap,
         ));
   }
+}
+
+Future<void> popupBox(context, title, content, onPressed) {
+  return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: content,
+          backgroundColor: AppTheme.colors.lightGrey,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          actions: <Widget>[
+            TextButton(
+              onPressed: onPressed,
+              child: const Text('SIM'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('CANCELAR'),
+            ),
+          ],
+        );
+      });
 }
 
 // class IconesMedia extends StatelessWidget {
