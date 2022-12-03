@@ -260,7 +260,7 @@ class ItemDemanda extends StatelessWidget {
     } else if (choice == 'atualizar') {
       //Navegar para a tela de edição de demandas
       Navigator.pushNamed(context, '/formDemanda',
-          arguments: Demandas(
+          arguments: DemandaArguments(
               titulo: infoTitulo,
               tempo: infoTempo,
               resumo: infoResumo,

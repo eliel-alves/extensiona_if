@@ -69,7 +69,7 @@ class _RegisterUserState extends State<RegisterUser> {
                     curve: Curves.ease);
               }),
 
-              addVerticalSpace(30),
+              Utils.addVerticalSpace(30),
 
               // campo nome
               EditorAuth(
@@ -110,7 +110,7 @@ class _RegisterUserState extends State<RegisterUser> {
                   true,
                   true),
 
-              addVerticalSpace(20),
+              Utils.addVerticalSpace(20),
 
               Row(
                 children: [
@@ -118,22 +118,22 @@ class _RegisterUserState extends State<RegisterUser> {
                       value: _represent,
                       onChanged: (value) {
                         value = !value;
-                        debugPrint('Valor do Checbox: ' + _represent.toString());
-                      }
-                  ),
-                  Text('Deseja ser um representante de sua instituição?')
+                        debugPrint(
+                            'Valor do Checbox: ' + _represent.toString());
+                      }),
+                  const Text('Deseja ser um representante de sua instituição?')
                 ],
               ),
 
-              addVerticalSpace(20),
+              Utils.addVerticalSpace(20),
               // campo estado
               buildDropdownState(),
 
-              addVerticalSpace(20),
+              Utils.addVerticalSpace(20),
 
               buildDropdownCity(),
 
-              addVerticalSpace(20),
+              Utils.addVerticalSpace(20),
 
               // campo senha
               EditorAuth(
@@ -161,7 +161,7 @@ class _RegisterUserState extends State<RegisterUser> {
                   false,
                   true),
 
-              addVerticalSpace(12),
+              Utils.addVerticalSpace(12),
 
               // botão registrar
               SizedBox(
@@ -176,8 +176,7 @@ class _RegisterUserState extends State<RegisterUser> {
                             _nameController.text,
                             _phoneController.text,
                             _myState,
-                            _myCity,
-                            context);
+                            _myCity);
                       } else {
                         setState(() {
                           _valida = true;

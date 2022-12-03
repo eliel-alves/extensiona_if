@@ -1,4 +1,92 @@
 class Demandas {
+  Demandas(
+    this.titulo,
+    this.tempo,
+    this.resumo,
+    this.objetivo,
+    this.contrapartida,
+    this.resultadosEsperados,
+    this.areaTematica,
+    this.vinculo,
+    this.propostaConjunto,
+    this.dadosProponente,
+    this.empresaEnvolvida,
+    this.equipeColaboradores,
+    this.docId,
+    this.localidade,
+  );
+
+  Demandas.fromJson(Map<String, Object> json)
+      : this(
+            json['id'] as String,
+            json['titulo'] as String,
+            json['tempo'] as String,
+            json['resumo'] as String,
+            json['objetivo'] as String,
+            json['contrapartida'] as String,
+            json['resultados_esperados'] as String,
+            json['area_tematica'] as String,
+            json['vinculo'] as String,
+            json['proposta_conjunto'] as String,
+            json['dados_proponente'] as String,
+            json['empresa_envolvida'] as String,
+            json['equipe_colaboradores'] as String,
+            json['localidade'] as String);
+
+  final String titulo;
+  final String tempo;
+  final String resumo;
+  final String objetivo;
+  final String contrapartida;
+  final String resultadosEsperados;
+  final String areaTematica;
+  final String vinculo;
+  final String propostaConjunto;
+  final String dadosProponente;
+  final String empresaEnvolvida;
+  final String equipeColaboradores;
+  final String localidade;
+  final String docId;
+
+  Map<String, Object> toJson() {
+    return {
+      'id': docId,
+      'titulo': titulo,
+      'tempo': tempo,
+      'resumo': resumo,
+      'objetivo': objetivo,
+      'contrapartida': contrapartida,
+      'resultados_esperados': resultadosEsperados,
+      'area_tematica': areaTematica,
+      'vinculo': vinculo,
+      'proposta_conjunto': propostaConjunto,
+      'dados_proponente': dadosProponente,
+      'empresa_envolvida': empresaEnvolvida,
+      'equipe_colaboradores': equipeColaboradores,
+      'localidade': localidade
+    };
+  }
+}
+
+class DemandaArguments {
+  DemandaArguments(
+      {this.titulo,
+      this.tempo,
+      this.resumo,
+      this.objetivo,
+      this.contrapartida,
+      this.resultadosEsperados,
+      this.areaTematica,
+      this.vinculo,
+      this.propostaConjunto,
+      this.dadosProponente,
+      this.empresaEnvolvida,
+      this.equipeColaboradores,
+      this.localidade,
+      this.docId,
+      this.editarDemanda,
+      this.usuario});
+
   final String titulo;
   final String tempo;
   final String resumo;
@@ -15,55 +103,6 @@ class Demandas {
   final String docId;
   final bool editarDemanda;
   final Users usuario;
-
-  Demandas(
-      {this.titulo,
-      this.tempo,
-      this.resumo,
-      this.objetivo,
-      this.contrapartida,
-      this.resultadosEsperados,
-      this.areaTematica,
-      this.vinculo,
-      this.propostaConjunto,
-      this.dadosProponente,
-      this.empresaEnvolvida,
-      this.equipeColaboradores,
-      this.docId,
-      this.editarDemanda,
-      this.localidade,
-      this.usuario});
-
-  @override
-  String toString() {
-    return "Demanda($titulo, $resumo, $objetivo, $contrapartida, $resultadosEsperados)";
-  }
-
-  ///Método responsável por acessar as informações dos campos dos documentos cadastrados no Firebase
-  // Demandas.fromSnapshot(DocumentSnapshot snapshot) {
-  //   Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-  //
-  //   titulo = data['titulo'];
-  //   tempo = data['tempo'];
-  //   resultadosEsperados = data['resultados_esperados'];
-  //   resumo = data['resumo'];
-  //   objetivo = data['objetivo'];
-  //   contrapartida = data['contrapartida'];
-  //   areaTematica = data['area_tematica'];
-  //   vinculo = data['vinculo'];
-  //   userID = data['usuario'];
-  //   docId = snapshot.id;
-  // }
-}
-
-class AreaTematica {
-  final int id;
-  final String name;
-
-  AreaTematica({
-    this.id,
-    this.name,
-  });
 }
 
 class Users {

@@ -21,10 +21,8 @@ Widget drawerNavigation(context) {
           decoration: BoxDecoration(
             color: AppTheme.colors.dark,
           ),
-          child: SvgPicture.asset(
-            'lib/assets/svg/extensiona-logo-light.svg',
-            width: 200
-          ),
+          child: SvgPicture.asset('lib/assets/svg/extensiona-logo-light.svg',
+              width: 200),
         ),
         ListTileOptions(
             icone: Icons.home_outlined,
@@ -44,7 +42,8 @@ Widget drawerNavigation(context) {
               var userInfo = Users.fromJson(userRef.data());
 
               Navigator.pushNamed(context, '/formDemanda',
-                  arguments: Demandas(editarDemanda: false, usuario: userInfo));
+                  arguments: DemandaArguments(
+                      editarDemanda: false, usuario: userInfo));
             }),
         ListTileOptions(
             icone: Icons.list_alt_rounded,

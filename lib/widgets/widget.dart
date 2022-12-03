@@ -59,7 +59,7 @@ class AppBarLogo extends StatelessWidget {
           'lib/assets/svg/extensiona-logo-light.svg',
           width: 220,
         ),
-        addVerticalSpace(10),
+        Utils.addVerticalSpace(10),
         Text(
           titulo,
           style: AppTheme.typo.defaultText,
@@ -117,7 +117,7 @@ class Options extends StatelessWidget {
                     isDeleteAccountOption
                         ? const Icon(Icons.delete_forever_rounded)
                         : Text(title, style: AppTheme.typo.title),
-                    addHorizontalSpace(15),
+                    Utils.addHorizontalSpace(15),
                     Text(titleContent, style: AppTheme.typo.defaultText),
                   ],
                 ),
@@ -145,15 +145,15 @@ Future<void> popupBox(context, title, content, onPressed) {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
           actions: <Widget>[
             TextButton(
-              onPressed: onPressed,
-              child: const Text('SIM'),
-            ),
-            TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
               child: const Text('CANCELAR'),
             ),
+            TextButton(
+              onPressed: onPressed,
+              child: const Text('PRÓXIMO'),
+            )
           ],
         );
       });

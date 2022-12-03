@@ -10,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 class FormDemanda extends StatefulWidget {
   final String titulo;
@@ -397,7 +397,6 @@ class _FormDemandaState extends State<FormDemanda> {
   void _editarDemanda() async {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
-    final user = UserDAO().auth.currentUser;
 
     final String _areaLocalidade =
         areaTematicaSelecionada + '-' + widget.localidade;
@@ -551,7 +550,9 @@ class _FormDemandaState extends State<FormDemanda> {
         'file_name_storage': nameFile
       });
     } else {
-      print(uploadTask.state);
+      if (kDebugMode) {
+        print(uploadTask.state);
+      }
     }
   }
 }

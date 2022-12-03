@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/models/demanda.dart';
+import 'package:extensiona_if/widgets/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class UserDAO extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
@@ -77,7 +79,7 @@ class UserDAO extends ChangeNotifier {
 
   // Cadastrar no app
   void signup(String email, String password, String userName, String userPhone,
-      String state, String city, BuildContext context) async {
+      String state, String city) async {
     // Tenta cadastrar o usuário
     try {
       await auth.createUserWithEmailAndPassword(
@@ -98,13 +100,128 @@ class UserDAO extends ChangeNotifier {
       }
 
       // Mostrando o erro pro usuário
-      //Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.BOTTOM);
-      //SnackBar
-      SnackBar snackBar = SnackBar(content: Text(errorMessage));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ////SNACKBAR
+      Utils.schowSnackBar(errorMessage);
     } catch (e) {
       debugPrint(e);
     }
+  }
+
+  // Logar o usuário
+  void login(String email, String password) async {
+    try {
+      await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      _getUser();
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password') {
+        //throw AuthException('Senha incorreta. Tente novamente');
+        errorMessage = 'Senha incorreta. Tente novamente';
+      } else if (e.code == 'user-not-found') {
+        //throw AuthException('Email não encontrado. Cadastre-se');
+        errorMessage = 'Email não encontrado. Cadastre-se';
+      }
+
+      //SNACKBAR
+      Utils.schowSnackBar(errorMessage);
+    } catch (e) {
+      debugPrint(e);
+    }
+  }
+
+  Future<void> deleteUser(
+      String email, String password, BuildContext context) async {
+    try {
+      final user = auth.currentUser;
+      AuthCredential credential =
+          EmailAuthProvider.credential(email: user.email, password: password);
+
+      final result = await user
+          .reauthenticateWithCredential(credential)
+          .catchError((error) {
+        Navigator.of(context).pop(true);
+
+        Utils.schowSnackBar(
+            'Credenciais incorretas. Por favor, verifique-as e tente novamente.');
+      });
+
+      if (kDebugMode) {
+        print(user);
+      }
+      await deleteUserData(result.user.uid, context);
+      await result.user.delete();
+    } catch (error) {
+      debugPrint(error);
+      debugPrint('Erro na deleção da conta do usuário !!!');
+    }
+  }
+
+  Future<void> deleteUserData(String uid, BuildContext context) async {
+    final userCollection =
+        await FirebaseFirestore.instance.collection('USUARIOS').doc(uid).get();
+
+    final userDemandas = await FirebaseFirestore.instance
+        .collection('DEMANDAS')
+        .where('usuario', isEqualTo: uid)
+        .get();
+
+    //Acessa as informações das demandas do usuário
+    for (var uDemanda in userDemandas.docs) {
+      //Referência a subcoleção dos documentos deste usuário
+      var subcollectionRef = await FirebaseFirestore.instance
+          .collection('DEMANDAS')
+          .doc(uDemanda.id)
+          .collection('arquivos')
+          .get();
+
+      //Acessa as informações das subcoleções das demandas do usuário
+      for (var subCollection in subcollectionRef.docs) {
+        // Referência do arquivo a ser deletado no firebase_storage
+        final storageFilesRef = firebase_storage.FirebaseStorage.instance
+            .ref()
+            .child("arquivos/${subCollection.get('file_name_storage')}");
+
+        final storagePhotoRef = firebase_storage.FirebaseStorage.instance
+            .ref()
+            .child("foto_perfil/${userCollection.get('nome_arquivo_foto')}");
+
+        // Deleta o arquivo
+        await storageFilesRef.delete();
+
+        await storagePhotoRef.delete();
+
+        //Deleta a subcoleção
+        subCollection.reference
+            .delete()
+            .then((value) => debugPrint('Subcoleção deletada !!!'))
+            .catchError((error) {
+          debugPrint('Erro ao deletar a subcoleção: ' + error);
+        });
+      }
+
+      //Deleta as demandas do usuário
+      uDemanda.reference
+          .delete()
+          .then((value) => debugPrint("Demanda deletada !!!"))
+          .catchError((error) {
+        debugPrint("Erro ao deletar a demanda do usuário: " + error);
+      });
+    }
+
+    //Deleta a coleção referente ao usuário
+    userCollection.reference
+        .delete()
+        .then((value) => debugPrint('Coleção do usuário deletada !!!'))
+        .catchError((error) {
+      debugPrint('Erro ao deletar a coleção do usuário: ' + error);
+    });
+
+    Navigator.of(context).pop(true);
+
+    Navigator.pushNamed(context, '/');
   }
 
   // Método responsável por adicionar um novo usuário na coleção USUARIOS
@@ -122,32 +239,6 @@ class UserDAO extends ChangeNotifier {
         );
   }
 
-  // Logar o usuário
-  void login(String email, String password, BuildContext context) async {
-    try {
-      await auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      _getUser();
-      notifyListeners();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'wrong-password') {
-        //throw AuthException('Senha incorreta. Tente novamente');
-        errorMessage = 'Senha incorreta. Tente novamente';
-      } else if (e.code == 'user-not-found') {
-        //throw AuthException('Email não encontrado. Cadastre-se');
-        errorMessage = 'Email não encontrado. Cadastre-se';
-      }
-
-      //Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.SNACKBAR);
-      SnackBar snackBar = SnackBar(content: Text(errorMessage));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } catch (e) {
-      debugPrint(e);
-    }
-  }
-
   // Logou do usuário
   void logout() async {
     await auth.signOut();
@@ -155,28 +246,18 @@ class UserDAO extends ChangeNotifier {
     _getUser();
   }
 
-  Future<void> resetPassword(String email, BuildContext context) async {
+  Future<void> resetPassword(String email) async {
     await auth.sendPasswordResetEmail(email: email).then((value) {
       String message =
           'Pronto! Um link para criação de uma nova senha foi enviado para seu e-mail.';
       debugPrint(message);
 
-      SnackBar snackBar = SnackBar(content: Text(message));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      //SNACKBAR
+      Utils.schowSnackBar(message);
     }).catchError((e) {
       debugPrint(e);
     });
   }
-  /*//
-  Future<void> checkUser(String userID) async {
-    // Pega o documento que possui em seu campo id o valor do id do usuário logado
-    final userId = await usersRef.where('id', isEqualTo: userID).get().then((value) => value.docs);
-
-    //Laço que retorna o tipo de usuário(admin ou user)
-    for (var element in userId) {
-      userType = element.data().tipo;
-    }
-  }*/
 
   // TODO: Sing In with Google
   Future<void> signInWithGoogle() async {

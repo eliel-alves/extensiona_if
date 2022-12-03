@@ -20,10 +20,8 @@ Widget AdminDrawerNavigation(context) {
           decoration: BoxDecoration(
             color: AppTheme.colors.dark,
           ),
-          child: SvgPicture.asset(
-              'lib/assets/svg/extensiona-logo-light.svg',
-              width: 200
-          ),
+          child: SvgPicture.asset('lib/assets/svg/extensiona-logo-light.svg',
+              width: 200),
         ),
         ListTileOptions(
             icone: Icons.group_outlined,
@@ -41,7 +39,8 @@ Widget AdminDrawerNavigation(context) {
                   .get();
 
               var userInfo = Users.fromJson(userRef.data());
-              Navigator.pushNamed(context, '/adminListaDemanda', arguments: userInfo.tipo);
+              Navigator.pushNamed(context, '/adminListaDemanda',
+                  arguments: userInfo.tipo);
             }),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -73,7 +72,7 @@ Widget AdminDrawerNavigation(context) {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const ManageAuthState()));
+                                        const ManageAuthState()));
                             authService.logout();
                           },
                           child: const Text('SIM'),

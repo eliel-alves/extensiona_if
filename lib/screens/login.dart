@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/widgets/widget.dart';
@@ -89,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 logo(size.height / 5, size.width),
-                addVerticalSpace(16),
+                Utils.addVerticalSpace(16),
                 forms(size.width)
               ],
             ),
@@ -137,14 +136,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   false,
                   false,
                   true),
-              addVerticalSpace(20),
+              Utils.addVerticalSpace(20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formResetPasswordKey.currentState.validate()) {
-                      context.read<UserDAO>().resetPassword(
-                          _verifyEmailController.text.trim(), context);
+                      context
+                          .read<UserDAO>()
+                          .resetPassword(_verifyEmailController.text.trim());
 
                       //Limpa o campo
                       _verifyEmailController.text = '';
@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(10))),
                 ),
               ),
-              addVerticalSpace(20),
+              Utils.addVerticalSpace(20),
               TextButton(
                   onPressed: () {
                     setState(() {
@@ -180,10 +180,10 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(title, style: AppTheme.typo.homeText),
-            addVerticalSpace(16),
+            Utils.addVerticalSpace(16),
             toggleButton(
                 buttonText, toggleButtonText, () => setFormAction(!isLogin)),
-            addVerticalSpace(30),
+            Utils.addVerticalSpace(30),
             formulario,
             if (forgotPassword)
               Align(
@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text('Esqueceu sua senha?'),
                 ),
               ),
-            addVerticalSpace(20),
+            Utils.addVerticalSpace(20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -206,8 +206,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (_formLoginKey.currentState.validate()) {
                       // debugPrint('login');
                       // Chama o método de login
-                      context.read<UserDAO>().login(_emailController.text,
-                          _passwordController.text, context);
+                      context.read<UserDAO>().login(
+                          _emailController.text, _passwordController.text);
                     }
                   } else {
                     if (_formCadastroKey.currentState.validate()) {
@@ -221,8 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             _nameController.text,
                             _phoneController.text,
                             _myState,
-                            _myCity,
-                            context);
+                            _myCity);
                         setState(() {
                           _valida = false;
                         });
@@ -346,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
 
-          addVerticalSpace(20),
+          Utils.addVerticalSpace(20),
 
           // campo telefone
           EditorAuth(
@@ -365,13 +364,13 @@ class _LoginScreenState extends State<LoginScreen> {
             // campo estado
             Expanded(child: buildDropdownState()),
 
-            addHorizontalSpace(10),
+            Utils.addHorizontalSpace(10),
 
             // campo cidade
             Expanded(child: buildDropdownCity()),
           ]),
 
-          addVerticalSpace(20),
+          Utils.addVerticalSpace(20),
 
           Row(
             children: [
@@ -390,7 +389,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     true),
               ),
 
-              addHorizontalSpace(10),
+              Utils.addHorizontalSpace(10),
 
               // campo confirmar senha
               Expanded(

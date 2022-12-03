@@ -196,7 +196,7 @@ class _AdminScreenState extends State<AdminScreen> {
                     );
                   }
                 }),
-            addVerticalSpace(10),
+            Utils.addVerticalSpace(10),
             StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('DEMANDAS')
@@ -286,7 +286,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         });
                   }
                 }),
-            addVerticalSpace(10),
+            Utils.addVerticalSpace(10),
             filteringData()
           ],
         ),

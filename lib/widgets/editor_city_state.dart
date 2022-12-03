@@ -43,9 +43,9 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
             child: Column(
               children: [
                 buildDropdownState(),
-                addVerticalSpace(20),
+                Utils.addVerticalSpace(20),
                 buildDropdownCity(),
-                addVerticalSpace(20),
+                Utils.addVerticalSpace(20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -54,7 +54,7 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                           Navigator.pop(context);
                         },
                         child: const Text('Cancelar')),
-                    addHorizontalSpace(10),
+                    Utils.addHorizontalSpace(10),
                     ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {

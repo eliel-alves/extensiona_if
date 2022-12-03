@@ -95,7 +95,7 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
                 ),
                 items: _optionsStatus.map((String item) {
                   return DropdownMenuItem<String>(
-                    child: Text(toCapitalization(item)),
+                    child: Text(Utils.toCapitalization(item)),
                     value: item,
                   );
                 }).toList(),
@@ -107,7 +107,7 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
                 },
                 value: _statusDemandaAtual,
               ),
-              addVerticalSpace(13),
+              Utils.addVerticalSpace(13),
               EditorTextFormField(
                   _controladorTempoNecessario,
                   "Informe o tempo necessário",

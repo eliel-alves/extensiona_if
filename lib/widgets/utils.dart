@@ -1,21 +1,35 @@
 import 'package:flutter/material.dart';
 
-Widget addVerticalSpace(double value) {
-  return SizedBox(
-    height: value,
-  );
-}
+class Utils {
+  static final messengerKey = GlobalKey<ScaffoldMessengerState>();
 
-Widget addHorizontalSpace(double value) {
-  return SizedBox(
-    width: value,
-  );
-}
+  static schowSnackBar(String text) {
+    if (text == null) return;
 
-Widget addSpace() {
-  return const Spacer();
-}
+    final snackBar = SnackBar(content: Text(text));
 
-String toCapitalization(String text) {
-  return text[0].toUpperCase() + text.substring(1).toLowerCase();
+    messengerKey.currentState
+      ..removeCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+  static Widget addVerticalSpace(double value) {
+    return SizedBox(
+      height: value,
+    );
+  }
+
+  static Widget addHorizontalSpace(double value) {
+    return SizedBox(
+      width: value,
+    );
+  }
+
+  static Widget addSpace() {
+    return const Spacer();
+  }
+
+  static String toCapitalization(String text) {
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  }
 }

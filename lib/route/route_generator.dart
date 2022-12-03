@@ -23,7 +23,7 @@ class RouteGenerator {
       case '/register':
         return MaterialPageRoute(builder: (_) => const RegisterUser());
       case '/formDemanda':
-        Demandas argument = settings.arguments as Demandas;
+        DemandaArguments argument = settings.arguments as DemandaArguments;
         return MaterialPageRoute(
             builder: (_) => FormDemanda(
                 titulo: argument.titulo,
@@ -46,7 +46,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const ListaDemanda());
       case '/adminListaDemanda':
         final argument = settings.arguments as String;
-        return MaterialPageRoute(builder: (_) => AdminScreen(tipoUsuario: argument));
+        return MaterialPageRoute(
+            builder: (_) => AdminScreen(tipoUsuario: argument));
       case '/usersList':
         return MaterialPageRoute(builder: (_) => const SuperAdminScreen());
       case '/profile':
