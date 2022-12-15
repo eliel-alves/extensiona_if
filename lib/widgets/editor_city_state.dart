@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/utils.dart';
+import 'package:extensiona_if/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,6 +21,7 @@ class ChangeStateCity extends StatefulWidget {
 
 class _ChangeStateCityState extends State<ChangeStateCity> {
   final _formKey = GlobalKey<FormState>();
+  bool editandoInfo = false;
 
   @override
   void initState() {
@@ -34,49 +36,62 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Estado e Cidade', style: AppTheme.typo.title),
+        title: Text('Cidade e Estado', style: AppTheme.typo.title),
       ),
       body: Padding(
           padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                buildDropdownState(),
-                Utils.addVerticalSpace(20),
-                buildDropdownCity(),
-                Utils.addVerticalSpace(20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Cancelar')),
-                    Utils.addHorizontalSpace(10),
-                    ElevatedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            if (_myCity == null) {}
+          child: Column(children: [
+            !editandoInfo
+                ? CardInfo(
+                    titulo: 'Cidade e Estado',
+                    conteudo: '${widget.selectedCity}/${widget.selectedState}',
+                    onTap: () {
+                      setState(() {
+                        editandoInfo = true;
+                      });
+                    })
+                : Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        buildDropdownState(),
+                        Utils.addVerticalSpace(20),
+                        buildDropdownCity(),
+                        Utils.addVerticalSpace(20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    editandoInfo = false;
+                                  });
+                                },
+                                child: const Text('Cancelar')),
+                            Utils.addHorizontalSpace(10),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  if (_formKey.currentState.validate()) {
+                                    final doc = await FirebaseFirestore.instance
+                                        .collection('USUARIOS')
+                                        .doc(widget.docId)
+                                        .get();
 
-                            final doc = await FirebaseFirestore.instance
-                                .collection('USUARIOS')
-                                .doc(widget.docId)
-                                .get();
+                                    doc.reference.update({
+                                      'estado': _myState,
+                                      'cidade': _myCity
+                                    });
 
-                            doc.reference.update(
-                                {'estado': _myState, 'cidade': _myCity});
-
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text('Salvar'))
-                  ],
-                )
-              ],
-            ),
-          )),
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: const Text('Salvar'))
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+          ])),
     );
   }
 

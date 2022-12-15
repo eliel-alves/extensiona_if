@@ -21,7 +21,7 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
     return Scaffold(
         appBar: AppBar(
             title: Text("Usuários Registrados", style: AppTheme.typo.title)),
-        drawer: AdminDrawerNavigation(context),
+        drawer: adminDrawerNavigation(context),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -30,6 +30,7 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
                     stream: FirebaseFirestore.instance
                         .collection('USUARIOS')
                         .where('tipo', isNotEqualTo: 'super_admin')
+                        //.orderBy('name', descending: false)
                         .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {

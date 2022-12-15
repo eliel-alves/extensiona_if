@@ -23,7 +23,7 @@ class _AdminScreenState extends State<AdminScreen> {
   List<String> _areaFiltered = [];
   List<String> _locationFiltered = [];
   List<String> _areaLocationFiltered = [];
-  List<String> _uniqueLocalidadeList = [];
+  final List<String> _uniqueLocalidadeList = [];
 
   final _formKeyArea = GlobalKey<FormFieldState>();
   final _formKeyLocalidade = GlobalKey<FormFieldState>();
@@ -110,7 +110,7 @@ class _AdminScreenState extends State<AdminScreen> {
               ],
       ),
       drawer: widget.tipoUsuario == 'super_admin'
-          ? AdminDrawerNavigation(context)
+          ? adminDrawerNavigation(context)
           : null,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

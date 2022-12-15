@@ -4,6 +4,7 @@ import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/drawer_navigation.dart';
+import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -241,10 +242,15 @@ class _FormDemandaState extends State<FormDemanda> {
                   600,
                   false),
               const SizedBox(height: 10),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () => _selecionarArquivos(),
-                child: const Text('Selecionar Arquivos'),
+                label: const Text('Selecionar Arquivos'),
+                icon: const Icon(Icons.upload_file_outlined),
+                style: ButtonStyle(
+                    padding:
+                        MaterialStateProperty.all(const EdgeInsets.all(16))),
               ),
+              Utils.addVerticalSpace(10),
               widget.editarDemanda
                   ? StreamBuilder<QuerySnapshot>(
                       stream: subcollectionRef,
@@ -276,25 +282,24 @@ class _FormDemandaState extends State<FormDemanda> {
                                   });
                                 }).toList(),
                               ),
-                              _caminhoDoArquivo != null
-                                  ? Wrap(
-                                      children: List.generate(
-                                          _caminhoDoArquivo.length,
-                                          (int index) {
-                                        final fileName =
-                                            _caminhoDoArquivo[index].name;
-                                        return listFile(fileName, () {
-                                          setState(() {
-                                            _caminhoDoArquivo.removeAt(index);
+                              if (_caminhoDoArquivo != null) ...[
+                                Wrap(
+                                  children: List.generate(
+                                      _caminhoDoArquivo.length, (int index) {
+                                    final fileName =
+                                        _caminhoDoArquivo[index].name;
+                                    return listFile(fileName, () {
+                                      setState(() {
+                                        _caminhoDoArquivo.removeAt(index);
 
-                                            if (_caminhoDoArquivo.isEmpty) {
-                                              _caminhoDoArquivo = null;
-                                            }
-                                          });
-                                        });
-                                      }).toList(),
-                                    )
-                                  : const Text('')
+                                        if (_caminhoDoArquivo.isEmpty) {
+                                          _caminhoDoArquivo = null;
+                                        }
+                                      });
+                                    });
+                                  }).toList(),
+                                )
+                              ]
                             ],
                           );
                         } else {
@@ -490,7 +495,8 @@ class _FormDemandaState extends State<FormDemanda> {
     return ListTile(
       title: Text(fileName),
       leading: IconButton(
-        icon: const Icon(Icons.highlight_remove_rounded),
+        icon:
+            const Icon(Icons.highlight_remove_rounded, color: Colors.redAccent),
         onPressed: onTap,
       ),
     );

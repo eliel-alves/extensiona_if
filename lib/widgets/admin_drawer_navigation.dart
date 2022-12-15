@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-Widget AdminDrawerNavigation(context) {
+Widget adminDrawerNavigation(context) {
   UserDAO authService = Provider.of<UserDAO>(context);
 
   return Drawer(

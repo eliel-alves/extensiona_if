@@ -53,6 +53,7 @@ dependencies:
   mask_text_input_formatter: ^2.4.0
   image_picker: ^0.8.6
   url_launcher: ^6.1.6
+  flutter_email_sender: ^5.2.0
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -222,6 +222,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             _phoneController.text,
                             _myState,
                             _myCity);
+
+                        //Usuário não solicitou ser representante
+                        if (!_representative) return;
+
+                        //Envia o email
+
                         setState(() {
                           _valida = false;
                         });
@@ -505,6 +511,35 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
+
+  // Future<void> sendEmail() async {
+  //   //joaopetuco.pf006@academico.ifsul.edu.br
+  //   final Email email = Email(
+  //       body:
+  //           'Link do currículo lattes do usuário solicitante: ${_lattesController.text}',
+  //       subject:
+  //           'Solicitação para ser representante institucional no app Extensiona',
+  //       recipients: ['joaopetuco0512@gmail.com'],
+  //       isHTML: false);
+
+  //   String platformResponse;
+
+  //   try {
+  //     await FlutterEmailSender.send(email);
+  //     platformResponse = 'success';
+  //   } catch (error) {
+  //     debugPrint(error);
+  //     platformResponse = error.toString();
+  //   }
+
+  //   if (!mounted) return;
+
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(platformResponse),
+  //     ),
+  //   );
+  // }
 
   /// API Estados e Cidades
   // Buscando estados

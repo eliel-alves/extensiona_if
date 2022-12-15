@@ -138,6 +138,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
                     icon: const Icon(Icons.person_outline),
                     qtdCaracteres: 20,
                     maskField: false,
+                    validator: true,
                     docId: widget.id,
                     dbName: 'name')),
           );
@@ -170,6 +171,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
                     icon: const Icon(Icons.mail_outlined),
                     qtdCaracteres: 30,
                     maskField: false,
+                    validator: true,
                     docId: widget.id,
                     dbName: 'email')),
           );
@@ -187,6 +189,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
                     icon: const Icon(Icons.phone_outlined),
                     qtdCaracteres: 20,
                     maskField: true,
+                    validator: true,
                     docId: widget.id,
                     dbName: 'telefone')),
           );
@@ -200,11 +203,18 @@ class _BuildUserPageState extends State<BuildUserPage> {
               context,
               'Deletar conta',
               SizedBox(
-                height: 150,
+                height: 180,
                 child: Form(
                   key: _formPasswordKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Chip(
+                        avatar: const Icon(Icons.account_circle_outlined),
+                        backgroundColor: AppTheme.colors.white,
+                        label: Text(widget.email),
+                      ),
+                      Utils.addVerticalSpace(15),
                       const Text(
                           'Para continuar, primeiro confirme sua identidade'),
                       Utils.addVerticalSpace(16),
@@ -347,36 +357,14 @@ class _EditarInfoUsuarioState extends State<EditarInfoUsuario> {
         child: Column(
           children: [
             !editandoInfo
-                ? Card(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                      side: BorderSide(
-                        color: AppTheme.colors.offWhite,
-                        width: 2.0,
-                      ),
-                    ),
-                    elevation: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(widget.titulo, style: AppTheme.typo.title),
-                          ListTile(
-                            title: Text(widget.conteudo,
-                                style: AppTheme.typo.defaultText),
-                            trailing: const Icon(Icons.edit),
-                            onTap: () {
-                              setState(() {
-                                editandoInfo = true;
-                              });
-                            },
-                          )
-                        ],
-                      ),
-                    ),
-                  )
+                ? CardInfo(
+                    titulo: widget.titulo,
+                    conteudo: widget.conteudo,
+                    onTap: () {
+                      setState(() {
+                        editandoInfo = true;
+                      });
+                    })
                 : Form(
                     key: _formKey,
                     child: Column(

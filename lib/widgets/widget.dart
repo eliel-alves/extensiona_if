@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class ListTileOptions extends StatelessWidget {
   final IconData icone;
@@ -157,6 +161,88 @@ Future<void> popupBox(context, title, content, onPressed) {
           ],
         );
       });
+}
+
+class CardInfo extends StatefulWidget {
+  final String titulo;
+  final String conteudo;
+  final Function onTap;
+
+  const CardInfo({Key key, this.titulo, this.conteudo, this.onTap})
+      : super(key: key);
+
+  @override
+  State<CardInfo> createState() => _CardInfoState();
+}
+
+class _CardInfoState extends State<CardInfo> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+        side: BorderSide(
+          color: AppTheme.colors.offWhite,
+          width: 2.0,
+        ),
+      ),
+      elevation: 0,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.titulo, style: AppTheme.typo.title),
+            ListTile(
+                title: Text(widget.conteudo, style: AppTheme.typo.defaultText),
+                trailing: const Icon(Icons.edit),
+                onTap: widget.onTap)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EmptyStateUi extends StatelessWidget {
+  const EmptyStateUi({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    UserDAO authService = Provider.of<UserDAO>(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset('lib/assets/img/empty-folder.png', width: 250),
+        Utils.addVerticalSpace(40),
+        Text('Sem demandas', style: AppTheme.typo.defaultBoldText),
+        Utils.addVerticalSpace(15),
+        Text('Você ainda não possui demandas cadastradas',
+            style: AppTheme.typo.defaultText),
+        Utils.addVerticalSpace(20),
+        ElevatedButton(
+          onPressed: () async {
+            var userRef = await FirebaseFirestore.instance
+                .collection('USUARIOS')
+                .doc(authService.userId())
+                .get();
+
+            var userInfo = Users.fromJson(userRef.data());
+
+            Navigator.pushNamed(context, '/formDemanda',
+                arguments:
+                    DemandaArguments(editarDemanda: false, usuario: userInfo));
+          },
+          child: Text('Cadastrar Agora', style: AppTheme.typo.button),
+          style: ButtonStyle(
+              padding: MaterialStateProperty.all(const EdgeInsets.all(16))),
+        )
+      ],
+    );
+  }
 }
 
 // class IconesMedia extends StatelessWidget {
