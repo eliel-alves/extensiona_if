@@ -30,7 +30,8 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
                     stream: FirebaseFirestore.instance
                         .collection('USUARIOS')
                         .where('tipo', isNotEqualTo: 'super_admin')
-                        //.orderBy('name', descending: false)
+                        .orderBy('tipo', descending: false)
+                        .orderBy('name', descending: false)
                         .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
