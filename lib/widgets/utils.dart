@@ -32,4 +32,6 @@ class Utils {
   static String toCapitalization(String text) {
     return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
+
+  static String strDigits(int n) => n.toString().padLeft(2, '0');
 }

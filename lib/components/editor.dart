@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -92,6 +93,7 @@ class EditorAuth extends StatefulWidget {
   final bool confirmPasswordField;
   final bool maskField;
   final bool validator;
+  final bool isEmailField;
 
   const EditorAuth(
       this.controlador,
@@ -104,6 +106,7 @@ class EditorAuth extends StatefulWidget {
       this.confirmPasswordField,
       this.maskField,
       this.validator,
+      this.isEmailField,
       {Key key})
       : super(key: key);
 
@@ -188,12 +191,16 @@ class _EditorAuthState extends State<EditorAuth> {
                   borderRadius: const BorderRadius.all(Radius.circular(10))),
             ),
             validator: widget.validator
-                ? (value) {
-                    if (value == null || value.isEmpty) {
-                      return widget.errorText;
-                    }
-                    return null;
-                  }
+                ? (widget.isEmailField
+                    ? ((value) => !EmailValidator.validate(value, true)
+                        ? widget.errorText
+                        : null)
+                    : (value) {
+                        if (value == null || value.isEmpty) {
+                          return widget.errorText;
+                        }
+                        return null;
+                      })
                 : (value) {
                     return null;
                   }));

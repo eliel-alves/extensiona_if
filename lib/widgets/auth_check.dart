@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/screens/homepage.dart';
 import 'package:extensiona_if/screens/homepage_admin.dart';
 import 'package:extensiona_if/screens/homepage_super_admin.dart';
 import 'package:extensiona_if/screens/login.dart';
+import 'package:extensiona_if/widgets/utils.dart';
+import 'package:extensiona_if/widgets/widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +29,7 @@ class _ManageAuthStateState extends State<ManageAuthState> {
     } else if (authService.usuario == null) {
       return const LoginScreen();
     } else {
-      return const RoleBasedUI();
+      return VerifyEmailPage(email: authService.userEmail());
     }
   }
 
@@ -35,6 +40,111 @@ class _ManageAuthStateState extends State<ManageAuthState> {
       ),
     );
   }
+}
+
+class VerifyEmailPage extends StatefulWidget {
+  final String email;
+
+  const VerifyEmailPage({Key key, this.email}) : super(key: key);
+
+  @override
+  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
+}
+
+class _VerifyEmailPageState extends State<VerifyEmailPage> {
+  bool isEmailVerified = false;
+  bool canResendEmail = false;
+  Timer timer;
+  Timer _timerResendEmail;
+  Duration myDuration = const Duration(seconds: 60);
+  int _start = 60;
+
+  @override
+  void initState() {
+    super.initState();
+
+    //O usuario deve ser criado antes
+    isEmailVerified = FirebaseAuth.instance.currentUser.emailVerified;
+
+    if (!isEmailVerified) {
+      sendVerificationEmail();
+      startTimer();
+      timer = Timer.periodic(
+          const Duration(seconds: 3), (_) => checkEmailVerified());
+    }
+  }
+
+  Future sendVerificationEmail() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      await user.sendEmailVerification();
+
+      //Após o envio do email, ele desabilitará por 60 segundos o botão de reenvio de email
+      setState(() => canResendEmail = false);
+      //setState(() => _start = 60);
+      await Future.delayed(myDuration);
+      //setState(() => _start = 0);
+      setState(() => canResendEmail = true);
+    } catch (error) {
+      Utils.schowSnackBar(
+          'Houve um erro no envio do link de verificação do email do usuário ');
+
+      debugPrint(error);
+    }
+  }
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    _timerResendEmail = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          setState(() {
+            timer.cancel();
+          });
+        } else {
+          setState(() {
+            _start--;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    _timerResendEmail?.cancel();
+    super.dispose();
+  }
+
+  Future checkEmailVerified() async {
+    //É chamado quando o email é verificado
+    await FirebaseAuth.instance.currentUser.reload();
+
+    setState(() {
+      isEmailVerified = FirebaseAuth.instance.currentUser.emailVerified;
+    });
+
+    if (isEmailVerified) timer?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) => isEmailVerified
+      ? const RoleBasedUI()
+      : VerifyEmailContent(
+          start: _start,
+          userEmail: widget.email,
+          onPressed: canResendEmail
+              ? () {
+                  setState(() {
+                    _start = 60;
+                    startTimer();
+                  });
+                  sendVerificationEmail();
+                }
+              : null,
+          onPressedCancel: () => FirebaseAuth.instance.signOut());
 }
 
 class RoleBasedUI extends StatelessWidget {
@@ -65,11 +175,6 @@ class RoleBasedUI extends StatelessWidget {
   }
 
   Widget checkRole(DocumentSnapshot snapshot) {
-    // if (snapshot.data == null) {
-    //   return const Center(
-    //     child: Text('Usuário não encontrado'),
-    //   );
-    // }
     if (snapshot.get('tipo') == 'super_admin') {
       return const SuperAdminScreen();
     } else if (snapshot.get('tipo') == 'admin') {

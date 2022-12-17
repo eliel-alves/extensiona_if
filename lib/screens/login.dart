@@ -65,6 +65,20 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPassword.dispose();
+    _lattesController.dispose();
+
+    _registerEmailController.dispose();
+    _registerPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     title = isLogin ? 'Olá, bem-vindo!' : 'Crie uma conta';
     forgotPassword = isLogin ? true : false;
@@ -135,6 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Insira um e-mail válido',
                   false,
                   false,
+                  true,
                   true),
               Utils.addVerticalSpace(20),
               SizedBox(
@@ -227,6 +242,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (!_representative) return;
 
                         //Envia o email
+                        // sendEmail(
+                        //     name: _nameController.text,
+                        //     subject:
+                        //         'Solicitação para ser representante institucional no app Extensiona',
+                        //     message:
+                        //         'Link do currículo lattes do usuário ${_nameController.text}: ${_lattesController.text}',
+                        //     email: 'joaopetuco.pf006@academico.ifsul.edu.br');
 
                         setState(() {
                           _valida = false;
@@ -266,9 +288,10 @@ class _LoginScreenState extends State<LoginScreen> {
               const Icon(Icons.mail_outline),
               30,
               false,
-              'Insira um e-mail válido',
+              'Informe um e-mail válido',
               false,
               false,
+              true,
               true),
           EditorAuth(
               _passwordController,
@@ -277,10 +300,11 @@ class _LoginScreenState extends State<LoginScreen> {
               const Icon(Ionicons.md_key),
               10,
               true,
-              'Insira uma senha',
+              'Informe uma senha',
               false,
               false,
-              true),
+              true,
+              false),
         ],
       ),
     );
@@ -302,7 +326,8 @@ class _LoginScreenState extends State<LoginScreen> {
               'Informe um nome',
               false,
               false,
-              true),
+              true,
+              false),
 
           // campo email
           EditorAuth(
@@ -312,10 +337,11 @@ class _LoginScreenState extends State<LoginScreen> {
               const Icon(Icons.mail_outlined),
               30,
               false,
-              'Informe um e-mail',
+              'Informe um e-mail válido',
               false,
               false,
-              true),
+              true,
+              false),
 
           // campo telefone
           EditorAuth(
@@ -328,7 +354,8 @@ class _LoginScreenState extends State<LoginScreen> {
               'Informe um telefone',
               false,
               true,
-              true),
+              true,
+              false),
 
           // campo quero ser representante
           Row(
@@ -364,7 +391,8 @@ class _LoginScreenState extends State<LoginScreen> {
               'Informe o link do seu currículo',
               false,
               false,
-              _representative),
+              _representative,
+              false),
 
           Row(children: [
             // campo estado
@@ -392,7 +420,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Informe uma senha',
                     false,
                     false,
-                    true),
+                    true,
+                    false),
               ),
 
               Utils.addHorizontalSpace(10),
@@ -409,7 +438,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Informar a mesma senha!',
                     _valida,
                     false,
-                    true),
+                    true,
+                    false),
               )
             ],
           )
@@ -512,6 +542,50 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Future sendEmail({
+    String name,
+    String email,
+    String subject,
+    String message,
+  }) async {
+    const serviceId = 'service_9pnqmiy';
+    const templateId = 'template_ubwfpbr';
+    const userId = 'v9WZ9oRAJH_iPE_1q';
+
+    final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+    final response = await http.post(url,
+        headers: {'origin': '*', 'Content-Type': 'application/json'},
+        body: json.encode({
+          'service_id': serviceId,
+          'template_id': templateId,
+          'user_id': userId,
+          'template_params': {
+            'user_name': name,
+            'user_email': email,
+            'user_subject': subject,
+            'user_message': message
+          }
+        }));
+
+    debugPrint(response.body);
+  }
+  /* Future<void> sendEmail() async {
+    final url = Mailto(
+      to: ['renanigordl04@gmail.com'],
+      subject:
+          'Solicitação para ser representante institucional no app Extensiona',
+      body:
+          'Link do currículo lattes do usuário solicitante: ${_lattesController.text}',
+    ).toString();
+
+    // ignore: deprecated_member_use
+    if (await canLaunch(url)) {
+      // ignore: deprecated_member_use
+      await launch(url);
+    } else {
+      debugPrint("Erro no envio do email: " + url);
+    }
+  } */
   // Future<void> sendEmail() async {
   //   //joaopetuco.pf006@academico.ifsul.edu.br
   //   final Email email = Email(

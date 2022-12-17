@@ -228,7 +228,8 @@ class _BuildUserPageState extends State<BuildUserPage> {
                           'Insira sua senha',
                           false,
                           false,
-                          true)
+                          true,
+                          false)
                     ],
                   ),
                 ),
@@ -237,7 +238,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
               authService.deleteUser(
                   widget.email, _userProvidedPassword.text, context);
 
-              _userProvidedPassword.text = '';
+              _userProvidedPassword.clear();
             }
           });
         }, true)
@@ -379,7 +380,8 @@ class _EditarInfoUsuarioState extends State<EditarInfoUsuario> {
                             widget.errorText,
                             false,
                             widget.maskField,
-                            widget.validator),
+                            widget.validator,
+                            false),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

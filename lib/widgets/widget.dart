@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/models/demanda.dart';
@@ -245,84 +247,85 @@ class EmptyStateUi extends StatelessWidget {
   }
 }
 
-// class IconesMedia extends StatelessWidget {
-//   final String imgMedia;
-//   final Function press;
-//   final String text;
-//   final double paddingRight;
-//   final double paddingLight;
+class VerifyEmailContent extends StatefulWidget {
+  final String userEmail;
+  final Function onPressed;
+  final Function onPressedCancel;
+  final int start;
 
-//   const IconesMedia(this.imgMedia, this.press, this.text, this.paddingRight,
-//       this.paddingLight,
-//       {Key key})
-//       : super(key: key);
+  const VerifyEmailContent(
+      {Key key,
+      this.userEmail,
+      this.onPressed,
+      this.onPressedCancel,
+      this.start})
+      : super(key: key);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     Size size = MediaQuery.of(context).size;
+  @override
+  State<VerifyEmailContent> createState() => _VerifyEmailContentState();
+}
 
-//     return GestureDetector(
-//       onTap: press,
-//       child: Container(
-//         padding: const EdgeInsets.all(2),
-//         width: size.width * 0.8,
-//         decoration: BoxDecoration(
-//           border: Border.all(width: 1, color: Colors.grey),
-//           borderRadius: BorderRadius.circular(30),
-//           shape: BoxShape.rectangle,
-//         ),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Image.asset(
-//               imgMedia,
-//               width: 30,
-//               height: 30,
-//             ),
-//             Padding(
-//               padding: EdgeInsets.only(right: paddingRight, left: paddingLight),
-//               child: Text(text),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class Divisor extends StatelessWidget {
-//   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-
-//   const Divisor({Key key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Size size = MediaQuery.of(context).size;
-
-//     return SizedBox(
-//       width: double.infinity,
-//       child: Row(
-//         children: <Widget>[
-//           _buildDivisor(),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 10),
-//             child: Text(
-//               "Ou",
-//               style:
-//                   GoogleFonts.cabin(textStyle: styleText, color: Colors.black),
-//             ),
-//           ),
-//           _buildDivisor(),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Expanded _buildDivisor() {
-//     return const Expanded(
-//         child: Divider(
-//       color: Colors.grey,
-//       height: 1.5,
-//     ));
-//   }
-// }
+class _VerifyEmailContentState extends State<VerifyEmailContent> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: Text('Verifique o seu endereço de email',
+            style: AppTheme.typo.title),
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Utils.addVerticalSpace(40),
+              Image.asset(
+                'lib/assets/img/verifyEmail.png',
+                width: 300,
+              ),
+              Utils.addVerticalSpace(40),
+              RichText(
+                  text: TextSpan(
+                      style: AppTheme.typo.defaultText,
+                      children: <TextSpan>[
+                    const TextSpan(
+                        text:
+                            'Um link de verificação de email foi enviado para o endereço '),
+                    TextSpan(
+                        text: widget.userEmail,
+                        style: AppTheme.typo.defaultBoldText)
+                  ])),
+              Utils.addVerticalSpace(15),
+              Text(
+                  'Caso não esteja na caixa de entrada, verifique sua caixa de spam. Certamente estará lá.',
+                  style: AppTheme.typo.defaultText),
+              Utils.addVerticalSpace(20),
+              if (widget.start != 0) ...[
+                Text(
+                    'O reenvio será habilidado em ${Utils.strDigits(widget.start)} s'),
+                Utils.addVerticalSpace(5),
+              ],
+              ElevatedButton.icon(
+                  icon: const Icon(Icons.email_rounded),
+                  label: Text('Reenviar Email', style: AppTheme.typo.button),
+                  style: ButtonStyle(
+                      padding:
+                          MaterialStateProperty.all(const EdgeInsets.all(20))),
+                  onPressed: widget.onPressed),
+              Utils.addVerticalSpace(15),
+              ElevatedButton(
+                  onPressed: widget.onPressedCancel,
+                  style: ButtonStyle(
+                      padding:
+                          MaterialStateProperty.all(const EdgeInsets.all(20))),
+                  child: Text('Cancelar', style: AppTheme.typo.button))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
