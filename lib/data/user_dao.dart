@@ -259,7 +259,6 @@ class UserDAO extends ChangeNotifier {
     });
   }
 
-  // TODO: Sing In with Google
   Future<void> signInWithGoogle() async {
     if (kIsWeb) {
       GoogleAuthProvider authProvider = GoogleAuthProvider();

@@ -80,7 +80,6 @@ class _FormDemandaState extends State<FormDemanda> {
   String documentID;
 
   String _fileName;
-  bool _carregando = false;
   List<PlatformFile> _caminhoDoArquivo;
   final FileType _tipoArquivo = FileType.custom;
 
@@ -388,7 +387,6 @@ class _FormDemandaState extends State<FormDemanda> {
     debugPrint('$_caminhoDoArquivo');
 
     setState(() {
-      _carregando = false;
       _fileName = _caminhoDoArquivo != null
           ? _caminhoDoArquivo.map((e) => e.name).toString()
           : '...';
@@ -446,9 +444,8 @@ class _FormDemandaState extends State<FormDemanda> {
     final String _areaLocalidade = areaTematicaSelecionada + '-' + _localidade;
 
     //Adicionando um novo documento a nossa coleção -> Demandas
-    DocumentReference _novaDemanda = await FirebaseFirestore.instance
-        .collection('DEMANDAS')
-        .add({
+    DocumentReference _novaDemanda =
+        await FirebaseFirestore.instance.collection('DEMANDAS').add({
       'usuario': userDao.userId(),
       'titulo': _controladorTitulo.text,
       'tempo': _controladorTempoNecessario.text,
@@ -466,8 +463,10 @@ class _FormDemandaState extends State<FormDemanda> {
       'area_tematica': areaTematicaSelecionada,
       'localidade': _localidade,
       'filtro_area_localidade': _areaLocalidade
-    }).catchError((error) =>
-            debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+    }).catchError((error) {
+      Utils.schowSnackBar('Erro no registro de sua demanda!');
+      debugPrint("Ocorreu um erro ao registrar sua demanda: $error");
+    });
 
     debugPrint("ID da demanda: " + _novaDemanda.id);
 

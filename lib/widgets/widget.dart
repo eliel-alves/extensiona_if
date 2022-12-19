@@ -220,10 +220,11 @@ class EmptyStateUi extends StatelessWidget {
       children: [
         Image.asset('lib/assets/img/empty-folder.png', width: 250),
         Utils.addVerticalSpace(40),
-        Text('Sem demandas', style: AppTheme.typo.defaultBoldText),
+        Text('Sem demandas',
+            style: AppTheme.typo.defaultBoldText, textAlign: TextAlign.center),
         Utils.addVerticalSpace(15),
         Text('Você ainda não possui demandas cadastradas',
-            style: AppTheme.typo.defaultText),
+            style: AppTheme.typo.defaultText, textAlign: TextAlign.center),
         Utils.addVerticalSpace(20),
         ElevatedButton(
           onPressed: () async {
@@ -276,6 +277,7 @@ class _VerifyEmailContentState extends State<VerifyEmailContent> {
             style: AppTheme.typo.title),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -285,27 +287,56 @@ class _VerifyEmailContentState extends State<VerifyEmailContent> {
               Image.asset(
                 'lib/assets/img/verifyEmail.png',
                 width: 300,
+                alignment: Alignment.center,
+                errorBuilder: (BuildContext context, Object exception,
+                    StackTrace stackTrace) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.broken_image_rounded),
+                      Utils.addHorizontalSpace(5),
+                      Text(
+                        'Erro ao carregar a imagem.',
+                        style: AppTheme.typo.defaultText,
+                      )
+                    ],
+                  );
+                },
               ),
               Utils.addVerticalSpace(40),
               RichText(
+                  textAlign: TextAlign.center,
                   text: TextSpan(
                       style: AppTheme.typo.defaultText,
                       children: <TextSpan>[
-                    const TextSpan(
-                        text:
-                            'Um link de verificação de email foi enviado para o endereço '),
-                    TextSpan(
-                        text: widget.userEmail,
-                        style: AppTheme.typo.defaultBoldText)
-                  ])),
-              Utils.addVerticalSpace(15),
-              Text(
-                  'Caso não esteja na caixa de entrada, verifique sua caixa de spam. Certamente estará lá.',
-                  style: AppTheme.typo.defaultText),
+                        const TextSpan(
+                            text:
+                                'Um link de verificação de email foi enviado para o endereço '),
+                        TextSpan(
+                            text: widget.userEmail,
+                            style: AppTheme.typo.defaultBoldText)
+                      ])),
+              Utils.addVerticalSpace(20),
+              RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                      style: AppTheme.typo.defaultText,
+                      children: <TextSpan>[
+                        const TextSpan(
+                            text:
+                                'Caso não esteja na caixa de entrada, verifique sua '),
+                        TextSpan(
+                            text: 'caixa de spam. ',
+                            style: AppTheme.typo.defaultBoldText),
+                        const TextSpan(text: 'Certamente estará lá.'),
+                      ])),
               Utils.addVerticalSpace(20),
               if (widget.start != 0) ...[
                 Text(
-                    'O reenvio será habilidado em ${Utils.strDigits(widget.start)} s'),
+                  'O reenvio será habilidado em ${Utils.strDigits(widget.start)} s',
+                  textAlign: TextAlign.center,
+                  style: AppTheme.typo.defaultText,
+                ),
                 Utils.addVerticalSpace(5),
               ],
               ElevatedButton.icon(

@@ -248,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         //         'Solicitação para ser representante institucional no app Extensiona',
                         //     message:
                         //         'Link do currículo lattes do usuário ${_nameController.text}: ${_lattesController.text}',
-                        //     email: 'joaopetuco.pf006@academico.ifsul.edu.br');
+                        //     email: _registerEmailController.text);
 
                         setState(() {
                           _valida = false;
@@ -370,11 +370,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     debugPrint('deseja ser representante: ' +
                         _representative.toString());
                   }),
-              Text('Deseja ser um representante de sua instituição?',
-                  style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 16,
-                      color: AppTheme.colors.greyText))
+              Expanded(
+                child: Text('Deseja ser um representante de sua instituição?',
+                    style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        color: AppTheme.colors.greyText)),
+              )
             ],
           ),
 
@@ -569,51 +571,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     debugPrint(response.body);
   }
-  /* Future<void> sendEmail() async {
-    final url = Mailto(
-      to: ['renanigordl04@gmail.com'],
-      subject:
-          'Solicitação para ser representante institucional no app Extensiona',
-      body:
-          'Link do currículo lattes do usuário solicitante: ${_lattesController.text}',
-    ).toString();
-
-    // ignore: deprecated_member_use
-    if (await canLaunch(url)) {
-      // ignore: deprecated_member_use
-      await launch(url);
-    } else {
-      debugPrint("Erro no envio do email: " + url);
-    }
-  } */
-  // Future<void> sendEmail() async {
-  //   //joaopetuco.pf006@academico.ifsul.edu.br
-  //   final Email email = Email(
-  //       body:
-  //           'Link do currículo lattes do usuário solicitante: ${_lattesController.text}',
-  //       subject:
-  //           'Solicitação para ser representante institucional no app Extensiona',
-  //       recipients: ['joaopetuco0512@gmail.com'],
-  //       isHTML: false);
-
-  //   String platformResponse;
-
-  //   try {
-  //     await FlutterEmailSender.send(email);
-  //     platformResponse = 'success';
-  //   } catch (error) {
-  //     debugPrint(error);
-  //     platformResponse = error.toString();
-  //   }
-
-  //   if (!mounted) return;
-
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text(platformResponse),
-  //     ),
-  //   );
-  // }
 
   /// API Estados e Cidades
   // Buscando estados
