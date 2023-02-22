@@ -1,4 +1,5 @@
 import 'package:extensiona_if/models/demanda.dart';
+import 'package:extensiona_if/screens/auth/auth_page.dart';
 import 'package:extensiona_if/screens/demanda_form.dart';
 import 'package:extensiona_if/screens/demanda_lista.dart';
 import 'package:extensiona_if/screens/homepage_admin.dart';
@@ -16,7 +17,7 @@ class RouteGenerator {
       case '/':
         return MaterialPageRoute(builder: (_) => const ManageAuthState());
       case '/login':
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(builder: (_) => const AuthPage());
       case '/formDemanda':
         DemandaArguments argument = settings.arguments as DemandaArguments;
         return MaterialPageRoute(

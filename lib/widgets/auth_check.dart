@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/screens/auth/auth_page.dart';
 import 'package:extensiona_if/screens/homepage.dart';
 import 'package:extensiona_if/screens/homepage_admin.dart';
 import 'package:extensiona_if/screens/homepage_super_admin.dart';
-import 'package:extensiona_if/screens/login.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +27,7 @@ class _ManageAuthStateState extends State<ManageAuthState> {
     if (authService.isLoading) {
       return loading();
     } else if (authService.usuario == null) {
-      return const LoginScreen();
+      return const AuthPage();
     } else {
       return VerifyEmailPage(email: authService.userEmail());
     }

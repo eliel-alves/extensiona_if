@@ -24,7 +24,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
     return Scaffold(
         backgroundColor: AppTheme.colors.dark,
         appBar: AppBar(
-          title: Text('Extensiona IF', style: AppTheme.typo.title),
+          title: Text('extensiona', style: AppTheme.typo.title),
           backgroundColor: AppTheme.colors.dark,
           elevation: 0,
         ),

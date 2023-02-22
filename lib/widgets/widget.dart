@@ -78,11 +78,13 @@ class AppBarLogo extends StatelessWidget {
 Widget toggleButton(
     String firstText, String secondText, Function setFormAction) {
   return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-    Text(firstText, style: AppTheme.typo.defaultText),
+    Text(firstText,
+        style: AppTheme.typo.regular(16, AppTheme.colors.dark, 1, 0)),
     TextButton(
         //style: TextButton.styleFrom(primary: AppTheme.colors.blue),
         onPressed: setFormAction,
-        child: Text(secondText, style: AppTheme.typo.defaultBoldText)),
+        child: Text(secondText,
+            style: AppTheme.typo.bold(16, AppTheme.colors.blue, 1, 0))),
   ]);
 }
 

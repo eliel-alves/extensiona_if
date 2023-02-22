@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/data/user_dao.dart';
+import 'package:extensiona_if/validation/validation.dart';
 import 'package:extensiona_if/widgets/drawer_navigation.dart';
 import 'package:extensiona_if/widgets/editor_city_state.dart';
 import 'package:extensiona_if/widgets/utils.dart';
@@ -219,17 +219,17 @@ class _BuildUserPageState extends State<BuildUserPage> {
                           'Para continuar, primeiro confirme sua identidade'),
                       Utils.addVerticalSpace(16),
                       EditorAuth(
-                          _userProvidedPassword,
-                          'Senha',
-                          'Digite sua senha',
-                          const Icon(Ionicons.md_key),
-                          10,
-                          true,
-                          'Insira sua senha',
-                          false,
-                          false,
-                          true,
-                          false)
+                        controlador: _userProvidedPassword,
+                        rotulo: 'Senha',
+                        dica: 'Digite sua senha',
+                        icon: const Icon(Ionicons.md_key),
+                        qtdCaracteres: 10,
+                        verSenha: true,
+                        confirmPasswordField: false,
+                        maskField: false,
+                        validateField: true,
+                        validator: FormValidation.validateField(),
+                      ),
                     ],
                   ),
                 ),
@@ -371,17 +371,17 @@ class _EditarInfoUsuarioState extends State<EditarInfoUsuario> {
                     child: Column(
                       children: [
                         EditorAuth(
-                            _controlador,
-                            widget.rotulo,
-                            widget.dica,
-                            widget.icon,
-                            widget.qtdCaracteres,
-                            false,
-                            widget.errorText,
-                            false,
-                            widget.maskField,
-                            widget.validator,
-                            false),
+                          controlador: _controlador,
+                          rotulo: widget.rotulo,
+                          dica: widget.dica,
+                          icon: widget.icon,
+                          qtdCaracteres: widget.qtdCaracteres,
+                          verSenha: false,
+                          confirmPasswordField: false,
+                          maskField: widget.maskField,
+                          validateField: true,
+                          validator: FormValidation.validateField(),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

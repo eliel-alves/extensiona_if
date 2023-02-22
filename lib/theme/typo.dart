@@ -48,5 +48,113 @@ class AppTypo {
       fontWeight: FontWeight.bold,
       letterSpacing: 0);
 
+  // Texto preto
+  TextStyle black(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w900,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto extra-negrito
+  TextStyle extraBold(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w800,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto em negrito
+  TextStyle bold(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w700,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto em semi-negrito
+  TextStyle semiBold(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w600,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto intermediário
+  TextStyle medium(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w500,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto normal
+  TextStyle regular(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w400,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto claro
+  TextStyle light(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w300,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto extra-claro
+  TextStyle extraLight(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w200,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
+  // Texto fino
+  TextStyle thin(
+          double size, Color color, double height, double letterSpacing) =>
+      TextStyle(
+          color: color,
+          fontFamily: "Inter",
+          fontSize: size,
+          fontWeight: FontWeight.w100,
+          fontStyle: FontStyle.normal,
+          letterSpacing: letterSpacing,
+          height: height);
+
   const AppTypo();
 }

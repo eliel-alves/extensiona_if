@@ -86,28 +86,26 @@ class EditorAuth extends StatefulWidget {
   final TextEditingController controlador;
   final String rotulo;
   final String dica;
-  final String errorText;
   final Icon icon;
   final int qtdCaracteres;
   final bool verSenha;
   final bool confirmPasswordField;
   final bool maskField;
-  final bool validator;
-  final bool isEmailField;
+  final bool validateField;
+  final FormFieldValidator validator;
 
   const EditorAuth(
+      {Key key,
       this.controlador,
       this.rotulo,
       this.dica,
       this.icon,
       this.qtdCaracteres,
       this.verSenha,
-      this.errorText,
       this.confirmPasswordField,
       this.maskField,
-      this.validator,
-      this.isEmailField,
-      {Key key})
+      this.validateField,
+      this.validator})
       : super(key: key);
 
   @override
@@ -173,7 +171,6 @@ class _EditorAuthState extends State<EditorAuth> {
                           },
                           icon: const Icon(Ionicons.md_eye)))
                   : null,
-              errorText: widget.confirmPasswordField ? widget.errorText : null,
               errorStyle: const TextStyle(
                   fontSize: 13, letterSpacing: 0, fontWeight: FontWeight.w500),
               enabledBorder: OutlineInputBorder(
@@ -190,17 +187,8 @@ class _EditorAuthState extends State<EditorAuth> {
                   borderSide: BorderSide(color: AppTheme.colors.red, width: 2),
                   borderRadius: const BorderRadius.all(Radius.circular(10))),
             ),
-            validator: widget.validator
-                ? (widget.isEmailField
-                    ? ((value) => !EmailValidator.validate(value, true)
-                        ? widget.errorText
-                        : null)
-                    : (value) {
-                        if (value == null || value.isEmpty) {
-                          return widget.errorText;
-                        }
-                        return null;
-                      })
+            validator: widget.validateField
+                ? widget.validator
                 : (value) {
                     return null;
                   }));

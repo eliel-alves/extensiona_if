@@ -13,7 +13,6 @@ class UserDAO extends ChangeNotifier {
   User usuario;
   bool isLoading = true;
 
-  String errorMessage;
   UserCredential user;
 
   String userType;
@@ -90,18 +89,7 @@ class UserDAO extends ChangeNotifier {
       notifyListeners();
       _getUser();
     } on FirebaseAuthException catch (e) {
-      // Possíveis erros
-      if (e.code == 'weak-password') {
-        // throw AuthException('A senha é muito fraca!');
-        errorMessage = 'A senha é muito fraca!';
-      } else if (e.code == 'email-already-in-use') {
-        //throw AuthException('Este email já foi cadastrado');
-        errorMessage = 'Este email já foi cadastrado';
-      }
-
-      // Mostrando o erro pro usuário
-      ////SNACKBAR
-      Utils.schowSnackBar(errorMessage);
+      handleAuthError(e);
     } catch (e) {
       debugPrint(e);
     }
@@ -117,16 +105,7 @@ class UserDAO extends ChangeNotifier {
       _getUser();
       notifyListeners();
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'wrong-password') {
-        //throw AuthException('Senha incorreta. Tente novamente');
-        errorMessage = 'Senha incorreta. Tente novamente';
-      } else if (e.code == 'user-not-found') {
-        //throw AuthException('Email não encontrado. Cadastre-se');
-        errorMessage = 'Email não encontrado. Cadastre-se';
-      }
-
-      //SNACKBAR
-      Utils.schowSnackBar(errorMessage);
+      handleAuthError(e);
     } catch (e) {
       debugPrint(e);
     }
@@ -257,6 +236,30 @@ class UserDAO extends ChangeNotifier {
     }).catchError((e) {
       debugPrint(e);
     });
+  }
+
+  handleAuthError(FirebaseException error) {
+    switch (error.code) {
+      case 'invalid-email':
+        Utils.schowSnackBar('Email inválido');
+
+        break;
+      case 'user-not-found':
+        Utils.schowSnackBar('Usuário não encontrado');
+        break;
+      case 'wrong-password':
+        Utils.schowSnackBar('Senha incorreta');
+        break;
+      case 'email-already-in-use':
+        Utils.schowSnackBar('Este email já está sendo usado por outro usuário');
+        break;
+      case 'weak-password':
+        Utils.schowSnackBar('A senha precisa ter no mínimo 6 caracteres');
+        break;
+      default:
+        Utils.schowSnackBar('Erro desconhecido');
+        break;
+    }
   }
 
   Future<void> signInWithGoogle() async {
