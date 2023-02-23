@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data' show Uint8List;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/components/editor.dart';
 import 'package:extensiona_if/data/user_dao.dart';
@@ -8,7 +9,8 @@ import 'package:extensiona_if/widgets/editor_city_state.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter_icons/flutter_icons.dart';
