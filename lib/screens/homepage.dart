@@ -53,6 +53,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
 
                   var userInfo = Users.fromJson(userRef.data());
 
+                  // ignore: use_build_context_synchronously
                   Navigator.pushNamed(context, '/formDemanda',
                       arguments: DemandaArguments(
                           editarDemanda: false, usuario: userInfo));
@@ -74,6 +75,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
 
                   var userInfo = Users.fromJson(userRef.data());
 
+                  // ignore: use_build_context_synchronously
                   Navigator.pushNamed(context, '/profile',
                       arguments: userInfo.userId);
                 }),
@@ -91,13 +93,13 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
 
   Widget _buildCard(
       String titulo, String descricao, String icone, Function pagina) {
-    final TextStyle _title = TextStyle(
+    final TextStyle title = TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20,
         fontFamily: 'Inter',
         color: AppTheme.colors.dark);
 
-    final TextStyle _subtitle = TextStyle(
+    final TextStyle subtitle = TextStyle(
         fontWeight: FontWeight.normal,
         fontSize: 14,
         fontFamily: 'Inter',
@@ -107,34 +109,34 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
       borderRadius: BorderRadius.circular(18),
       onTap: pagina,
       child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('lib/assets/img/' + icone, width: 50),
+              Image.asset('lib/assets/img/$icone', width: 50),
               Utils.addVerticalSpace(20),
-              Text(titulo, style: _title, textAlign: TextAlign.center),
+              Text(titulo, style: title, textAlign: TextAlign.center),
               Utils.addVerticalSpace(10),
-              Text(descricao, style: _subtitle, textAlign: TextAlign.center)
+              Text(descricao, style: subtitle, textAlign: TextAlign.center)
             ],
           ),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
 }
 
 Future<void> _linkAreasConhecimento() async {
-  final Uri _url = Uri.parse(
+  final Uri url = Uri.parse(
       'http://lattes.cnpq.br/documents/11871/24930/TabeladeAreasdoConhecimento.pdf/d192ff6b-3e0a-4074-a74d-c280521bd5f7');
 
   if (!await launchUrl(
-    _url,
+    url,
     mode: LaunchMode.externalApplication,
   )) {
-    throw 'Não foi possível abrir o link: $_url';
+    throw 'Não foi possível abrir o link: $url';
   }
 }

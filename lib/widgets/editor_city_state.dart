@@ -82,6 +82,7 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                                       'cidade': _myCity
                                     });
 
+                                    // ignore: use_build_context_synchronously
                                     Navigator.pop(context);
                                   }
                                 },
@@ -122,15 +123,15 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                   setState(() {
                     _myState = newValue;
                     _myCity = null;
-                    debugPrint('depois estado: ' + _myState);
+                    debugPrint('depois estado: $_myState');
                   });
 
                   _getCitiesList();
                 },
                 items: statesList?.map<DropdownMenuItem<String>>((item) {
                       return DropdownMenuItem(
-                        child: Text(item['nome']),
                         value: item['sigla'].toString(),
+                        child: Text(item['nome']),
                       );
                     })?.toList() ??
                     [],
@@ -168,13 +169,13 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                 onChanged: (String newValue) {
                   setState(() {
                     _myCity = newValue;
-                    debugPrint('depois cidade: ' + _myCity);
+                    debugPrint('depois cidade: $_myCity');
                   });
                 },
                 items: citiesList?.map((item) {
                       return DropdownMenuItem(
-                        child: Text(item['nome']),
                         value: item['nome'].toString(),
+                        child: Text(item['nome']),
                       );
                     })?.toList() ??
                     [],

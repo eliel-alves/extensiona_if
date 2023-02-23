@@ -38,18 +38,18 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
                       if (!snapshot.hasData) {
                         return const CircularProgressIndicator();
                       } else {
-                        final _data = snapshot.data.docs;
+                        final data = snapshot.data.docs;
 
                         return ListView.builder(
                           shrinkWrap: true,
                           itemCount: snapshot.data.size,
                           itemBuilder: (context, index) {
-                            final userPhoto = _data[index]['url_photo'];
-                            final userName = _data[index]['name'];
-                            final userEmail = _data[index]['email'];
-                            final userType = _data[index]['tipo'];
+                            final userPhoto = data[index]['url_photo'];
+                            final userName = data[index]['name'];
+                            final userEmail = data[index]['email'];
+                            final userType = data[index]['tipo'];
 
-                            var _isAdmin = userType == 'admin' ? true : false;
+                            var isAdmin = userType == 'admin' ? true : false;
 
                             return SwitchListTile(
                               contentPadding: const EdgeInsets.all(5),
@@ -66,16 +66,16 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
                                         'lib/assets/img/user-default.jpg')
                                     : NetworkImage(userPhoto),
                               ),
-                              value: _isAdmin,
+                              value: isAdmin,
                               onChanged: (bool value) {
                                 setState(() {
-                                  _isAdmin = value;
+                                  isAdmin = value;
 
-                                  _isAdmin
-                                      ? _data[index]
+                                  isAdmin
+                                      ? data[index]
                                           .reference
                                           .update({'tipo': 'admin'})
-                                      : _data[index]
+                                      : data[index]
                                           .reference
                                           .update({'tipo': 'user'});
                                 });

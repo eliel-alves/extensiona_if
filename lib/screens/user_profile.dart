@@ -1,19 +1,19 @@
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:extensiona_if/components/editor.dart';
+import 'package:extensiona_if/components/edit_info_user.dart';
 import 'package:extensiona_if/data/user_dao.dart';
-import 'package:extensiona_if/validation/validation.dart';
 import 'package:extensiona_if/widgets/drawer_navigation.dart';
 import 'package:extensiona_if/widgets/editor_city_state.dart';
+import 'package:extensiona_if/widgets/reauthenticate_box.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -104,7 +104,13 @@ class BuildUserPage extends StatefulWidget {
 
 class _BuildUserPageState extends State<BuildUserPage> {
   final TextEditingController _userProvidedPassword = TextEditingController();
-  final _formPasswordKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+
+  //Faz referência a coleção DEMANDAS no Firebase
+  final demandaRef = FirebaseFirestore.instance.collection('DEMANDAS');
+
+  //Faz referência a coleção USUARIOS no Firebase
+  final userRef = FirebaseFirestore.instance.collection('USUARIOS');
 
   @override
   Widget build(BuildContext context) {
@@ -160,24 +166,41 @@ class _BuildUserPageState extends State<BuildUserPage> {
         Utils.addVerticalSpace(30),
         Text('Informações de Contato', style: AppTheme.typo.title),
         Utils.addVerticalSpace(10),
-        Options(widget.email, false, () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EditarInfoUsuario(
-                    titulo: 'E-mail',
-                    conteudo: widget.email,
-                    rotulo: 'E-mail',
-                    dica: 'Informe seu email',
-                    errorText: 'Informe um e-mail',
-                    icon: const Icon(Icons.mail_outlined),
-                    qtdCaracteres: 30,
-                    maskField: false,
-                    validator: true,
-                    docId: widget.id,
-                    dbName: 'email')),
-          );
-        }, false, title: 'E-mail:'),
+        Options(
+            widget.email,
+            false,
+            () => reauthenticateBox(
+                context: context,
+                controller: _userProvidedPassword,
+                title: 'Atualizar E-mail',
+                label: widget.email,
+                formKey: _formKey,
+                action: () {
+                  if (_formKey.currentState.validate()) {
+                    authService.reauthenticateUser(
+                        _userProvidedPassword.text,
+                        context,
+                        () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditarInfoUsuario(
+                                      titulo: 'E-mail',
+                                      conteudo: widget.email,
+                                      rotulo: 'E-mail',
+                                      dica: 'Informe seu email',
+                                      errorText: 'Informe um e-mail',
+                                      icon: const Icon(Icons.mail_outlined),
+                                      qtdCaracteres: 30,
+                                      maskField: false,
+                                      validator: true,
+                                      docId: widget.id,
+                                      dbName: 'email')),
+                            ));
+                    _userProvidedPassword.clear();
+                  }
+                }),
+            false,
+            title: 'E-mail:'),
         Options(widget.telefone, false, () {
           Navigator.push(
             context,
@@ -199,53 +222,108 @@ class _BuildUserPageState extends State<BuildUserPage> {
         Utils.addVerticalSpace(30),
         Text('Mais opções', style: AppTheme.typo.title),
         Utils.addVerticalSpace(10),
-        Options('Excluir sua conta', false, () async {
-          //'Tem certeza que desejas deletar sua conta e todos os seus dados?'
-          popupBox(
-              context,
-              'Deletar conta',
-              SizedBox(
-                height: 180,
-                child: Form(
-                  key: _formPasswordKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Chip(
-                        avatar: const Icon(Icons.account_circle_outlined),
-                        backgroundColor: AppTheme.colors.white,
-                        label: Text(widget.email),
-                      ),
-                      Utils.addVerticalSpace(15),
-                      const Text(
-                          'Para continuar, primeiro confirme sua identidade'),
-                      Utils.addVerticalSpace(16),
-                      EditorAuth(
-                        controlador: _userProvidedPassword,
-                        rotulo: 'Senha',
-                        dica: 'Digite sua senha',
-                        icon: const Icon(Ionicons.md_key),
-                        qtdCaracteres: 10,
-                        verSenha: true,
-                        confirmPasswordField: false,
-                        maskField: false,
-                        validateField: true,
-                        validator: FormValidation.validateField(),
-                      ),
-                    ],
-                  ),
-                ),
-              ), () {
-            if (_formPasswordKey.currentState.validate()) {
-              authService.deleteUser(
-                  widget.email, _userProvidedPassword.text, context);
+        Options(
+            'Excluir sua conta',
+            false,
+            () => reauthenticateBox(
+                context: context,
+                controller: _userProvidedPassword,
+                title: 'Deletar conta',
+                label: widget.email,
+                formKey: _formKey,
+                action: () {
+                  if (_formKey.currentState.validate()) {
+                    authService.reauthenticateUser(
+                        _userProvidedPassword.text,
+                        context,
+                        () => confirmBox(context, authService.userId(),
+                            authService.usuario));
 
-              _userProvidedPassword.clear();
-            }
-          });
-        }, true)
+                    _userProvidedPassword.clear();
+                  }
+                }),
+            true)
       ],
     );
+  }
+
+  confirmBox(BuildContext context, String userId, User usuario) {
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Confirmação',
+              textAlign: TextAlign.start,
+            ),
+            content: const Text('Tem certeza que deseja excluir sua conta?'),
+            backgroundColor: AppTheme.colors.lightGrey,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('CANCELAR'),
+              ),
+              TextButton(
+                onPressed: () => deleteAccount(context, userId, usuario),
+                child: const Text('DELETAR'),
+              )
+            ],
+          );
+        });
+  }
+
+  deleteAccount(BuildContext context, String userId, User usuario) async {
+    //Referências das coleções do banco de dados
+    final demanda = await demandaRef.where("usuario", isEqualTo: userId).get();
+
+    final user = await userRef.where("id", isEqualTo: userId).get();
+
+    //Deletando todos os dados do usuário
+    for (var demandaDocs in demanda.docs) {
+      //Referência a subcoleção dos documentos deste usuário
+      var subcollectionRef =
+          await demandaRef.doc(demandaDocs.id).collection('arquivos').get();
+
+      //Acessa as informações das subcoleções das demandas do usuário
+      for (var subCollection in subcollectionRef.docs) {
+        // Referência do arquivo a ser deletado no firebase_storage
+        final storageFilesRef = firebase_storage.FirebaseStorage.instance
+            .ref()
+            .child("arquivos/${subCollection.get('file_name_storage')}");
+
+        // Deleta os arquivos
+        await storageFilesRef.delete();
+
+        //Deleta a subcoleção
+        await subCollection.reference.delete();
+      }
+
+      // Deleta a demanda
+      await demandaDocs.reference.delete();
+    }
+
+    for (var userDocs in user.docs) {
+      final storagePhotoRef = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child("foto_perfil/${userDocs.get('nome_arquivo_foto')}");
+
+      // Deleta os arquivos de imagem
+      await storagePhotoRef.delete();
+
+      // Deleta os dados pessoais do usuário
+      await userDocs.reference.delete();
+    }
+
+    //Deletando a conta do usuário
+    await usuario.delete();
+
+    // ignore: use_build_context_synchronously
+    Navigator.pushNamed(context, '/');
   }
 
   void selecionarFoto(String docId, String nomeArquivo) async {
@@ -256,23 +334,20 @@ class _BuildUserPageState extends State<BuildUserPage> {
 
     if (result == null) return;
 
-    String _nomeFoto = result.files.first.name +
-        '_' +
-        docId +
-        '.' +
-        result.files.first.extension;
+    String nomeFoto =
+        '${result.files.first.name}_$docId.${result.files.first.extension}';
 
     if (kIsWeb) {
       final fileBytes = result.files.first.bytes;
-      uploadImageFile(fileBytes, _nomeFoto, nomeArquivo, docId);
+      uploadImageFile(fileBytes, nomeFoto, nomeArquivo, docId);
     } else {
       final filePath = result.files.first.path;
       uploadImageFile(
-          await File(filePath).readAsBytes(), _nomeFoto, nomeArquivo, docId);
+          await File(filePath).readAsBytes(), nomeFoto, nomeArquivo, docId);
     }
   }
 
-  void uploadImageFile(Uint8List _data, String nomeFoto, String nomeRefArquivo,
+  void uploadImageFile(Uint8List data, String nomeFoto, String nomeRefArquivo,
       String docId) async {
     final docRef = await FirebaseFirestore.instance
         .collection('USUARIOS')
@@ -283,7 +358,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
         firebase_storage.FirebaseStorage.instance.ref('foto_perfil/$nomeFoto');
 
     ///Mostrar a progressão do upload
-    firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
+    firebase_storage.TaskSnapshot uploadTask = await reference.putData(data);
 
     ///Pega o download url do arquivo
     String url = await uploadTask.ref.getDownloadURL();
@@ -299,134 +374,5 @@ class _BuildUserPageState extends State<BuildUserPage> {
     }
 
     docRef.reference.update({'url_photo': url, "nome_arquivo_foto": nomeFoto});
-  }
-}
-
-class EditarInfoUsuario extends StatefulWidget {
-  final String titulo;
-  final String conteudo;
-  final String rotulo;
-  final String dica;
-  final String errorText;
-  final Icon icon;
-  final int qtdCaracteres;
-  final bool maskField;
-  final bool validator;
-  final String docId;
-  final String dbName;
-
-  const EditarInfoUsuario(
-      {Key key,
-      this.titulo,
-      this.conteudo,
-      this.rotulo,
-      this.dica,
-      this.errorText,
-      this.icon,
-      this.qtdCaracteres,
-      this.maskField,
-      this.validator,
-      this.docId,
-      this.dbName})
-      : super(key: key);
-
-  @override
-  State<EditarInfoUsuario> createState() => _EditarInfoUsuarioState();
-}
-
-class _EditarInfoUsuarioState extends State<EditarInfoUsuario> {
-  final TextEditingController _controlador = TextEditingController();
-  bool editandoInfo = false;
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    setState(() {
-      _controlador.text = widget.conteudo;
-    });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    UserDAO auth = Provider.of<UserDAO>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.titulo, style: AppTheme.typo.title),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            !editandoInfo
-                ? CardInfo(
-                    titulo: widget.titulo,
-                    conteudo: widget.conteudo,
-                    onTap: () {
-                      setState(() {
-                        editandoInfo = true;
-                      });
-                    })
-                : Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        EditorAuth(
-                          controlador: _controlador,
-                          rotulo: widget.rotulo,
-                          dica: widget.dica,
-                          icon: widget.icon,
-                          qtdCaracteres: widget.qtdCaracteres,
-                          verSenha: false,
-                          confirmPasswordField: false,
-                          maskField: widget.maskField,
-                          validateField: true,
-                          validator: FormValidation.validateField(),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    editandoInfo = false;
-                                  });
-                                },
-                                child: const Text('Cancelar')),
-                            const SizedBox(width: 10),
-                            ElevatedButton(
-                                onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
-                                    if (_controlador.text.isNotEmpty) {
-                                      debugPrint('editou a informação');
-                                    }
-
-                                    final doc = await FirebaseFirestore.instance
-                                        .collection('USUARIOS')
-                                        .doc(widget.docId)
-                                        .get();
-
-                                    doc.reference.update(
-                                        {widget.dbName: _controlador.text});
-
-                                    if (widget.dbName == 'email') {
-                                      auth.usuario
-                                          .updateEmail(_controlador.text);
-                                    }
-
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: const Text('Salvar'))
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-          ],
-        ),
-      ),
-    );
   }
 }

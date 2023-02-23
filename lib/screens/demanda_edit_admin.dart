@@ -66,7 +66,7 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
     _controladorVinculo.text = widget.vinculo;
     _controladorResultadosEsperados.text = widget.resultadosEsperados;
 
-    List<String> _optionsStatus = [
+    List<String> optionsStatus = [
       'registrado',
       'em análise',
       'aprovado',
@@ -94,10 +94,10 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
                   helperText: 'O status da demanda atual',
                   hintText: 'Selecione o status da demanda atual',
                 ),
-                items: _optionsStatus.map((String item) {
+                items: optionsStatus.map((String item) {
                   return DropdownMenuItem<String>(
-                    child: Text(Utils.toCapitalization(item)),
                     value: item,
+                    child: Text(Utils.toCapitalization(item)),
                   );
                 }).toList(),
                 onChanged: (statusValue) {

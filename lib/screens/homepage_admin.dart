@@ -37,12 +37,12 @@ class _AdminScreenState extends State<AdminScreen> {
   filterAreaLocation() {
     //Concatena as áreas selecionadas com as localidades
 
-    String _areaLocalidade;
+    String areaLocalidade;
 
     for (var area in _areaFiltered) {
       for (var localidade in _locationFiltered) {
-        _areaLocalidade = area + '-' + localidade;
-        _areaLocationFiltered.add(_areaLocalidade);
+        areaLocalidade = '$area-$localidade';
+        _areaLocationFiltered.add(areaLocalidade);
       }
     }
 
@@ -59,34 +59,34 @@ class _AdminScreenState extends State<AdminScreen> {
   filteringData() {
     if (_areaFiltered.isEmpty && _locationFiltered.isEmpty) {
       // Verifica se o vetor que contém as áreas selecionadas e a localização está vazio
-      final Stream<QuerySnapshot> _demandaStream =
+      final Stream<QuerySnapshot> demandaStream =
           FirebaseFirestore.instance.collection('DEMANDAS').snapshots();
-      return StreamBuilderDemandas(stream: _demandaStream);
+      return StreamBuilderDemandas(stream: demandaStream);
     } else if (_areaFiltered.isEmpty) {
       // caso não esteja, ele realizará o filtro baseado nos valores que ele encontrar no vetor _categoryFiltered
-      final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
+      final Stream<QuerySnapshot> filterDemandaStream = FirebaseFirestore
           .instance
           .collection('DEMANDAS')
           .where('localidade', whereIn: _locationFiltered)
           .snapshots();
-      return StreamBuilderDemandas(stream: _filterDemandaStream);
+      return StreamBuilderDemandas(stream: filterDemandaStream);
     } else if (_locationFiltered.isEmpty) {
       // caso não esteja no primeiro vetor, ele realizará o filtro baseado nos valores que ele encontrar no vetor _locationFiltered
-      final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
+      final Stream<QuerySnapshot> filterDemandaStream = FirebaseFirestore
           .instance
           .collection('DEMANDAS')
           .where('area_tematica', whereIn: _areaFiltered)
           .snapshots();
-      return StreamBuilderDemandas(stream: _filterDemandaStream);
+      return StreamBuilderDemandas(stream: filterDemandaStream);
     } else {
       // por fim, se os dois vetores tiver alguma informação, ele faz um filtro utilizando os dois vetores
 
-      final Stream<QuerySnapshot> _filterDemandaStream = FirebaseFirestore
+      final Stream<QuerySnapshot> filterDemandaStream = FirebaseFirestore
           .instance
           .collection('DEMANDAS')
           .where('filtro_area_localidade', whereIn: filterAreaLocation())
           .snapshots();
-      return StreamBuilderDemandas(stream: _filterDemandaStream);
+      return StreamBuilderDemandas(stream: filterDemandaStream);
     }
   }
 
@@ -125,18 +125,18 @@ class _AdminScreenState extends State<AdminScreen> {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
                   } else {
-                    final _items = snapshot.data.docs
+                    final items = snapshot.data.docs
                         .map((DocumentSnapshot document) =>
                             MultiSelectItem<String>(
                                 document['nome'], document['nome']))
                         .toList();
 
-                    final _itemsChip = _areaFiltered
+                    final itemsChip = _areaFiltered
                         .map((e) => MultiSelectItem<String>(e, e))
                         .toList();
 
                     return MultiSelectDialogField(
-                      items: _items,
+                      items: items,
                       key: _formKeyArea,
                       title: Text("Filtrar por Áreas Temáticas",
                           style: AppTheme.typo.defaultBoldText),
@@ -165,7 +165,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       cancelText: const Text('CANCELAR'),
                       confirmText: const Text('FILTRAR'),
                       chipDisplay: MultiSelectChipDisplay<String>(
-                        items: _itemsChip,
+                        items: itemsChip,
                         onTap: (value) {
                           setState(() {
                             debugPrint(value);
@@ -182,8 +182,8 @@ class _AdminScreenState extends State<AdminScreen> {
                               removeAreaLocation(index);
                             }
                           }
-                          debugPrint('vetor de areas e localidades:' +
-                              _areaLocationFiltered.toString());
+                          debugPrint(
+                              'vetor de areas e localidades:$_areaLocationFiltered');
                         },
                       ),
                       validator: (list) {
@@ -210,7 +210,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       _uniqueLocalidadeList.add(itens.get('localidade'));
                     }
 
-                    final _items = _uniqueLocalidadeList
+                    final items = _uniqueLocalidadeList
                         .toSet()
                         .map((document) =>
                             MultiSelectItem<String>(document, document))
@@ -222,12 +222,12 @@ class _AdminScreenState extends State<AdminScreen> {
                     //             document['localidade'], document['localidade']))
                     //     .toList();
 
-                    final _itemsChip = _locationFiltered
+                    final itemsChip = _locationFiltered
                         .map((e) => MultiSelectItem<String>(e, e))
                         .toList();
 
                     return MultiSelectDialogField(
-                        items: _items,
+                        items: items,
                         key: _formKeyLocalidade,
                         title: Text("Filtrar por Localidade",
                             style: AppTheme.typo.defaultBoldText),
@@ -254,7 +254,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         cancelText: const Text('CANCELAR'),
                         confirmText: const Text('FILTRAR'),
                         chipDisplay: MultiSelectChipDisplay<String>(
-                          items: _itemsChip,
+                          items: itemsChip,
                           onTap: (value) {
                             debugPrint(value);
 
@@ -272,8 +272,8 @@ class _AdminScreenState extends State<AdminScreen> {
                                 removeAreaLocation(index);
                               }
                             }
-                            debugPrint('vetor de areas e localidades:' +
-                                _areaLocationFiltered.toString());
+                            debugPrint(
+                                'vetor de areas e localidades:$_areaLocationFiltered');
                             // debugPrint(_locationFiltered.toString());
                           },
                         ),
@@ -448,6 +448,7 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
                         .collection('arquivos')
                         .get();
 
+                    // ignore: use_build_context_synchronously
                     Navigator.push(
                       context,
                       MaterialPageRoute(

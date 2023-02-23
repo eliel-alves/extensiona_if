@@ -3,9 +3,8 @@ import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class UserDAO extends ChangeNotifier {
@@ -130,6 +129,7 @@ class UserDAO extends ChangeNotifier {
       if (kDebugMode) {
         print(user);
       }
+      // ignore: use_build_context_synchronously
       await deleteUserData(result.user.uid, context);
       await result.user.delete();
     } catch (error) {
@@ -177,6 +177,7 @@ class UserDAO extends ChangeNotifier {
             .delete()
             .then((value) => debugPrint('Subcoleção deletada !!!'))
             .catchError((error) {
+          // ignore: prefer_interpolation_to_compose_strings
           debugPrint('Erro ao deletar a subcoleção: ' + error);
         });
       }
@@ -185,9 +186,9 @@ class UserDAO extends ChangeNotifier {
       uDemanda.reference
           .delete()
           .then((value) => debugPrint("Demanda deletada !!!"))
-          .catchError((error) {
-        debugPrint("Erro ao deletar a demanda do usuário: " + error);
-      });
+          .catchError((error) =>
+              // ignore: prefer_interpolation_to_compose_strings
+              debugPrint("Erro ao deletar a demanda do usuário: " + error));
     }
 
     //Deleta a coleção referente ao usuário
@@ -195,11 +196,14 @@ class UserDAO extends ChangeNotifier {
         .delete()
         .then((value) => debugPrint('Coleção do usuário deletada !!!'))
         .catchError((error) {
+      // ignore: prefer_interpolation_to_compose_strings
       debugPrint('Erro ao deletar a coleção do usuário: ' + error);
     });
 
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pop(true);
 
+    // ignore: use_build_context_synchronously
     Navigator.pushNamed(context, '/');
   }
 
@@ -225,17 +229,43 @@ class UserDAO extends ChangeNotifier {
     _getUser();
   }
 
+  Future<void> reauthenticateUser(
+      String password, BuildContext context, Function action) async {
+    try {
+      final user = auth.currentUser;
+      AuthCredential credential =
+          EmailAuthProvider.credential(email: userEmail(), password: password);
+
+      await user.reauthenticateWithCredential(credential);
+
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop(true);
+      action();
+    } catch (error) {
+      debugPrint('$error');
+      Navigator.of(context).pop(true);
+
+      Utils.schowSnackBar(
+          'Credenciais incorretas. Por favor, verifique-as e tente novamente.');
+      debugPrint('Erro na reautenticação do usuário !!!');
+    }
+  }
+
   Future<void> resetPassword(String email) async {
-    await auth.sendPasswordResetEmail(email: email).then((value) {
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+
       String message =
-          'Pronto! Um link para criação de uma nova senha foi enviado para seu e-mail.';
+          'Pronto! Um link para criação de uma nova senha foi enviado para o seu e-mail.';
       debugPrint(message);
 
       //SNACKBAR
       Utils.schowSnackBar(message);
-    }).catchError((e) {
-      debugPrint(e);
-    });
+    } catch (e) {
+      debugPrint('$e');
+
+      Utils.schowSnackBar('Erro no envio do e-mail!');
+    }
   }
 
   handleAuthError(FirebaseException error) {
@@ -262,80 +292,80 @@ class UserDAO extends ChangeNotifier {
     }
   }
 
-  Future<void> signInWithGoogle() async {
-    if (kIsWeb) {
-      GoogleAuthProvider authProvider = GoogleAuthProvider();
+  // Future<void> signInWithGoogle() async {
+  //   if (kIsWeb) {
+  //     GoogleAuthProvider authProvider = GoogleAuthProvider();
 
-      try {
-        final UserCredential userCredential =
-            await auth.signInWithPopup(authProvider);
+  //     try {
+  //       final UserCredential userCredential =
+  //           await auth.signInWithPopup(authProvider);
 
-        auth.currentUser?.photoURL;
+  //       auth.currentUser?.photoURL;
 
-        addUser(userEmail(), null, auth.currentUser?.displayName,
-            auth.currentUser?.phoneNumber);
-        usuario = userCredential.user;
-        _getUser();
-        notifyListeners();
-      } catch (e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      }
-    } else {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
+  //       addUser(userEmail(), null, auth.currentUser?.displayName,
+  //           auth.currentUser?.phoneNumber);
+  //       usuario = userCredential.user;
+  //       _getUser();
+  //       notifyListeners();
+  //     } catch (e) {
+  //       if (kDebugMode) {
+  //         print(e);
+  //       }
+  //     }
+  //   } else {
+  //     final GoogleSignIn googleSignIn = GoogleSignIn();
 
-      final GoogleSignInAccount googleSignInAccount =
-          await googleSignIn.signIn();
+  //     final GoogleSignInAccount googleSignInAccount =
+  //         await googleSignIn.signIn();
 
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
+  //     if (googleSignInAccount != null) {
+  //       final GoogleSignInAuthentication googleSignInAuthentication =
+  //           await googleSignInAccount.authentication;
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
+  //       final AuthCredential credential = GoogleAuthProvider.credential(
+  //         accessToken: googleSignInAuthentication.accessToken,
+  //         idToken: googleSignInAuthentication.idToken,
+  //       );
 
-        try {
-          final UserCredential userCredential =
-              await auth.signInWithCredential(credential);
+  //       try {
+  //         final UserCredential userCredential =
+  //             await auth.signInWithCredential(credential);
 
-          addUser(userEmail(), null, auth.currentUser?.displayName,
-              auth.currentUser?.phoneNumber);
+  //         addUser(userEmail(), null, auth.currentUser?.displayName,
+  //             auth.currentUser?.phoneNumber);
 
-          usuario = userCredential.user;
-          _getUser();
-          notifyListeners();
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'account-exists-with-different-credential') {
-            // ...
-          } else if (e.code == 'invalid-credential') {
-            // ...
-          }
-        } catch (e) {
-          // ...
-        }
-      }
-    }
+  //         usuario = userCredential.user;
+  //         _getUser();
+  //         notifyListeners();
+  //       } on FirebaseAuthException catch (e) {
+  //         if (e.code == 'account-exists-with-different-credential') {
+  //           // ...
+  //         } else if (e.code == 'invalid-credential') {
+  //           // ...
+  //         }
+  //       } catch (e) {
+  //         // ...
+  //       }
+  //     }
+  //   }
 
-    return usuario;
-  }
+  //   return usuario;
+  // }
 
-  // Login com Facebook
-  void signInWithFacebook() async {
-    try {
-      final LoginResult loginResult = await FacebookAuth.instance.login();
-      //final userData = await FacebookAuth.instance.getUserData();
+  // // Login com Facebook
+  // void signInWithFacebook() async {
+  //   try {
+  //     final LoginResult loginResult = await FacebookAuth.instance.login();
+  //     //final userData = await FacebookAuth.instance.getUserData();
 
-      final OAuthCredential facebookAuthCredential =
-          FacebookAuthProvider.credential(loginResult.accessToken.token);
-      await auth.signInWithCredential(facebookAuthCredential);
-      notifyListeners();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'account-exists-with-different-credential') {
-        debugPrint('erro de autentificação');
-      }
-    }
-  }
+  //     final OAuthCredential facebookAuthCredential =
+  //         FacebookAuthProvider.credential(loginResult.accessToken.token);
+  //     await auth.signInWithCredential(facebookAuthCredential);
+  //     notifyListeners();
+  //   } on FirebaseAuthException catch (e) {
+  //     if (e.code == 'account-exists-with-different-credential') {
+  //       debugPrint('erro de autentificação');
+  //     }
+  //   }
+  // }
 }

@@ -1,6 +1,7 @@
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
+import 'package:extensiona_if/widgets/utils.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -249,9 +250,7 @@ class ItemDemanda extends StatelessWidget {
                     }
 
                     //SnackBar
-                    const SnackBar snackBar = SnackBar(
-                        content: Text("A proposta foi deletada com sucesso! "));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    Utils.schowSnackBar(' proposta foi deletada com sucesso! ');
                   },
                   child: const Text('Sim'),
                 ),

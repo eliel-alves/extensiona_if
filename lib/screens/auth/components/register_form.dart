@@ -119,8 +119,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       _representative = value;
                       widget.representative(value);
                     });
-                    debugPrint('deseja ser representante: ' +
-                        _representative.toString());
+                    debugPrint('deseja ser representante: $_representative');
                   }),
               Expanded(
                 child: Text('Deseja ser um representante de sua instituição?',
@@ -274,12 +273,12 @@ class _RegisterFormState extends State<RegisterForm> {
                 },
                 items: statesList?.map<DropdownMenuItem<String>>((item) {
                       return DropdownMenuItem(
+                        value: item['sigla'].toString(),
                         child: Text(
                           item['nome'],
                           style: AppTheme.typo
                               .bold(16, AppTheme.colors.dark, 1, 0),
                         ),
-                        value: item['sigla'].toString(),
                       );
                     })?.toList() ??
                     [],
@@ -325,12 +324,12 @@ class _RegisterFormState extends State<RegisterForm> {
                 },
                 items: citiesList?.map((item) {
                       return DropdownMenuItem(
+                        value: item['nome'].toString(),
                         child: Text(
                           item['nome'],
                           style: AppTheme.typo
                               .bold(16, AppTheme.colors.dark, 1, 0),
                         ),
-                        value: item['nome'].toString(),
                       );
                     })?.toList() ??
                     [],

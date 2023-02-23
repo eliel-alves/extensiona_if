@@ -55,13 +55,13 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: widget.sendLink,
-                child: Text('Enviar', style: AppTheme.typo.button),
                 style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: AppTheme.colors.blue,
                     padding: const EdgeInsets.all(23),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10))),
+                child: Text('Enviar', style: AppTheme.typo.button),
               ),
             ),
             Utils.addVerticalSpace(20),

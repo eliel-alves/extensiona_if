@@ -113,6 +113,7 @@ class Options extends StatelessWidget {
         ),
         elevation: 0,
         child: InkWell(
+          onTap: onTap,
           child: Container(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -135,7 +136,6 @@ class Options extends StatelessWidget {
               ],
             ),
           ),
-          onTap: onTap,
         ));
   }
 }
@@ -237,13 +237,14 @@ class EmptyStateUi extends StatelessWidget {
 
             var userInfo = Users.fromJson(userRef.data());
 
+            // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/formDemanda',
                 arguments:
                     DemandaArguments(editarDemanda: false, usuario: userInfo));
           },
-          child: Text('Cadastrar Agora', style: AppTheme.typo.button),
           style: ButtonStyle(
               padding: MaterialStateProperty.all(const EdgeInsets.all(16))),
+          child: Text('Cadastrar Agora', style: AppTheme.typo.button),
         )
       ],
     );

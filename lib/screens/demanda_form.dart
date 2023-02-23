@@ -150,8 +150,8 @@ class _FormDemandaState extends State<FormDemanda> {
                             items: snapshot.data.docs
                                 .map((DocumentSnapshot document) {
                               return DropdownMenuItem<String>(
-                                child: Text(document['nome']),
                                 value: document['nome'],
+                                child: Text(document['nome']),
                               );
                             }).toList(),
                             onChanged: (currencyValue) {
@@ -401,8 +401,8 @@ class _FormDemandaState extends State<FormDemanda> {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
 
-    final String _areaLocalidade =
-        areaTematicaSelecionada + '-' + widget.localidade;
+    final String areaLocalidade =
+        '$areaTematicaSelecionada-${widget.localidade}';
 
     debugPrint(widget.localidade);
 
@@ -422,7 +422,7 @@ class _FormDemandaState extends State<FormDemanda> {
           'equipe_colaboradores': _controladorEquipeColaboradores.text,
           'area_tematica': areaTematicaSelecionada,
           'localidade': widget.localidade,
-          'filtro_area_localidade': _areaLocalidade
+          'filtro_area_localidade': areaLocalidade
         })
         .then((value) => debugPrint("Demanda atualizada"))
         .catchError((error) => debugPrint(
@@ -438,13 +438,13 @@ class _FormDemandaState extends State<FormDemanda> {
     final userDao = Provider.of<UserDAO>(context, listen: false);
 
     // Define a localidade da demanda de acordo com a localidade do usuário
-    final String _localidade =
-        '(' + widget.usuario.userState + ') ' + widget.usuario.userCity;
+    final String localidade =
+        '(${widget.usuario.userState}) ${widget.usuario.userCity}';
 
-    final String _areaLocalidade = areaTematicaSelecionada + '-' + _localidade;
+    final String areaLocalidade = '$areaTematicaSelecionada-$localidade';
 
     //Adicionando um novo documento a nossa coleção -> Demandas
-    DocumentReference _novaDemanda =
+    DocumentReference novaDemanda =
         await FirebaseFirestore.instance.collection('DEMANDAS').add({
       'usuario': userDao.userId(),
       'titulo': _controladorTitulo.text,
@@ -461,18 +461,19 @@ class _FormDemandaState extends State<FormDemanda> {
       'empresa_envolvida': _controladorEmpresaEnvolvida.text,
       'equipe_colaboradores': _controladorEquipeColaboradores.text,
       'area_tematica': areaTematicaSelecionada,
-      'localidade': _localidade,
-      'filtro_area_localidade': _areaLocalidade
+      'localidade': localidade,
+      'filtro_area_localidade': areaLocalidade
     }).catchError((error) {
       Utils.schowSnackBar('Erro no registro de sua demanda!');
       debugPrint("Ocorreu um erro ao registrar sua demanda: $error");
     });
 
-    debugPrint("ID da demanda: " + _novaDemanda.id);
+    debugPrint("ID da demanda: ${novaDemanda.id}");
 
-    Navigator.pushReplacementNamed(context, '/listaDemanda');
+    // ignore: use_build_context_synchronously
+    Navigator.pushNamed(context, '/listaDemanda');
 
-    uploadFile(_novaDemanda.id);
+    uploadFile(novaDemanda.id);
   }
 
   void limpaFormulario() {
@@ -505,33 +506,32 @@ class _FormDemandaState extends State<FormDemanda> {
     if (_caminhoDoArquivo == null && _caminhoDoArquivo.isEmpty) return;
 
     for (var arquivos in _caminhoDoArquivo) {
-      String _nomeArquivo = arquivos.name;
-      String _nomeArquivoExtensao;
+      String nomeArquivo = arquivos.name;
+      String nomeArquivoExtensao;
 
       //Faz o upload do arquivo selecionado para o Firebase storage
-      _nomeArquivo = arquivos.name.substring(0, _nomeArquivo.lastIndexOf('.'));
-      _nomeArquivoExtensao =
-          _nomeArquivo + '_' + docId + '.' + arquivos.extension;
+      nomeArquivo = arquivos.name.substring(0, nomeArquivo.lastIndexOf('.'));
+      nomeArquivoExtensao = '${nomeArquivo}_$docId.${arquivos.extension}';
 
-      debugPrint("Nome do arquivo: " + _nomeArquivoExtensao);
+      debugPrint("Nome do arquivo: $nomeArquivoExtensao");
 
       if (kIsWeb) {
         _uploadFileToFirebase(_caminhoDoArquivo.first.bytes,
-            _nomeArquivoExtensao, docId, _nomeArquivo);
+            nomeArquivoExtensao, docId, nomeArquivo);
       } else {
         _uploadFileToFirebase(
             await File(_caminhoDoArquivo.first.path).readAsBytes(),
-            _nomeArquivoExtensao,
+            nomeArquivoExtensao,
             docId,
-            _nomeArquivo);
+            nomeArquivo);
       }
     }
   }
 
   ///Função responsável por fazer o upload do arquivo para o storage
-  Future<void> _uploadFileToFirebase(Uint8List _data, String nameFile,
+  Future<void> _uploadFileToFirebase(Uint8List data, String nameFile,
       String demandaId, String nomeArquivoReal) async {
-    CollectionReference _arquivosDemanda = FirebaseFirestore.instance
+    CollectionReference arquivosDemanda = FirebaseFirestore.instance
         .collection('DEMANDAS')
         .doc(demandaId)
         .collection('arquivos');
@@ -540,7 +540,7 @@ class _FormDemandaState extends State<FormDemanda> {
         firebase_storage.FirebaseStorage.instance.ref('arquivos/$nameFile');
 
     ///Mostrar a progressão do upload
-    firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
+    firebase_storage.TaskSnapshot uploadTask = await reference.putData(data);
 
     ///Pega o download url do arquivo
     String url = await uploadTask.ref.getDownloadURL();
@@ -549,7 +549,7 @@ class _FormDemandaState extends State<FormDemanda> {
       debugPrint('Arquivo enviado com sucesso!');
       debugPrint('URL do arquivo: $url');
       debugPrint(demandaId);
-      _arquivosDemanda.add({
+      arquivosDemanda.add({
         'file_url': url,
         'file_name': nomeArquivoReal,
         'file_name_storage': nameFile

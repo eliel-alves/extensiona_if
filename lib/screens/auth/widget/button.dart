@@ -13,14 +13,15 @@ class AuthButton extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: onPressed,
-        child: Text(title,
-            style: AppTheme.typo.bold(16, AppTheme.colors.light, 1, 0)),
         style: ElevatedButton.styleFrom(
             elevation: 0,
+            foregroundColor: AppTheme.colors.blue,
             backgroundColor: AppTheme.colors.blue,
             padding: const EdgeInsets.all(23),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10))),
+        child: Text(title,
+            style: AppTheme.typo.bold(16, AppTheme.colors.light, 1, 0)),
       ),
     );
   }
