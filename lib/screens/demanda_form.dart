@@ -79,7 +79,7 @@ class _FormDemandaState extends State<FormDemanda> {
 
   String documentID;
 
-  String _fileName;
+  String fileName;
   List<PlatformFile> _caminhoDoArquivo;
   final FileType _tipoArquivo = FileType.custom;
 
@@ -387,7 +387,7 @@ class _FormDemandaState extends State<FormDemanda> {
     debugPrint('$_caminhoDoArquivo');
 
     setState(() {
-      _fileName = _caminhoDoArquivo != null
+      fileName = _caminhoDoArquivo != null
           ? _caminhoDoArquivo.map((e) => e.name).toString()
           : '...';
     });
