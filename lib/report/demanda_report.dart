@@ -75,8 +75,6 @@ class _DemandaReportState extends State<DemandaReport> {
 
   Future<Uint8List> generateDocument(PdfPageFormat format) async {
     final doc = pw.Document(pageMode: PdfPageMode.outlines);
-    // final font1 = await PdfGoogleFonts.interRegular();
-    // final font2 = await PdfGoogleFonts.interBold();
     //final logo = await rootBundle.loadString('lib/assets/svg/logo-dark.svg');
     final logo = pw.MemoryImage(
       (await rootBundle.load('lib/assets/img/logo-dark-version.png'))
