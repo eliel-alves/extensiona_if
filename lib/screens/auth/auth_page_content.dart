@@ -20,16 +20,15 @@ class AuthPageContent extends StatefulWidget {
   final Function() authAction;
 
   const AuthPageContent(
-      {Key key,
-      this.title,
-      this.actionButton,
-      this.buttonText,
-      this.toggleButtonText,
-      this.formulario,
-      this.forgotPassword,
-      this.setFormAction,
-      this.authAction})
-      : super(key: key);
+      {super.key,
+      required this.title,
+      required this.actionButton,
+      required this.buttonText,
+      required this.toggleButtonText,
+      required this.forgotPassword,
+      required this.formulario,
+      required this.setFormAction,
+      required this.authAction});
 
   @override
   State<AuthPageContent> createState() => _AuthPageContentState();
@@ -88,7 +87,7 @@ class _AuthPageContentState extends State<AuthPageContent> {
                     isforgotPasswordScream = false;
                   }),
                   sendLink: () {
-                    if (_formResetPasswordKey.currentState.validate()) {
+                    if (_formResetPasswordKey.currentState!.validate()) {
                       context
                           .read<UserDAO>()
                           .resetPassword(_verifyEmailController.text.trim());
@@ -117,7 +116,7 @@ class _AuthPageContentState extends State<AuthPageContent> {
                     isforgotPasswordScream = false;
                   }),
                   sendLink: () {
-                    if (_formResetPasswordKey.currentState.validate()) {
+                    if (_formResetPasswordKey.currentState!.validate()) {
                       _verifyEmailController.clear();
                     }
                   },

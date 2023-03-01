@@ -1,4 +1,3 @@
-import 'package:extensiona_if/report/demanda_report.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:extensiona_if/components/editor.dart';
@@ -25,7 +24,7 @@ class EditarFormInfoAdmin extends StatefulWidget {
       this.resultadosEsperados,
       this.status,
       this.updateDados,
-      {Key key})
+      {Key? key})
       : super(key: key);
 
   @override
@@ -45,7 +44,7 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
   final TextEditingController _controladorVinculo = TextEditingController();
   final TextEditingController _controladorResultadosEsperados =
       TextEditingController();
-  String _statusDemandaAtual;
+  late String _statusDemandaAtual;
 
   @override
   initState() {
@@ -102,9 +101,9 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
                 }).toList(),
                 onChanged: (statusValue) {
                   setState(() {
-                    _statusDemandaAtual = statusValue;
+                    _statusDemandaAtual = statusValue as String;
                   });
-                  debugPrint(statusValue);
+                  debugPrint('$statusValue');
                 },
                 value: _statusDemandaAtual,
               ),
@@ -151,17 +150,17 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
                   5,
                   600,
                   false),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            DemandaReport(docid: widget.updateDados),
-                      ),
-                    );
-                  },
-                  child: const Text('Gerar PDF'))
+              // ElevatedButton(
+              //     onPressed: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //           builder: (_) =>
+              //               DemandaReport(docid: widget.updateDados),
+              //         ),
+              //       );
+              //     },
+              //     child: const Text('Gerar PDF'))
 
               /*SizedBox(
                 height: 40,
@@ -191,7 +190,7 @@ class EditarFormInfoState extends State<EditarFormInfoAdmin> {
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            if (_formKey.currentState.validate()) {
+            if (_formKey.currentState!.validate()) {
               _editarDemanda(context);
 
               //SnackBar

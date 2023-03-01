@@ -4,7 +4,7 @@ import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
 
 class ExtensionaApp extends StatelessWidget {
-  const ExtensionaApp({Key key}) : super(key: key);
+  const ExtensionaApp({super.key});
 
   @override
   Widget build(BuildContext context) {

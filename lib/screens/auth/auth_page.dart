@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AuthPage extends StatefulWidget {
-  const AuthPage({Key key}) : super(key: key);
+  const AuthPage({Key? key}) : super(key: key);
 
   @override
   State<AuthPage> createState() => _AuthPageState();
@@ -37,12 +37,12 @@ class _AuthPageState extends State<AuthPage> {
   bool _representative = true;
 
   bool isLogin = true;
-  String title;
-  bool forgotPassword;
-  String actionButton;
-  String buttonText;
-  String toggleButtonText;
-  Widget formulario;
+  late String title;
+  late bool forgotPassword;
+  late String actionButton;
+  late String buttonText;
+  late String toggleButtonText;
+  late Widget formulario;
 
   @override
   void initState() {
@@ -93,6 +93,20 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _registerEmailController.dispose();
+    _registerPasswordController.dispose();
+    _confirmPassword.dispose();
+    _phoneController.dispose();
+    _lattesController.dispose();
+
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AuthPageContent(
       title: title,
@@ -108,13 +122,13 @@ class _AuthPageState extends State<AuthPage> {
 
   void authAction() {
     if (isLogin) {
-      if (_formLoginKey.currentState.validate()) {
+      if (_formLoginKey.currentState!.validate()) {
         context
             .read<UserDAO>()
             .login(_emailController.text, _passwordController.text);
       }
     } else {
-      if (_formRegisterKey.currentState.validate()) {
+      if (_formRegisterKey.currentState!.validate()) {
         debugPrint('cadastro');
         // Chama o método de cadastro
         context.read<UserDAO>().signup(
@@ -138,9 +152,9 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Future sendEmail({
-    String name,
-    String email,
-    String message,
+    required String name,
+    required String email,
+    required String message,
   }) async {
     const serviceId = 'service_1j5vjqk';
     const templateId = 'template_n9b4nva';

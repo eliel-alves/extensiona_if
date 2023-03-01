@@ -6,7 +6,7 @@ import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/validation/validation.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+
 import 'package:http/http.dart' as http;
 
 class RegisterForm extends StatefulWidget {
@@ -22,19 +22,18 @@ class RegisterForm extends StatefulWidget {
   final Function(String) myCity;
   final Function(bool) representative;
 
-  const RegisterForm({
-    Key key,
-    this.registerEmailController,
-    this.registerPasswordController,
-    this.nameController,
-    this.phoneController,
-    this.confirmPassword,
-    this.lattesController,
-    this.formKey,
-    this.myState,
-    this.myCity,
-    this.representative,
-  }) : super(key: key);
+  const RegisterForm(
+      {super.key,
+      required this.registerEmailController,
+      required this.registerPasswordController,
+      required this.nameController,
+      required this.phoneController,
+      required this.confirmPassword,
+      required this.lattesController,
+      required this.formKey,
+      required this.myState,
+      required this.myCity,
+      required this.representative});
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
@@ -50,12 +49,14 @@ class _RegisterFormState extends State<RegisterForm> {
     //_registerInfo();
     super.initState();
 
-    widget.registerPasswordController.addListener(() {
-      setState(() {
-        passwordText = widget.registerPasswordController.text;
+    if (mounted) {
+      widget.registerPasswordController.addListener(() {
+        setState(() {
+          passwordText = widget.registerPasswordController.text;
+        });
+        debugPrint(passwordText);
       });
-      debugPrint(passwordText);
-    });
+    }
   }
 
   @override
@@ -114,9 +115,9 @@ class _RegisterFormState extends State<RegisterForm> {
               Checkbox(
                   value: _representative,
                   activeColor: AppTheme.colors.blue,
-                  onChanged: (bool value) {
+                  onChanged: (bool? value) {
                     setState(() {
-                      _representative = value;
+                      _representative = value!;
                       widget.representative(value);
                     });
                     debugPrint('deseja ser representante: $_representative');
@@ -166,7 +167,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         controlador: widget.registerPasswordController,
                         rotulo: 'Senha',
                         dica: 'Informe a sua senha',
-                        icon: const Icon(Ionicons.md_key),
+                        icon: const Icon(Icons.key_rounded),
                         qtdCaracteres: 10,
                         verSenha: true,
                         confirmPasswordField: false,
@@ -184,7 +185,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         controlador: widget.confirmPassword,
                         rotulo: 'Confirmar senha',
                         dica: 'Insira novamente a sua senha',
-                        icon: const Icon(Ionicons.md_key),
+                        icon: const Icon(Icons.key_rounded),
                         qtdCaracteres: 10,
                         verSenha: true,
                         confirmPasswordField: false,
@@ -203,7 +204,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       controlador: widget.registerPasswordController,
                       rotulo: 'Senha',
                       dica: 'Informe a sua senha',
-                      icon: const Icon(Ionicons.md_key),
+                      icon: const Icon(Icons.key_rounded),
                       qtdCaracteres: 10,
                       verSenha: true,
                       confirmPasswordField: false,
@@ -219,7 +220,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       controlador: widget.confirmPassword,
                       rotulo: 'Confirmar senha',
                       dica: 'Insira novamente a sua senha',
-                      icon: const Icon(Ionicons.md_key),
+                      icon: const Icon(Icons.key_rounded),
                       qtdCaracteres: 10,
                       verSenha: true,
                       confirmPasswordField: false,
@@ -260,10 +261,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 value: _myState,
                 icon: const Icon(Icons.expand_more),
                 style: AppTheme.typo.bold(16, AppTheme.colors.dark, 1, 0),
-                onChanged: (String newValue) {
+                onChanged: (String? newValue) {
                   setState(() {
                     _myState = newValue;
-                    widget.myState(newValue);
+                    widget.myState(newValue!);
                     _myCity = null;
                     // debugPrint('depois estado: ' + _myState);
                   });
@@ -280,7 +281,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               .bold(16, AppTheme.colors.dark, 1, 0),
                         ),
                       );
-                    })?.toList() ??
+                    }).toList() ??
                     [],
               ),
             ),
@@ -315,10 +316,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 value: _myCity,
                 icon: const Icon(Icons.expand_more),
                 style: AppTheme.typo.semiBold(16, AppTheme.colors.dark, 1, 0),
-                onChanged: (String newValue) {
+                onChanged: (String? newValue) {
                   setState(() {
                     _myCity = newValue;
-                    widget.myCity(newValue);
+                    widget.myCity(newValue!);
                     // debugPrint('depois cidade: ' + _myCity);
                   });
                 },
@@ -331,7 +332,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               .bold(16, AppTheme.colors.dark, 1, 0),
                         ),
                       );
-                    })?.toList() ??
+                    }).toList() ??
                     [],
               ),
             ),
@@ -343,8 +344,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
   /// API Estados e Cidades
   // Buscando estados
-  List statesList;
-  String _myState;
+  List? statesList;
+  String? _myState;
 
   final stateInfoUrl = Uri.parse(
       'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
@@ -360,8 +361,8 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   // Buscando cidades
-  List citiesList;
-  String _myCity;
+  List? citiesList;
+  String? _myCity;
 
   Future<dynamic> _getCitiesList() async {
     String cityInfoUrl;

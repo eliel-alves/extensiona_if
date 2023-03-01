@@ -12,8 +12,10 @@ class ChangeStateCity extends StatefulWidget {
   final String docId;
 
   const ChangeStateCity(
-      {Key key, this.selectedCity, this.selectedState, this.docId})
-      : super(key: key);
+      {super.key,
+      required this.selectedState,
+      required this.selectedCity,
+      required this.docId});
 
   @override
   State<ChangeStateCity> createState() => _ChangeStateCityState();
@@ -71,7 +73,7 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                             Utils.addHorizontalSpace(10),
                             ElevatedButton(
                                 onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
+                                  if (_formKey.currentState!.validate()) {
                                     final doc = await FirebaseFirestore.instance
                                         .collection('USUARIOS')
                                         .doc(widget.docId)
@@ -119,22 +121,21 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                 value: _myState,
                 icon: const Icon(Icons.expand_more),
                 style: AppTheme.typo.formText,
-                onChanged: (String newValue) {
+                onChanged: (String? newValue) {
                   setState(() {
-                    _myState = newValue;
-                    _myCity = null;
+                    _myState = newValue!;
+                    _myCity = '';
                     debugPrint('depois estado: $_myState');
                   });
 
                   _getCitiesList();
                 },
-                items: statesList?.map<DropdownMenuItem<String>>((item) {
-                      return DropdownMenuItem(
-                        value: item['sigla'].toString(),
-                        child: Text(item['nome']),
-                      );
-                    })?.toList() ??
-                    [],
+                items: statesList.map<DropdownMenuItem<String>>((item) {
+                  return DropdownMenuItem(
+                    value: item['sigla'].toString(),
+                    child: Text(item['nome']),
+                  );
+                }).toList(),
               ),
             ),
           ),
@@ -166,19 +167,18 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                 value: _myCity,
                 icon: const Icon(Icons.expand_more),
                 style: AppTheme.typo.formText,
-                onChanged: (String newValue) {
+                onChanged: (String? newValue) {
                   setState(() {
-                    _myCity = newValue;
+                    _myCity = newValue!;
                     debugPrint('depois cidade: $_myCity');
                   });
                 },
-                items: citiesList?.map((item) {
-                      return DropdownMenuItem(
-                        value: item['nome'].toString(),
-                        child: Text(item['nome']),
-                      );
-                    })?.toList() ??
-                    [],
+                items: citiesList.map((item) {
+                  return DropdownMenuItem(
+                    value: item['nome'].toString(),
+                    child: Text(item['nome']),
+                  );
+                }).toList(),
               ),
             ),
           ),
@@ -189,8 +189,8 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
 
   /// API Estados e Cidades
   // Buscando estados
-  List statesList;
-  String _myState;
+  late List statesList;
+  late String _myState;
 
   final stateInfoUrl = Uri.parse(
       'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
@@ -206,8 +206,8 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
   }
 
   // Buscando cidades
-  List citiesList;
-  String _myCity;
+  late List citiesList;
+  late String _myCity;
 
   Future<dynamic> _getCitiesList() async {
     String cityInfoUrl;

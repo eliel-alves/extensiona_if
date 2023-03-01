@@ -3,15 +3,14 @@ import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/validation/validation.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 Future<void> reauthenticateBox({
-  BuildContext context,
-  String title,
-  Function action,
-  String label,
-  GlobalKey<FormState> formKey,
-  TextEditingController controller,
+  required BuildContext context,
+  required String title,
+  required Function() action,
+  required String label,
+  required GlobalKey<FormState> formKey,
+  required TextEditingController controller,
 }) {
   return showDialog(
       context: context,
@@ -52,7 +51,7 @@ Future<void> reauthenticateBox({
                     controlador: controller,
                     rotulo: 'Senha',
                     dica: 'Digite sua senha',
-                    icon: const Icon(Ionicons.md_key),
+                    icon: const Icon(Icons.key_rounded),
                     qtdCaracteres: 20,
                     verSenha: true,
                     confirmPasswordField: false,

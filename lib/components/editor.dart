@@ -1,6 +1,6 @@
 import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 /*class Editor extends StatelessWidget {
@@ -46,7 +46,7 @@ class EditorTextFormField extends StatelessWidget {
 
   const EditorTextFormField(this.controller, this.labelText, this.dica,
       this.lines, this.maxLength, this.validaField,
-      {Key key})
+      {Key? key})
       : super(key: key);
 
   @override
@@ -92,26 +92,25 @@ class EditorAuth extends StatefulWidget {
   final FormFieldValidator validator;
 
   const EditorAuth(
-      {Key key,
-      this.controlador,
-      this.rotulo,
-      this.dica,
-      this.icon,
-      this.qtdCaracteres,
-      this.verSenha,
-      this.confirmPasswordField,
-      this.maskField,
-      this.validateField,
-      this.validator})
-      : super(key: key);
+      {super.key,
+      required this.controlador,
+      required this.rotulo,
+      required this.dica,
+      required this.icon,
+      required this.qtdCaracteres,
+      required this.verSenha,
+      required this.confirmPasswordField,
+      required this.maskField,
+      required this.validateField,
+      required this.validator});
 
   @override
   State<EditorAuth> createState() => _EditorAuthState();
 }
 
 class _EditorAuthState extends State<EditorAuth> {
-  bool _habilitaVerSenha;
-  bool _verSenha;
+  late bool _habilitaVerSenha;
+  late bool _verSenha;
   //bool _validation;
   var maskPhone = MaskTextInputFormatter(mask: '(##) #####-####');
 
@@ -157,16 +156,20 @@ class _EditorAuthState extends State<EditorAuth> {
                               _verSenha = false;
                             });
                           },
-                          icon: const Icon(Ionicons.md_eye_off))
+                          icon: const ImageIcon(
+                            AssetImage("lib/assets/img/eye_off.png"),
+                          ))
                       : IconButton(
                           onPressed: () {
                             setState(() {
-                              //Quando o usuário clicar nesse ícone, ele mudará para verdadeiro
+                              //Quando o usuário clicar neste ícone, ele mudará para verdadeiro
                               debugPrint('Você não está vendo a sua senha');
                               _verSenha = true;
                             });
                           },
-                          icon: const Icon(Ionicons.md_eye)))
+                          icon: const ImageIcon(
+                            AssetImage("lib/assets/img/eye.png"),
+                          )))
                   : null,
               errorStyle: const TextStyle(
                   fontSize: 13, letterSpacing: 0, fontWeight: FontWeight.w500),

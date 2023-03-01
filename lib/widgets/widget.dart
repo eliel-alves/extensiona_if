@@ -14,8 +14,11 @@ class ListTileOptions extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const ListTileOptions({Key key, this.icone, this.title, this.onTap})
-      : super(key: key);
+  const ListTileOptions(
+      {super.key,
+      required this.icone,
+      required this.title,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -39,8 +42,11 @@ class ListTileFiles extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
 
-  const ListTileFiles({Key key, this.icone, this.title, this.onPressed})
-      : super(key: key);
+  const ListTileFiles(
+      {super.key,
+      required this.icone,
+      required this.title,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) => ListTile(
@@ -55,7 +61,7 @@ class ListTileFiles extends StatelessWidget {
 class AppBarLogo extends StatelessWidget {
   final String titulo;
 
-  const AppBarLogo(this.titulo, {Key key}) : super(key: key);
+  const AppBarLogo({super.key, required this.titulo});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +82,7 @@ class AppBarLogo extends StatelessWidget {
 }
 
 Widget toggleButton(
-    String firstText, String secondText, Function setFormAction) {
+    String firstText, String secondText, Function() setFormAction) {
   return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
     Text(firstText,
         style: AppTheme.typo.regular(16, AppTheme.colors.dark, 1, 0)),
@@ -89,16 +95,19 @@ Widget toggleButton(
 }
 
 class Options extends StatelessWidget {
-  final String title;
-  final String titleContent;
-  final Function onTap;
+  final String? title;
+  final String subtitle;
+  final Function() onTap;
   final bool editImage;
   final bool isDeleteAccountOption;
 
   const Options(
-      this.titleContent, this.editImage, this.onTap, this.isDeleteAccountOption,
-      {Key key, this.title})
-      : super(key: key);
+      {super.key,
+      this.title,
+      required this.subtitle,
+      required this.onTap,
+      required this.editImage,
+      required this.isDeleteAccountOption});
 
   @override
   Widget build(BuildContext context) {
@@ -125,9 +134,9 @@ class Options extends StatelessWidget {
                   children: [
                     isDeleteAccountOption
                         ? const Icon(Icons.delete_forever_rounded)
-                        : Text(title, style: AppTheme.typo.title),
+                        : Text(title!, style: AppTheme.typo.title),
                     Utils.addHorizontalSpace(15),
-                    Text(titleContent, style: AppTheme.typo.defaultText),
+                    Text(subtitle, style: AppTheme.typo.defaultText),
                   ],
                 ),
                 editImage
@@ -170,10 +179,13 @@ Future<void> popupBox(context, title, content, onPressed) {
 class CardInfo extends StatefulWidget {
   final String titulo;
   final String conteudo;
-  final Function onTap;
+  final Function() onTap;
 
-  const CardInfo({Key key, this.titulo, this.conteudo, this.onTap})
-      : super(key: key);
+  const CardInfo(
+      {super.key,
+      required this.titulo,
+      required this.conteudo,
+      required this.onTap});
 
   @override
   State<CardInfo> createState() => _CardInfoState();
@@ -210,7 +222,7 @@ class _CardInfoState extends State<CardInfo> {
 }
 
 class EmptyStateUi extends StatelessWidget {
-  const EmptyStateUi({Key key}) : super(key: key);
+  const EmptyStateUi({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +247,7 @@ class EmptyStateUi extends StatelessWidget {
                 .doc(authService.userId())
                 .get();
 
-            var userInfo = Users.fromJson(userRef.data());
+            var userInfo = Users.fromJson(userRef.data()!);
 
             // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/formDemanda',
@@ -253,17 +265,16 @@ class EmptyStateUi extends StatelessWidget {
 
 class VerifyEmailContent extends StatefulWidget {
   final String userEmail;
-  final Function onPressed;
-  final Function onPressedCancel;
+  final Function()? onPressed;
+  final Function() onPressedCancel;
   final int start;
 
   const VerifyEmailContent(
-      {Key key,
-      this.userEmail,
-      this.onPressed,
-      this.onPressedCancel,
-      this.start})
-      : super(key: key);
+      {super.key,
+      required this.userEmail,
+      required this.onPressed,
+      required this.onPressedCancel,
+      required this.start});
 
   @override
   State<VerifyEmailContent> createState() => _VerifyEmailContentState();
@@ -291,8 +302,8 @@ class _VerifyEmailContentState extends State<VerifyEmailContent> {
                 'lib/assets/img/verifyEmail.png',
                 width: 300,
                 alignment: Alignment.center,
-                errorBuilder: (BuildContext context, Object exception,
-                    StackTrace stackTrace) {
+                errorBuilder: (BuildContext? context, Object? exception,
+                    StackTrace? stackTrace) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

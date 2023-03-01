@@ -69,6 +69,23 @@ class Demandas {
 }
 
 class DemandaArguments {
+  final String? titulo;
+  final String? tempo;
+  final String? resumo;
+  final String? objetivo;
+  final String? contrapartida;
+  final String? resultadosEsperados;
+  final String? areaTematica;
+  final String? vinculo;
+  final String? propostaConjunto;
+  final String? dadosProponente;
+  final String? empresaEnvolvida;
+  final String? equipeColaboradores;
+
+  final String? docId;
+  final bool editarDemanda;
+  final Users usuario;
+
   DemandaArguments(
       {this.titulo,
       this.tempo,
@@ -82,44 +99,34 @@ class DemandaArguments {
       this.dadosProponente,
       this.empresaEnvolvida,
       this.equipeColaboradores,
-      this.localidade,
       this.docId,
-      this.editarDemanda,
-      this.usuario});
-
-  final String titulo;
-  final String tempo;
-  final String resumo;
-  final String objetivo;
-  final String contrapartida;
-  final String resultadosEsperados;
-  final String areaTematica;
-  final String vinculo;
-  final String propostaConjunto;
-  final String dadosProponente;
-  final String empresaEnvolvida;
-  final String equipeColaboradores;
-  final String localidade;
-  final String docId;
-  final bool editarDemanda;
-  final Users usuario;
+      required this.editarDemanda,
+      required this.usuario});
 }
 
 class Users {
-  Users(this.userId, this.email, this.tipo, this.userName, this.userPhone,
-      this.userPhoto, this.userState, this.userCity, this.nomeArquivoFoto);
+  Users(
+      {required this.userId,
+      required this.email,
+      required this.tipo,
+      required this.userName,
+      required this.userPhone,
+      required this.userPhoto,
+      required this.userState,
+      required this.userCity,
+      required this.nomeArquivoFoto});
 
-  Users.fromJson(Map<String, Object> json)
+  Users.fromJson(Map<String, Object?> json)
       : this(
-            json['id'] as String,
-            json['email'] as String,
-            json['tipo'] as String,
-            json['name'] as String,
-            json['telefone'] as String,
-            json['url_photo'] as String,
-            json['estado'] as String,
-            json['cidade'] as String,
-            json['nome_arquivo_foto'] as String);
+            userId: json['id']! as String,
+            email: json['email']! as String,
+            tipo: json['tipo']! as String,
+            userName: json['name']! as String,
+            userPhone: json['telefone']! as String,
+            userPhoto: json['url_photo']! as String,
+            userState: json['estado']! as String,
+            userCity: json['cidade']! as String,
+            nomeArquivoFoto: json['nome_arquivo_foto']! as String);
 
   final String userId;
   final String email;

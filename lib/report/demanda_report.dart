@@ -10,7 +10,8 @@ class DemandaReport extends StatefulWidget {
   final DocumentSnapshot docid;
   final List vetDadoSubcolecao;
 
-  const DemandaReport({Key key, this.docid, this.vetDadoSubcolecao})
+  const DemandaReport(
+      {Key? key, required this.docid, required this.vetDadoSubcolecao})
       : super(key: key);
 
   @override
@@ -19,19 +20,19 @@ class DemandaReport extends StatefulWidget {
 
 class _DemandaReportState extends State<DemandaReport> {
   // final pdf = pw.Document();
-  String titulo;
-  String resumo;
-  String status;
-  String tempo;
-  String equipeColaboradores;
-  String dadosProponente;
-  String empresaEnvolvida;
-  String vinculo;
-  String areaTematica;
-  String propostaConjunto;
-  String objetivo;
-  String contrapartida;
-  List vetAnexos;
+  late String titulo;
+  late String resumo;
+  late String status;
+  late String tempo;
+  late String equipeColaboradores;
+  late String dadosProponente;
+  late String empresaEnvolvida;
+  late String vinculo;
+  late String areaTematica;
+  late String propostaConjunto;
+  late String objetivo;
+  late String contrapartida;
+  late List vetAnexos;
 
   @override
   void initState() {

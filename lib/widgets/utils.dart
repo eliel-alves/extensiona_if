@@ -4,12 +4,12 @@ class Utils {
   static final messengerKey = GlobalKey<ScaffoldMessengerState>();
 
   static schowSnackBar(String text) {
-    if (text == null) return;
+    if (text == '') return;
 
     final snackBar = SnackBar(content: Text(text));
 
     messengerKey.currentState
-      ..removeCurrentSnackBar()
+      ?..removeCurrentSnackBar()
       ..showSnackBar(snackBar);
   }
 

@@ -6,14 +6,13 @@ import 'package:extensiona_if/theme/app_theme.dart';
 import 'package:extensiona_if/widgets/admin_drawer_navigation.dart';
 import 'package:extensiona_if/widgets/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AdminScreen extends StatefulWidget {
   final String tipoUsuario;
 
-  const AdminScreen({Key key, this.tipoUsuario}) : super(key: key);
+  const AdminScreen({Key? key, required this.tipoUsuario}) : super(key: key);
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();
@@ -125,7 +124,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
                   } else {
-                    final items = snapshot.data.docs
+                    final items = snapshot.data!.docs
                         .map((DocumentSnapshot document) =>
                             MultiSelectItem<String>(
                                 document['nome'], document['nome']))
@@ -153,9 +152,9 @@ class _AdminScreenState extends State<AdminScreen> {
                       buttonText:
                           Text("Áreas Temáticas", style: AppTheme.typo.button),
                       onConfirm: (results) {
-                        if (_formKeyArea.currentState.validate()) {
+                        if (_formKeyArea.currentState!.validate()) {
                           setState(() {
-                            _areaFiltered = results;
+                            _areaFiltered = results as List<String>;
                           });
                           debugPrint(_areaFiltered.toString());
                         } else {
@@ -187,7 +186,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         },
                       ),
                       validator: (list) {
-                        if (list.length > 10) {
+                        if (list!.length > 10) {
                           return 'O número máximo de opções selecionáveis é 10';
                         }
 
@@ -206,7 +205,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
                   } else {
-                    for (var itens in snapshot.data.docs) {
+                    for (var itens in snapshot.data!.docs) {
                       _uniqueLocalidadeList.add(itens.get('localidade'));
                     }
 
@@ -244,9 +243,9 @@ class _AdminScreenState extends State<AdminScreen> {
                         buttonText:
                             Text("Localidade", style: AppTheme.typo.button),
                         onConfirm: (results) {
-                          if (_formKeyLocalidade.currentState.validate()) {
+                          if (_formKeyLocalidade.currentState!.validate()) {
                             setState(() {
-                              _locationFiltered = results;
+                              _locationFiltered = results as List<String>;
                             });
                             debugPrint(_locationFiltered.toString());
                           }
@@ -278,7 +277,7 @@ class _AdminScreenState extends State<AdminScreen> {
                           },
                         ),
                         validator: (list) {
-                          if (list.length > 10) {
+                          if (list!.length > 10) {
                             return 'O número máximo de opções selecionáveis é 10';
                           }
 
@@ -298,7 +297,8 @@ class _AdminScreenState extends State<AdminScreen> {
 class StreamBuilderDemandas extends StatelessWidget {
   final Stream<QuerySnapshot> stream;
 
-  const StreamBuilderDemandas({Key key, this.stream}) : super(key: key);
+  const StreamBuilderDemandas({Key? key, required this.stream})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -364,17 +364,16 @@ class EstilizacaoLista extends StatefulWidget {
   final DocumentSnapshot docRef;
 
   const EstilizacaoLista(
-      {Key key,
-      this.infoTitulo,
-      this.infoTempo,
-      this.infoResumo,
-      this.infoStatus,
-      this.infoObjetivo,
-      this.infoContrapartida,
-      this.infoVinculo,
-      this.infoResultadosEsperados,
-      this.docRef})
-      : super(key: key);
+      {super.key,
+      required this.infoTitulo,
+      required this.infoTempo,
+      required this.infoResumo,
+      required this.infoStatus,
+      required this.infoObjetivo,
+      required this.infoContrapartida,
+      required this.infoVinculo,
+      required this.infoResultadosEsperados,
+      required this.docRef});
 
   @override
   State<EstilizacaoLista> createState() => _EstilizacaoListaState();
@@ -402,7 +401,7 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: const [
-              Icon(FontAwesome.file),
+              Icon(Icons.folder_rounded),
             ]),
         title: Text(widget.infoTitulo),
         subtitle: Padding(
@@ -458,7 +457,7 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
                       ),
                     );
                   },
-                  icon: Icon(FontAwesome.print,
+                  icon: Icon(Icons.print_rounded,
                       size: 20, color: Colors.grey.shade800),
                 ),
                 const SizedBox(
@@ -486,7 +485,7 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
                       debugPrint('A proposta foi alterada');
                     });
                   },
-                  icon: Icon(FontAwesome.pencil,
+                  icon: Icon(Icons.edit_rounded,
                       size: 20, color: Colors.grey.shade800),
                 ),
                 const SizedBox(
@@ -536,7 +535,7 @@ class _EstilizacaoListaState extends State<EstilizacaoLista> {
                         });
                   },
                   tooltip: 'Remover Proposta',
-                  icon: Icon(FontAwesome.trash,
+                  icon: Icon(Icons.delete_rounded,
                       size: 20, color: Colors.grey.shade800),
                 )
               ],

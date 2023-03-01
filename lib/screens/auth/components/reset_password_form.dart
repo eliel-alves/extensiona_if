@@ -11,8 +11,11 @@ class ResetPasswordForm extends StatefulWidget {
   final TextEditingController controller;
 
   const ResetPasswordForm(
-      {Key key, this.sendLink, this.goBack, this.formKey, this.controller})
-      : super(key: key);
+      {super.key,
+      required this.sendLink,
+      required this.goBack,
+      required this.formKey,
+      required this.controller});
 
   @override
   State<ResetPasswordForm> createState() => _ResetPasswordFormState();

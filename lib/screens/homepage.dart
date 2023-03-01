@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AllUsersHomePage extends StatefulWidget {
-  const AllUsersHomePage({Key key}) : super(key: key);
+  const AllUsersHomePage({Key? key}) : super(key: key);
 
   @override
   State<AllUsersHomePage> createState() => _AllUsersHomePageState();
@@ -51,7 +51,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
                       .doc(authService.userId())
                       .get();
 
-                  var userInfo = Users.fromJson(userRef.data());
+                  var userInfo = Users.fromJson(userRef.data()!);
 
                   // ignore: use_build_context_synchronously
                   Navigator.pushNamed(context, '/formDemanda',
@@ -73,7 +73,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
                       .doc(authService.userId())
                       .get();
 
-                  var userInfo = Users.fromJson(userRef.data());
+                  var userInfo = Users.fromJson(userRef.data()!);
 
                   // ignore: use_build_context_synchronously
                   Navigator.pushNamed(context, '/profile',
@@ -92,7 +92,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
   }
 
   Widget _buildCard(
-      String titulo, String descricao, String icone, Function pagina) {
+      String titulo, String descricao, String icone, Function() pagina) {
     final TextStyle title = TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20,

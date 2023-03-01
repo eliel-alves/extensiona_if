@@ -4,17 +4,13 @@ import 'package:extensiona_if/widgets/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
 class UserDAO extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
-  User usuario;
-  bool isLoading = true;
+  User? usuario;
+  bool? isLoading = true;
+  UserCredential? user;
 
-  UserCredential user;
-
-  String userType;
+  late String userType;
 
   // Verifica se o usuário está logado
   bool isLoggedIn() {
@@ -22,12 +18,12 @@ class UserDAO extends ChangeNotifier {
   }
 
   // Pega o ID do usuário
-  String userId() {
+  userId() {
     return auth.currentUser?.uid;
   }
 
-  // Pega o email do Usuario
-  String userEmail() {
+  // Pega o email do usuário
+  userEmail() {
     return auth.currentUser?.email;
   }
 
@@ -42,7 +38,7 @@ class UserDAO extends ChangeNotifier {
         .doc(userId())
         .get();
 
-    var userInfo = Users.fromJson(userRef.data());
+    var userInfo = Users.fromJson(userRef.data()!);
 
     return userInfo.userCity;
   }
@@ -51,7 +47,7 @@ class UserDAO extends ChangeNotifier {
     _authCheck();
   }
 
-  // Pegar usuário atual logado
+  // Pegar o atual usuário logado
   _getUser() {
     usuario = auth.currentUser;
     notifyListeners();
@@ -59,19 +55,17 @@ class UserDAO extends ChangeNotifier {
 
   // Observador do status de autenticação do usuário
   _authCheck() {
-    auth.authStateChanges().listen((User user) {
+    auth.authStateChanges().listen((User? user) {
       usuario = (user == null) ? null : user;
       isLoading = false;
       notifyListeners();
     });
   }
 
-  Stream<User> get authState => auth.authStateChanges();
-
   //Faz referência a coleção de usuário no Firebase
   final usersRef =
       FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
-            fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+            fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()!),
             toFirestore: (user, _) => user.toJson(),
           );
 
@@ -90,7 +84,7 @@ class UserDAO extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       handleAuthError(e);
     } catch (e) {
-      debugPrint(e);
+      debugPrint('$e');
     }
   }
 
@@ -106,119 +100,25 @@ class UserDAO extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       handleAuthError(e);
     } catch (e) {
-      debugPrint(e);
+      debugPrint('$e');
     }
-  }
-
-  Future<void> deleteUser(
-      String email, String password, BuildContext context) async {
-    try {
-      final user = auth.currentUser;
-      AuthCredential credential =
-          EmailAuthProvider.credential(email: user.email, password: password);
-
-      final result = await user
-          .reauthenticateWithCredential(credential)
-          .catchError((error) {
-        Navigator.of(context).pop(true);
-
-        Utils.schowSnackBar(
-            'Credenciais incorretas. Por favor, verifique-as e tente novamente.');
-      });
-
-      if (kDebugMode) {
-        print(user);
-      }
-      // ignore: use_build_context_synchronously
-      await deleteUserData(result.user.uid, context);
-      await result.user.delete();
-    } catch (error) {
-      debugPrint(error);
-      debugPrint('Erro na deleção da conta do usuário !!!');
-    }
-  }
-
-  Future<void> deleteUserData(String uid, BuildContext context) async {
-    final userCollection =
-        await FirebaseFirestore.instance.collection('USUARIOS').doc(uid).get();
-
-    final userDemandas = await FirebaseFirestore.instance
-        .collection('DEMANDAS')
-        .where('usuario', isEqualTo: uid)
-        .get();
-
-    //Acessa as informações das demandas do usuário
-    for (var uDemanda in userDemandas.docs) {
-      //Referência a subcoleção dos documentos deste usuário
-      var subcollectionRef = await FirebaseFirestore.instance
-          .collection('DEMANDAS')
-          .doc(uDemanda.id)
-          .collection('arquivos')
-          .get();
-
-      //Acessa as informações das subcoleções das demandas do usuário
-      for (var subCollection in subcollectionRef.docs) {
-        // Referência do arquivo a ser deletado no firebase_storage
-        final storageFilesRef = firebase_storage.FirebaseStorage.instance
-            .ref()
-            .child("arquivos/${subCollection.get('file_name_storage')}");
-
-        final storagePhotoRef = firebase_storage.FirebaseStorage.instance
-            .ref()
-            .child("foto_perfil/${userCollection.get('nome_arquivo_foto')}");
-
-        // Deleta o arquivo
-        await storageFilesRef.delete();
-
-        await storagePhotoRef.delete();
-
-        //Deleta a subcoleção
-        subCollection.reference
-            .delete()
-            .then((value) => debugPrint('Subcoleção deletada !!!'))
-            .catchError((error) {
-          // ignore: prefer_interpolation_to_compose_strings
-          debugPrint('Erro ao deletar a subcoleção: ' + error);
-        });
-      }
-
-      //Deleta as demandas do usuário
-      uDemanda.reference
-          .delete()
-          .then((value) => debugPrint("Demanda deletada !!!"))
-          .catchError((error) =>
-              // ignore: prefer_interpolation_to_compose_strings
-              debugPrint("Erro ao deletar a demanda do usuário: " + error));
-    }
-
-    //Deleta a coleção referente ao usuário
-    userCollection.reference
-        .delete()
-        .then((value) => debugPrint('Coleção do usuário deletada !!!'))
-        .catchError((error) {
-      // ignore: prefer_interpolation_to_compose_strings
-      debugPrint('Erro ao deletar a coleção do usuário: ' + error);
-    });
-
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop(true);
-
-    // ignore: use_build_context_synchronously
-    Navigator.pushNamed(context, '/');
   }
 
   // Método responsável por adicionar um novo usuário na coleção USUARIOS
-  void addUser(
-      [String email,
-      String password,
-      String userName,
-      String userPhone,
-      String state,
-      String city]) async {
+  void addUser(String email, String password, String userName, String userPhone,
+      String state, String city) async {
     //Adicionando um novo usuario a nossa coleção -> Usuários
     await usersRef.doc(userId()).set(
-          Users(userId(), userEmail(), 'user', userName, userPhone, '', state,
-              city, ''),
+          Users(
+              userId: userId(),
+              email: userEmail()!,
+              tipo: 'user',
+              userName: userName,
+              userPhone: userPhone,
+              userPhoto: '',
+              userState: state,
+              userCity: city,
+              nomeArquivoFoto: ''),
         );
   }
 
@@ -232,9 +132,9 @@ class UserDAO extends ChangeNotifier {
   Future<void> reauthenticateUser(
       String password, BuildContext context, Function action) async {
     try {
-      final user = auth.currentUser;
+      final user = auth.currentUser!;
       AuthCredential credential =
-          EmailAuthProvider.credential(email: userEmail(), password: password);
+          EmailAuthProvider.credential(email: userEmail()!, password: password);
 
       await user.reauthenticateWithCredential(credential);
 

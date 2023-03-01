@@ -38,7 +38,7 @@ Widget adminDrawerNavigation(context) {
                   .doc(authService.userId())
                   .get();
 
-              var userInfo = Users.fromJson(userRef.data());
+              var userInfo = Users.fromJson(userRef.data()!);
               Navigator.pushNamed(context, '/adminListaDemanda',
                   arguments: userInfo.tipo);
             }),

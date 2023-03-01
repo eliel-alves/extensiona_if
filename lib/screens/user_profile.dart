@@ -20,7 +20,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 class MyProfile extends StatefulWidget {
   final String userId;
 
-  const MyProfile({Key key, this.userId}) : super(key: key);
+  const MyProfile({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<MyProfile> createState() => _MyProfileState();
@@ -37,37 +37,33 @@ class _MyProfileState extends State<MyProfile> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          StreamBuilder(
+          StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('USUARIOS')
                 .doc(widget.userId)
                 .snapshots(),
             builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                  return const Center(child: CircularProgressIndicator());
-                case ConnectionState.active:
-                case ConnectionState.done:
-                  if (snapshot.hasData) {
-                    final userInfo = snapshot.data;
-
-                    return BuildUserPage(
-                        nome: userInfo['name'],
-                        email: userInfo['email'],
-                        foto: userInfo['url_photo'],
-                        telefone: userInfo['telefone'],
-                        id: userInfo['id'],
-                        cidade: userInfo['cidade'],
-                        estado: userInfo['estado'],
-                        nomeArquivoFoto: userInfo['nome_arquivo_foto']);
-                  } else if (snapshot.hasError) {
-                    return const Text(
-                        'Ocorreu algum erro ao tentar recuperar informações do usuário');
-                  }
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
               }
 
-              return null;
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              final userInfo = snapshot.data!;
+
+              return BuildUserPage(
+                  nome: userInfo['name'],
+                  email: userInfo['email'],
+                  foto: userInfo['url_photo'],
+                  telefone: userInfo['telefone'],
+                  id: userInfo['id'],
+                  cidade: userInfo['cidade'],
+                  estado: userInfo['estado'],
+                  nomeArquivoFoto: userInfo['nome_arquivo_foto']);
             },
           )
         ]),
@@ -87,16 +83,15 @@ class BuildUserPage extends StatefulWidget {
   final String nomeArquivoFoto;
 
   const BuildUserPage(
-      {Key key,
-      this.nome,
-      this.email,
-      this.foto,
-      this.telefone,
-      this.id,
-      this.cidade,
-      this.estado,
-      this.nomeArquivoFoto})
-      : super(key: key);
+      {super.key,
+      required this.nome,
+      required this.email,
+      required this.foto,
+      required this.telefone,
+      required this.id,
+      required this.cidade,
+      required this.estado,
+      required this.nomeArquivoFoto});
 
   @override
   State<BuildUserPage> createState() => _BuildUserPageState();
@@ -124,59 +119,68 @@ class _BuildUserPageState extends State<BuildUserPage> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: widget.foto == ''
+              backgroundImage: widget.foto.isEmpty
                   ? const AssetImage('lib/assets/img/user-default.jpg')
-                  : NetworkImage(widget.foto),
+                  : NetworkImage(widget.foto) as ImageProvider,
             ),
           ],
         ),
         Utils.addVerticalSpace(30),
         Text('Informações Básicas', style: AppTheme.typo.title),
         Utils.addVerticalSpace(10),
-        Options(widget.nome, false, () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EditarInfoUsuario(
-                    titulo: 'Nome',
-                    conteudo: widget.nome,
-                    rotulo: 'Nome',
-                    dica: 'Informe o seu nome',
-                    errorText: 'Informe um nome',
-                    icon: const Icon(Icons.person_outline),
-                    qtdCaracteres: 20,
-                    maskField: false,
-                    validator: true,
-                    docId: widget.id,
-                    dbName: 'name')),
-          );
-        }, false, title: 'Nome:'),
-        Options('${widget.cidade}/${widget.estado}', false, () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChangeStateCity(
-                      selectedCity: widget.cidade,
-                      selectedState: widget.estado,
-                      docId: widget.id)));
-        }, false, title: 'Localidade:'),
-        Options('Selecionar uma foto', true, () {
-          selecionarFoto(widget.id, widget.nomeArquivoFoto);
-        }, false, title: 'Foto:'),
+        Options(
+            subtitle: widget.nome,
+            editImage: false,
+            onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditarInfoUsuario(
+                          titulo: 'Nome',
+                          conteudo: widget.nome,
+                          rotulo: 'Nome',
+                          dica: 'Informe o seu nome',
+                          errorText: 'Informe um nome',
+                          icon: const Icon(Icons.person_outline),
+                          qtdCaracteres: 20,
+                          maskField: false,
+                          validator: true,
+                          docId: widget.id,
+                          dbName: 'name')),
+                ),
+            isDeleteAccountOption: false,
+            title: 'Nome:'),
+        Options(
+            subtitle: '${widget.cidade}/${widget.estado}',
+            editImage: false,
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChangeStateCity(
+                        selectedCity: widget.cidade,
+                        selectedState: widget.estado,
+                        docId: widget.id))),
+            isDeleteAccountOption: false,
+            title: 'Localidade:'),
+        Options(
+            subtitle: 'Selecionar uma foto',
+            editImage: true,
+            onTap: () => selecionarFoto(widget.id, widget.nomeArquivoFoto),
+            isDeleteAccountOption: false,
+            title: 'Foto:'),
         Utils.addVerticalSpace(30),
         Text('Informações de Contato', style: AppTheme.typo.title),
         Utils.addVerticalSpace(10),
         Options(
-            widget.email,
-            false,
-            () => reauthenticateBox(
+            subtitle: widget.email,
+            editImage: false,
+            onTap: () => reauthenticateBox(
                 context: context,
                 controller: _userProvidedPassword,
                 title: 'Atualizar E-mail',
                 label: widget.email,
                 formKey: _formKey,
                 action: () {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     authService.reauthenticateUser(
                         _userProvidedPassword.text,
                         context,
@@ -199,50 +203,53 @@ class _BuildUserPageState extends State<BuildUserPage> {
                     _userProvidedPassword.clear();
                   }
                 }),
-            false,
+            isDeleteAccountOption: false,
             title: 'E-mail:'),
-        Options(widget.telefone, false, () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EditarInfoUsuario(
-                    titulo: 'Telefone',
-                    conteudo: widget.telefone,
-                    rotulo: 'Telefone',
-                    dica: 'Informe o seu telefone',
-                    errorText: 'Informe um telefone',
-                    icon: const Icon(Icons.phone_outlined),
-                    qtdCaracteres: 20,
-                    maskField: true,
-                    validator: true,
-                    docId: widget.id,
-                    dbName: 'telefone')),
-          );
-        }, false, title: 'Telefone:'),
+        Options(
+            subtitle: widget.telefone,
+            editImage: false,
+            onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditarInfoUsuario(
+                          titulo: 'Telefone',
+                          conteudo: widget.telefone,
+                          rotulo: 'Telefone',
+                          dica: 'Informe o seu telefone',
+                          errorText: 'Informe um telefone',
+                          icon: const Icon(Icons.phone_outlined),
+                          qtdCaracteres: 20,
+                          maskField: true,
+                          validator: true,
+                          docId: widget.id,
+                          dbName: 'telefone')),
+                ),
+            isDeleteAccountOption: false,
+            title: 'Telefone:'),
         Utils.addVerticalSpace(30),
         Text('Mais opções', style: AppTheme.typo.title),
         Utils.addVerticalSpace(10),
         Options(
-            'Excluir sua conta',
-            false,
-            () => reauthenticateBox(
+            subtitle: 'Excluir sua conta',
+            editImage: false,
+            onTap: () => reauthenticateBox(
                 context: context,
                 controller: _userProvidedPassword,
                 title: 'Deletar conta',
                 label: widget.email,
                 formKey: _formKey,
                 action: () {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     authService.reauthenticateUser(
                         _userProvidedPassword.text,
                         context,
                         () => confirmBox(context, authService.userId(),
-                            authService.usuario));
+                            authService.usuario!));
 
                     _userProvidedPassword.clear();
                   }
                 }),
-            true)
+            isDeleteAccountOption: true)
       ],
     );
   }
@@ -327,7 +334,7 @@ class _BuildUserPageState extends State<BuildUserPage> {
   }
 
   void selecionarFoto(String docId, String nomeArquivo) async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['png', 'jpeg', 'jpg'],
         allowMultiple: false);
@@ -339,11 +346,11 @@ class _BuildUserPageState extends State<BuildUserPage> {
 
     if (kIsWeb) {
       final fileBytes = result.files.first.bytes;
-      uploadImageFile(fileBytes, nomeFoto, nomeArquivo, docId);
+      uploadImageFile(fileBytes!, nomeFoto, nomeArquivo, docId);
     } else {
       final filePath = result.files.first.path;
       uploadImageFile(
-          await File(filePath).readAsBytes(), nomeFoto, nomeArquivo, docId);
+          await File(filePath!).readAsBytes(), nomeFoto, nomeArquivo, docId);
     }
   }
 

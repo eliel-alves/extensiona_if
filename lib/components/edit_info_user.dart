@@ -21,19 +21,18 @@ class EditarInfoUsuario extends StatefulWidget {
   final String dbName;
 
   const EditarInfoUsuario(
-      {Key key,
-      this.titulo,
-      this.conteudo,
-      this.rotulo,
-      this.dica,
-      this.errorText,
-      this.icon,
-      this.qtdCaracteres,
-      this.maskField,
-      this.validator,
-      this.docId,
-      this.dbName})
-      : super(key: key);
+      {super.key,
+      required this.titulo,
+      required this.conteudo,
+      required this.rotulo,
+      required this.dica,
+      required this.errorText,
+      required this.icon,
+      required this.qtdCaracteres,
+      required this.maskField,
+      required this.validator,
+      required this.docId,
+      required this.dbName});
 
   @override
   State<EditarInfoUsuario> createState() => _EditarInfoUsuarioState();
@@ -102,7 +101,7 @@ class _EditarInfoUsuarioState extends State<EditarInfoUsuario> {
                             const SizedBox(width: 10),
                             ElevatedButton(
                                 onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
+                                  if (_formKey.currentState!.validate()) {
                                     if (_controlador.text.isNotEmpty) {
                                       debugPrint('editou a informação');
                                     }
@@ -116,7 +115,7 @@ class _EditarInfoUsuarioState extends State<EditarInfoUsuario> {
                                         {widget.dbName: _controlador.text});
 
                                     if (widget.dbName == 'email') {
-                                      auth.usuario
+                                      auth.usuario!
                                           .updateEmail(_controlador.text);
                                     }
 

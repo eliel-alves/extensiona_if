@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extensiona_if/data/user_dao.dart';
 import 'package:extensiona_if/models/demanda.dart';
 import 'package:extensiona_if/theme/app_theme.dart';
-import 'package:extensiona_if/widgets/auth_check.dart';
 import 'package:extensiona_if/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,7 +38,7 @@ Widget drawerNavigation(context) {
                   .doc(authService.userId())
                   .get();
 
-              var userInfo = Users.fromJson(userRef.data());
+              var userInfo = Users.fromJson(userRef.data()!);
 
               Navigator.pushNamed(context, '/formDemanda',
                   arguments: DemandaArguments(
@@ -60,7 +59,7 @@ Widget drawerNavigation(context) {
                   .doc(authService.userId())
                   .get();
 
-              var userInfo = Users.fromJson(userRef.data());
+              var userInfo = Users.fromJson(userRef.data()!);
 
               Navigator.pushNamed(context, '/profile',
                   arguments: userInfo.userId);
@@ -91,12 +90,9 @@ Widget drawerNavigation(context) {
                         TextButton(
                           onPressed: () {
                             debugPrint('O usuário saiu do app');
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ManageAuthState()));
+
                             authService.logout();
+                            Navigator.pushNamed(context, '/');
                           },
                           child: const Text('SIM'),
                         ),

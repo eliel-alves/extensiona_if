@@ -4,7 +4,7 @@ import 'package:extensiona_if/widgets/admin_drawer_navigation.dart';
 import 'package:flutter/material.dart';
 
 class SuperAdminScreen extends StatefulWidget {
-  const SuperAdminScreen({Key key}) : super(key: key);
+  const SuperAdminScreen({Key? key}) : super(key: key);
 
   @override
   State<SuperAdminScreen> createState() => _SuperAdminScreenState();
@@ -38,11 +38,11 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
                       if (!snapshot.hasData) {
                         return const CircularProgressIndicator();
                       } else {
-                        final data = snapshot.data.docs;
+                        final data = snapshot.data!.docs;
 
                         return ListView.builder(
                           shrinkWrap: true,
-                          itemCount: snapshot.data.size,
+                          itemCount: snapshot.data!.size,
                           itemBuilder: (context, index) {
                             final userPhoto = data[index]['url_photo'];
                             final userName = data[index]['name'];
@@ -64,7 +64,7 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
                                 backgroundImage: userPhoto == ''
                                     ? const AssetImage(
                                         'lib/assets/img/user-default.jpg')
-                                    : NetworkImage(userPhoto),
+                                    : NetworkImage(userPhoto) as ImageProvider,
                               ),
                               value: isAdmin,
                               onChanged: (bool value) {

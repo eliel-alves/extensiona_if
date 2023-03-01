@@ -14,42 +14,39 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 class FormDemanda extends StatefulWidget {
-  final String titulo;
-  final String tempo;
-  final String resumo;
-  final String objetivo;
-  final String contrapartida;
-  final String vinculo;
-  final String resultadosEsperados;
-  final String propostaConjunto;
-  final String dadosProponente;
-  final String empresaEnvolvida;
-  final String equipeColaboradores;
-  final String areaTematica;
-  final String localidade;
-  final String docId;
+  final String? titulo;
+  final String? tempo;
+  final String? resumo;
+  final String? objetivo;
+  final String? contrapartida;
+  final String? resultadosEsperados;
+  final String? areaTematica;
+  final String? vinculo;
+  final String? propostaConjunto;
+  final String? dadosProponente;
+  final String? empresaEnvolvida;
+  final String? equipeColaboradores;
+  final String? docId;
   final bool editarDemanda;
   final Users usuario;
 
   const FormDemanda(
-      {Key key,
+      {super.key,
       this.titulo,
       this.tempo,
       this.resumo,
       this.objetivo,
       this.contrapartida,
-      this.vinculo,
       this.resultadosEsperados,
+      this.areaTematica,
+      this.vinculo,
       this.propostaConjunto,
       this.dadosProponente,
       this.empresaEnvolvida,
       this.equipeColaboradores,
-      this.areaTematica,
-      this.localidade,
       this.docId,
-      this.editarDemanda,
-      this.usuario})
-      : super(key: key);
+      required this.editarDemanda,
+      required this.usuario});
 
   @override
   State<FormDemanda> createState() => _FormDemandaState();
@@ -77,43 +74,61 @@ class _FormDemandaState extends State<FormDemanda> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String documentID;
+  String documentID = '';
+  Stream<QuerySnapshot>? subcollectionRef;
 
-  String fileName;
-  List<PlatformFile> _caminhoDoArquivo;
+  String fileName = '';
+  List<PlatformFile> _caminhoDoArquivo = [];
   final FileType _tipoArquivo = FileType.custom;
 
-  String areaTematicaSelecionada;
+  String? areaTematicaSelecionada;
 
   String hintText = 'Área temática';
 
   @override
   void initState() {
-    // Retornando os valores para os campos de texto
-    _controladorTitulo.text = widget.titulo;
-    _controladorTempoNecessario.text = widget.tempo;
-    _controladorResumo.text = widget.resumo;
-    _controladorObjetivo.text = widget.objetivo;
-    _controladorContrapartida.text = widget.contrapartida;
-    _controladorVinculo.text = widget.vinculo;
-    _controladorResultadosEsperados.text = widget.resultadosEsperados;
-    _controladorPropostaConjunto.text = widget.propostaConjunto;
-    _controladorDadosProponete.text = widget.dadosProponente;
-    _controladorEmpresaEnvolvida.text = widget.empresaEnvolvida;
-    _controladorEquipeColaboradores.text = widget.equipeColaboradores;
-    areaTematicaSelecionada = widget.areaTematica;
-    documentID = widget.docId;
+    //Retornando os valores para os campos de texto
+    widget.titulo != null ? _controladorTitulo.text = widget.titulo! : '';
+    widget.tempo != null
+        ? _controladorTempoNecessario.text = widget.tempo!
+        : '';
+    widget.resumo != null ? _controladorResumo.text = widget.resumo! : '';
+    widget.objetivo != null ? _controladorObjetivo.text = widget.objetivo! : '';
+    widget.contrapartida != null
+        ? _controladorContrapartida.text = widget.contrapartida!
+        : '';
+    widget.vinculo != null ? _controladorVinculo.text = widget.vinculo! : '';
+    widget.resultadosEsperados != null
+        ? _controladorResultadosEsperados.text = widget.resultadosEsperados!
+        : '';
+    widget.propostaConjunto != null
+        ? _controladorPropostaConjunto.text = widget.propostaConjunto!
+        : '';
+    widget.dadosProponente != null
+        ? _controladorDadosProponete.text = widget.dadosProponente!
+        : '';
+    widget.empresaEnvolvida != null
+        ? _controladorEmpresaEnvolvida.text = widget.empresaEnvolvida!
+        : '';
+    widget.equipeColaboradores != null
+        ? _controladorEquipeColaboradores.text = widget.equipeColaboradores!
+        : '';
+    widget.areaTematica != null
+        ? areaTematicaSelecionada = widget.areaTematica!
+        : '';
+    widget.docId != null ? documentID = widget.docId! : '';
+    widget.editarDemanda
+        ? subcollectionRef = FirebaseFirestore.instance
+            .collection('DEMANDAS')
+            .doc(documentID)
+            .collection('arquivos')
+            .snapshots()
+        : null;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var subcollectionRef = FirebaseFirestore.instance
-        .collection('DEMANDAS')
-        .doc(documentID)
-        .collection('arquivos')
-        .snapshots();
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Formulário de Cadastro", style: AppTheme.typo.title),
@@ -139,7 +154,7 @@ class _FormDemandaState extends State<FormDemanda> {
                         return const Text('Carregando ...');
                       } else {
                         return Expanded(
-                          child: DropdownButtonFormField(
+                          child: DropdownButtonFormField<String>(
                             isExpanded: true,
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
@@ -147,18 +162,19 @@ class _FormDemandaState extends State<FormDemanda> {
                                   'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
                               hintText: hintText,
                             ),
-                            items: snapshot.data.docs
+                            items: snapshot.data!.docs
                                 .map((DocumentSnapshot document) {
                               return DropdownMenuItem<String>(
-                                value: document['nome'],
+                                value: document['nome'].toString(),
                                 child: Text(document['nome']),
                               );
                             }).toList(),
                             onChanged: (currencyValue) {
                               setState(() {
-                                areaTematicaSelecionada = currencyValue;
+                                areaTematicaSelecionada =
+                                    currencyValue as String;
                               });
-                              debugPrint(currencyValue);
+                              debugPrint('$currencyValue');
                             },
                             value: areaTematicaSelecionada,
                           ),
@@ -267,7 +283,7 @@ class _FormDemandaState extends State<FormDemanda> {
 
                         final data = snapshot.requireData;
 
-                        if (snapshot.data.docs.isNotEmpty) {
+                        if (snapshot.data!.docs.isNotEmpty) {
                           return Column(
                             children: [
                               Wrap(
@@ -281,7 +297,7 @@ class _FormDemandaState extends State<FormDemanda> {
                                   });
                                 }).toList(),
                               ),
-                              if (_caminhoDoArquivo != null) ...[
+                              if (_caminhoDoArquivo != []) ...[
                                 Wrap(
                                   children: List.generate(
                                       _caminhoDoArquivo.length, (int index) {
@@ -292,7 +308,7 @@ class _FormDemandaState extends State<FormDemanda> {
                                         _caminhoDoArquivo.removeAt(index);
 
                                         if (_caminhoDoArquivo.isEmpty) {
-                                          _caminhoDoArquivo = null;
+                                          _caminhoDoArquivo = [];
                                         }
                                       });
                                     });
@@ -302,7 +318,7 @@ class _FormDemandaState extends State<FormDemanda> {
                             ],
                           );
                         } else {
-                          return _caminhoDoArquivo != null
+                          return _caminhoDoArquivo != []
                               ? Wrap(
                                   children: List.generate(
                                       _caminhoDoArquivo.length, (int index) {
@@ -313,7 +329,7 @@ class _FormDemandaState extends State<FormDemanda> {
                                         _caminhoDoArquivo.removeAt(index);
 
                                         if (_caminhoDoArquivo.isEmpty) {
-                                          _caminhoDoArquivo = null;
+                                          _caminhoDoArquivo = [];
                                         }
                                       });
                                     });
@@ -323,7 +339,7 @@ class _FormDemandaState extends State<FormDemanda> {
                         }
                       },
                     )
-                  : _caminhoDoArquivo != null
+                  : _caminhoDoArquivo != []
                       ? Wrap(
                           children: List.generate(_caminhoDoArquivo.length,
                               (int index) {
@@ -333,7 +349,7 @@ class _FormDemandaState extends State<FormDemanda> {
                                 _caminhoDoArquivo.removeAt(index);
 
                                 if (_caminhoDoArquivo.isEmpty) {
-                                  _caminhoDoArquivo = null;
+                                  _caminhoDoArquivo = [];
                                 }
                               });
                             });
@@ -348,21 +364,17 @@ class _FormDemandaState extends State<FormDemanda> {
         backgroundColor: AppTheme.colors.blue,
         child: const Icon(Icons.done, color: Colors.white),
         onPressed: () {
-          if (_formKey.currentState.validate()) {
+          if (_formKey.currentState!.validate()) {
             if (!widget.editarDemanda) {
               _criarDemanda(context);
 
               //SnackBar
-              const SnackBar snackBar = SnackBar(
-                  content: Text("Sua demanda foi criada com sucesso! "));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              Utils.schowSnackBar("Sua demanda foi criada com sucesso! ");
             } else {
               _editarDemanda();
 
               //SnackBar
-              const SnackBar snackBar = SnackBar(
-                  content: Text("Sua demanda foi atualizada com sucesso! "));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              Utils.schowSnackBar("Sua demanda foi atualizada com sucesso! ");
             }
 
             //Limpa o formulário após adição ou edição da demanda
@@ -379,15 +391,13 @@ class _FormDemandaState extends State<FormDemanda> {
       type: _tipoArquivo,
       allowMultiple: true,
       allowedExtensions: ['jpg', 'pdf', 'doc', 'txt'],
-    ))
+    ))!
         .files;
 
     if (!mounted) return;
 
-    debugPrint('$_caminhoDoArquivo');
-
     setState(() {
-      fileName = _caminhoDoArquivo != null
+      fileName = _caminhoDoArquivo != []
           ? _caminhoDoArquivo.map((e) => e.name).toString()
           : '...';
     });
@@ -401,10 +411,11 @@ class _FormDemandaState extends State<FormDemanda> {
     final CollectionReference demandaRef =
         FirebaseFirestore.instance.collection('DEMANDAS');
 
-    final String areaLocalidade =
-        '$areaTematicaSelecionada-${widget.localidade}';
+    // Define a localidade da demanda de acordo com a localidade do usuário
+    final String localidade =
+        '(${widget.usuario.userState}) ${widget.usuario.userCity}';
 
-    debugPrint(widget.localidade);
+    var areaLocalidade = '$areaTematicaSelecionada-$localidade';
 
     demandaRef
         .doc(documentID)
@@ -421,7 +432,7 @@ class _FormDemandaState extends State<FormDemanda> {
           'empresa_envolvida': _controladorEmpresaEnvolvida.text,
           'equipe_colaboradores': _controladorEquipeColaboradores.text,
           'area_tematica': areaTematicaSelecionada,
-          'localidade': widget.localidade,
+          'localidade': localidade,
           'filtro_area_localidade': areaLocalidade
         })
         .then((value) => debugPrint("Demanda atualizada"))
@@ -503,7 +514,7 @@ class _FormDemandaState extends State<FormDemanda> {
   }
 
   void uploadFile(String docId) async {
-    if (_caminhoDoArquivo == null && _caminhoDoArquivo.isEmpty) return;
+    if (_caminhoDoArquivo == [] && _caminhoDoArquivo.isEmpty) return;
 
     for (var arquivos in _caminhoDoArquivo) {
       String nomeArquivo = arquivos.name;
@@ -516,11 +527,11 @@ class _FormDemandaState extends State<FormDemanda> {
       debugPrint("Nome do arquivo: $nomeArquivoExtensao");
 
       if (kIsWeb) {
-        _uploadFileToFirebase(_caminhoDoArquivo.first.bytes,
+        _uploadFileToFirebase(_caminhoDoArquivo.first.bytes!,
             nomeArquivoExtensao, docId, nomeArquivo);
       } else {
         _uploadFileToFirebase(
-            await File(_caminhoDoArquivo.first.path).readAsBytes(),
+            await File(_caminhoDoArquivo.first.path!).readAsBytes(),
             nomeArquivoExtensao,
             docId,
             nomeArquivo);

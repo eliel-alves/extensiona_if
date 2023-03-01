@@ -7,13 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 enum Options { deletar, atualizar }
 
 class ItemDemanda extends StatelessWidget {
-  const ItemDemanda({Key key}) : super(key: key);
+  const ItemDemanda({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +53,7 @@ class ItemDemanda extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 itemBuilder: (context, index) {
                   //Pegando as informações dos documentos do firebase da coleção Demandas
+                  final userId = data.docs[index]['usuario'];
                   final infoTitulo = data.docs[index]['titulo'];
                   final infoTempo = data.docs[index]['tempo'];
                   //final infoData = data.docs[index]['data'];
@@ -73,8 +73,7 @@ class ItemDemanda extends StatelessWidget {
                       data.docs[index]['empresa_envolvida'];
                   final infoEquipeColaboradores =
                       data.docs[index]['equipe_colaboradores'];
-                  final infoLocalidade = data.docs[index]['localidade'];
-                  final docRef = snapshot.data.docs[index];
+                  final docRef = snapshot.data!.docs[index];
 
                   return AnimationConfiguration.staggeredList(
                       position: index,
@@ -106,7 +105,7 @@ class ItemDemanda extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: const [
-                                      Icon(FontAwesome.file),
+                                      Icon(Icons.folder_rounded),
                                     ]),
                                 title: Text(infoTitulo),
                                 subtitle: Padding(
@@ -158,7 +157,7 @@ class ItemDemanda extends StatelessWidget {
                                         infoEmpresaEnvolvida,
                                         infoEquipeColaboradores,
                                         infoAreaTematica,
-                                        infoLocalidade);
+                                        userId);
                                   },
                                   itemBuilder: (BuildContext context) {
                                     return <PopupMenuEntry<Options>>[
@@ -206,7 +205,7 @@ class ItemDemanda extends StatelessWidget {
       infoEmpresaEnvolvida,
       infoEquipeColaboradores,
       infoAreaTematica,
-      infoLocalidade) {
+      userId) async {
     if (choice == 'deletar') {
       showDialog(
           context: context,
@@ -250,7 +249,8 @@ class ItemDemanda extends StatelessWidget {
                     }
 
                     //SnackBar
-                    Utils.schowSnackBar(' proposta foi deletada com sucesso! ');
+                    Utils.schowSnackBar(
+                        'A proposta foi deletada com sucesso! ');
                   },
                   child: const Text('Sim'),
                 ),
@@ -265,7 +265,15 @@ class ItemDemanda extends StatelessWidget {
             );
           });
     } else if (choice == 'atualizar') {
+      var userRef = await FirebaseFirestore.instance
+          .collection('USUARIOS')
+          .doc(userId)
+          .get();
+
+      var userInfo = Users.fromJson(userRef.data()!);
+
       //Navegar para a tela de edição de demandas
+      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/formDemanda',
           arguments: DemandaArguments(
               titulo: infoTitulo,
@@ -282,7 +290,7 @@ class ItemDemanda extends StatelessWidget {
               equipeColaboradores: infoEquipeColaboradores,
               docId: docRef.id,
               editarDemanda: true,
-              localidade: infoLocalidade));
+              usuario: userInfo));
     }
   }
 }
