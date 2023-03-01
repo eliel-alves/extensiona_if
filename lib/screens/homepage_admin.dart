@@ -154,7 +154,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       onConfirm: (results) {
                         if (_formKeyArea.currentState!.validate()) {
                           setState(() {
-                            _areaFiltered = results as List<String>;
+                            _areaFiltered = results;
                           });
                           debugPrint(_areaFiltered.toString());
                         } else {
@@ -245,7 +245,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         onConfirm: (results) {
                           if (_formKeyLocalidade.currentState!.validate()) {
                             setState(() {
-                              _locationFiltered = results as List<String>;
+                              _locationFiltered = results;
                             });
                             debugPrint(_locationFiltered.toString());
                           }
