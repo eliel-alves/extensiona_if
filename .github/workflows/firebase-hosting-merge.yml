@@ -14,16 +14,21 @@ jobs:
       # Verifica repositório
       - uses: actions/checkout@v2
 
+      # Instalando dart
+      - name: Install Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          dart-version: '2.17.1'
+
       # Instalando flutter
       - uses: subosito/flutter-action@v1
         with:
-          channel: 'dev'
+          channel: 'stable'
 
       # Buildando a aplicação
       - name: Build Website
         run: |
           flutter config --enable-web
-          flutter pub upgrade
           flutter pub get
           flutter build web --release
         working-directory: ./
