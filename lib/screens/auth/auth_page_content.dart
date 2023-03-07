@@ -75,7 +75,7 @@ class _AuthPageContentState extends State<AuthPageContent> {
             size.height,
             (size.width > 900 && size.width <= 1200)
                 ? const EdgeInsets.only(right: 50, left: 50)
-                : const EdgeInsets.only(right: 110, left: 110)),
+                : const EdgeInsets.only(right: 200, left: 200)),
         isforgotPasswordScream
             ? SizedBox(
                 height: size.height,

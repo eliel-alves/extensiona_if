@@ -124,6 +124,7 @@ class UserDAO extends ChangeNotifier {
 
   // Logou do usuário
   void logout() async {
+    usuario = null;
     await auth.signOut();
     notifyListeners();
     _getUser();

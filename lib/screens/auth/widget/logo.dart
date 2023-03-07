@@ -9,7 +9,7 @@ Widget logoContainer(double width, double height, EdgeInsets padding) {
     padding: padding,
     decoration: BoxDecoration(color: AppTheme.colors.dark),
     child: SvgPicture.asset(
-      'lib/assets/svg/extensiona-logo-light.svg',
+      'lib/assets/svg/extensiona-logo-light-slogan.svg',
     ),
   );
 }

@@ -20,7 +20,7 @@ Widget adminDrawerNavigation(context) {
           decoration: BoxDecoration(
             color: AppTheme.colors.dark,
           ),
-          child: SvgPicture.asset('lib/assets/svg/extensiona-logo-light.svg',
+          child: SvgPicture.asset('lib/assets/svg/extensiona-logo-light-slogan.svg',
               width: 200),
         ),
         ListTileOptions(

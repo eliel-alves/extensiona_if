@@ -123,19 +123,25 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                 style: AppTheme.typo.formText,
                 onChanged: (String? newValue) {
                   setState(() {
-                    _myState = newValue!;
-                    _myCity = '';
-                    debugPrint('depois estado: $_myState');
+                    _myState = newValue;
+                    _myCity = null;
+                    // debugPrint('depois estado: ' + _myState);
                   });
 
                   _getCitiesList();
+                  // debugPrint('Permitir seleção');
                 },
-                items: statesList.map<DropdownMenuItem<String>>((item) {
+                items: statesList?.map<DropdownMenuItem<String>>((item) {
                   return DropdownMenuItem(
                     value: item['sigla'].toString(),
-                    child: Text(item['nome']),
+                    child: Text(
+                      item['nome'],
+                      style: AppTheme.typo
+                          .bold(16, AppTheme.colors.dark, 1, 0),
+                    ),
                   );
-                }).toList(),
+                }).toList() ??
+                    [],
               ),
             ),
           ),
@@ -169,16 +175,21 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
                 style: AppTheme.typo.formText,
                 onChanged: (String? newValue) {
                   setState(() {
-                    _myCity = newValue!;
-                    debugPrint('depois cidade: $_myCity');
+                    _myCity = newValue;
+                    // debugPrint('depois cidade: ' + _myCity);
                   });
                 },
-                items: citiesList.map((item) {
+                items: citiesList?.map((item) {
                   return DropdownMenuItem(
                     value: item['nome'].toString(),
-                    child: Text(item['nome']),
+                    child: Text(
+                      item['nome'],
+                      style: AppTheme.typo
+                          .bold(16, AppTheme.colors.dark, 1, 0),
+                    ),
                   );
-                }).toList(),
+                }).toList() ??
+                    [],
               ),
             ),
           ),
@@ -189,8 +200,8 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
 
   /// API Estados e Cidades
   // Buscando estados
-  late List statesList;
-  late String _myState;
+  List? statesList;
+  String? _myState;
 
   final stateInfoUrl = Uri.parse(
       'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
@@ -206,8 +217,8 @@ class _ChangeStateCityState extends State<ChangeStateCity> {
   }
 
   // Buscando cidades
-  late List citiesList;
-  late String _myCity;
+  List? citiesList;
+  String? _myCity;
 
   Future<dynamic> _getCitiesList() async {
     String cityInfoUrl;

@@ -146,7 +146,8 @@ class _RegisterFormState extends State<RegisterForm> {
             validator: FormValidation.validateField(),
           ),
 
-          Row(children: [
+          Responsive.isDesktop(context) || Responsive.isTablet(context)
+            ? Row(children: [
             // campo estado
             Expanded(child: buildDropdownState()),
 
@@ -154,7 +155,13 @@ class _RegisterFormState extends State<RegisterForm> {
 
             // campo cidade
             Expanded(child: buildDropdownCity()),
-          ]),
+          ]) : Column(
+            children: [
+              buildDropdownState(),
+              Utils.addVerticalSpace(20),
+              buildDropdownCity()
+            ],
+          ),
 
           Utils.addVerticalSpace(20),
 

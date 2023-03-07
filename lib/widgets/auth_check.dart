@@ -24,7 +24,7 @@ class _ManageAuthStateState extends State<ManageAuthState> {
   Widget build(BuildContext context) {
     UserDAO authService = Provider.of<UserDAO>(context);
 
-    if (authService.isLoading!) {
+    if (authService.isLoading == null || authService.isLoading!) {
       return loading();
     } else if (authService.usuario == null) {
       return const AuthPage();
@@ -72,6 +72,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       timer = Timer.periodic(
           const Duration(seconds: 3), (_) => checkEmailVerified());
     }
+
+    // Inicializando variáveis late antes de serem chamadas
+    timer = Timer.periodic(const Duration(), (_) {});
+    _timerResendEmail = Timer.periodic(const Duration(), (_) {});
   }
 
   Future sendVerificationEmail() async {
